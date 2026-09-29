@@ -228,3 +228,5 @@ data/raw/
 node_modules/
 .next/
 .vercel/
+# 위쪽 파이썬용 lib/ 규칙이 src/lib/ 까지 무시하므로 다시 추적한다
+!src/lib/
