@@ -153,7 +153,8 @@
 ## 6. 함수·파일 이름 (AI가 멋대로 짓지 않게)
 | 이름 | 위치 | 담당 |
 |---|---|---|
-| getMyLevel | src/lib/pet.ts | care_logs 수를 세어 레벨 계산 |
-| addCareLog | src/lib/pet.ts | 돌봄 행동을 care_logs에 추가 |
-| getCashBalance | src/lib/cash.ts | cash_logs 합계로 잔액 계산 |
-| joinClan | src/lib/clan.ts | 동의에 따라 clan_id를 정해 players 추가 |
+| getMyLevel | src/lib/pet.ts | `getMyLevel(playerId)` → 숫자. care_logs 수를 세어 레벨 계산 (조원영) |
+| addCareLog | src/lib/pet.ts | `addCareLog(playerId, actionType)` → 추가된 행. 돌봄 행동을 care_logs에 추가 (조원영) |
+| getCashBalance | src/lib/cash.ts | `getCashBalance(playerId)` → 숫자. cash_logs 합계로 잔액 계산 (조원영) |
+| joinClan | src/lib/clan.ts | `joinClan(nickname, inviteCode, agree)` → 새 player 행. 동의하면 초대한 사람의 클랜, 거절하면 새 클랜으로 players 추가 (조원영) |
+| startBattle | src/lib/battle.ts | `startBattle(attackerId, defenderId)` → battle_logs 행. 레벨을 비교해 승패를 정하고 기록 (조연준) |
