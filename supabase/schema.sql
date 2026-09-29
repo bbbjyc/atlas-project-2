@@ -1,0 +1,2 @@
+-- 설계 ⑥ 단계에서 @docs/plan.md 를 보고 AI가 생성 -> 팀장이 Supabase SQL Editor에서 실행
+-- 규칙: RLS 켜기, 읽기·추가만 허용(수정/삭제 X). 테이블 변경은 plan.md 먼저 수정 후 여기에 추가.
