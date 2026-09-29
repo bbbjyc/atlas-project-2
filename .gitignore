@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ATLAS team additions
+.env
+.env.local
+*.key
+.cursor/
+.DS_Store
+*.log
+data/raw/
+node_modules/
+.next/
+.vercel/
