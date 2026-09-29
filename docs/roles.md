@@ -6,9 +6,9 @@
 
 | 역할 | 담당 | 주 작업 폴더 | 브랜치 예시 |
 |---|---|---|---|
-| A. 팀장 · 데이터/배포 (조연준) | Supabase 프로젝트·팀원 초대, schema.sql·RLS, 뼈대 PR, Vercel 배포·환경변수, PR merge 관리, plan.md 최종 확정 | `supabase/`, `docs/plan.md`, `src/lib/` (Supabase 연결), 루트 설정 파일 | `feat/yeonjun-schema`, `feat/yeonjun-deploy` |
-| B. 화면 · UX (하재영) | 폰 기준 화면, 입력·목록 UI, 공유 링크 진입 화면, 디자인 | `src/app/` 페이지, `src/components/` | `feat/jaeyoung-ui-...` |
-| C. 핵심 기능 · 연결 (조원영) | 저장·조회·이어쓰기 로직, 링크 생성/공유, 새로고침 후 데이터 유지, 예외 처리 | `src/lib/` (기능 로직), `src/app/api/` | `feat/wonyoung-...` |
+| A. 팀장 · 데이터/배포 · 전쟁 기능 (조연준) | Supabase 프로젝트·팀원 초대, schema.sql·RLS, 뼈대 PR, Vercel 배포·환경변수, PR merge 관리, plan.md 최종 확정, 전쟁 기능(대전·클랜전) | `supabase/`, `docs/plan.md`, `src/lib/supabase.ts`, `src/lib/battle.ts`, 루트 설정 파일 | `feat/yeonjun-skeleton`, `feat/yeonjun-battle`, `feat/yeonjun-deploy` |
+| B. 화면 · UX (하재영) | 화면 4장(내 집·초대/클랜·친구 집/클랜전·상점), 충전 팝업 UI, 디자인 | `src/app/` 페이지, `src/components/` | `feat/jaeyoung-ui-...` |
+| C. 핵심 기능 · 연결 (조원영) | 돌봄·레벨·꾸미기, 초대·클랜 가입(joinClan), 방문·선물, 캐시 잔액, 충전 팝업 기록(fake_door_logs), 예외 처리 | `src/lib/pet.ts`, `src/lib/clan.ts`, `src/lib/visit.ts`, `src/lib/cash.ts`, `src/lib/fakeDoor.ts` | `feat/wonyoung-...` |
 
 역할은 "주 담당"일 뿐이다. 남의 폴더를 고쳐야 하면 채팅에 먼저 알린다.
 
