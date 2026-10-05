@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Pet } from '@/types/pet';
+import Shop from './Shop';
 import styles from './GameScreen.module.css';
 
 interface GameScreenProps {
@@ -32,6 +33,7 @@ const ACTION_EMOJIS: Record<string, string> = {
 export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const [pet, setPet] = useState(initialPet);
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
+  const [showShop, setShowShop] = useState(false);
 
   // Simulate cooldown timer
   useEffect(() => {
@@ -242,9 +244,20 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
       <div className={styles.navbar}>
         <button className={`${styles.navButton} ${styles.active}`}>🏠 집</button>
         <button className={styles.navButton}>👥 친구</button>
-        <button className={styles.navButton}>🛍️ 상점</button>
+        <button className={styles.navButton} onClick={() => setShowShop(true)}>
+          🛍️ 상점
+        </button>
         <button className={styles.navButton}>⚙️ 설정</button>
       </div>
+
+      {/* Shop Modal */}
+      {showShop && (
+        <Shop
+          pet={pet}
+          onPetUpdate={setPet}
+          onClose={() => setShowShop(false)}
+        />
+      )}
     </div>
   );
 }
