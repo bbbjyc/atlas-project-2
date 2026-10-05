@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Pet } from '@/types/pet';
 import Shop from './Shop';
+import Friends from './Friends';
 import styles from './GameScreen.module.css';
 
 interface GameScreenProps {
@@ -34,6 +35,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const [pet, setPet] = useState(initialPet);
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
   const [showShop, setShowShop] = useState(false);
+  const [showFriends, setShowFriends] = useState(false);
 
   // Simulate cooldown timer
   useEffect(() => {
@@ -243,7 +245,12 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
       {/* Bottom Navigation */}
       <div className={styles.navbar}>
         <button className={`${styles.navButton} ${styles.active}`}>🏠 집</button>
-        <button className={styles.navButton}>👥 친구</button>
+        <button
+          className={styles.navButton}
+          onClick={() => setShowFriends(true)}
+        >
+          👥 친구
+        </button>
         <button className={styles.navButton} onClick={() => setShowShop(true)}>
           🛍️ 상점
         </button>
@@ -256,6 +263,15 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           pet={pet}
           onPetUpdate={setPet}
           onClose={() => setShowShop(false)}
+        />
+      )}
+
+      {/* Friends Modal */}
+      {showFriends && (
+        <Friends
+          pet={pet}
+          onPetUpdate={setPet}
+          onClose={() => setShowFriends(false)}
         />
       )}
     </div>
