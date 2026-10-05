@@ -203,6 +203,52 @@ button:active .disc{transform:scale(.92)}
 .sheet-foot button:active{transform:scale(.97)}
 .btn-ghost{background:var(--chip-bg);color:var(--ink)}
 .btn-primary{background:var(--primary);color:#fff;box-shadow:0 6px 14px rgba(124,108,246,.3)}
+/* ── 미션 ── */
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:0 16px;padding:4px;border-radius:14px;background:var(--chip-bg)}
+.tier-tab{position:relative;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink-2);transition:background .2s,color .2s}
+.tier-tab small{font-size:10px;font-weight:600}
+.tier-tab svg.i{position:absolute;top:5px;left:6px;width:11px;height:11px}
+.tier-tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.tier-tab.locked{opacity:.55}
+.tier-tab.has::after{content:"";position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.tier-head{flex:none;margin:12px 16px 0;padding:14px 14px 12px;border-radius:18px;color:#fff;background:linear-gradient(135deg,#9585ff,#6c5cf0);box-shadow:0 6px 16px rgba(108,92,240,.25)}
+.war .tier-head{background:linear-gradient(135deg,#ff7a6b,#c8364a);box-shadow:0 6px 16px rgba(200,54,74,.3)}
+.tier-head h3{font-size:16px;font-weight:800}
+.tier-head p{font-size:12px;opacity:.85;margin-top:2px}
+.tier-prog{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;font-weight:800}
+.tier-prog .track{flex:1;background:rgba(255,255,255,.25)}
+.tier-prog .track i{background:#fff}
+.bonus{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:12px;font-weight:600}
+.bonus svg.i{width:15px;height:15px}
+.bonus button{margin-left:auto;height:30px;padding:0 12px;border-radius:10px;background:#fff;color:#6c5cf0;font-size:12px;font-weight:800}
+.war .bonus button{color:#c8364a}
+.bonus button[disabled]{background:rgba(255,255,255,.22);color:#fff;cursor:default}
+.mlist{flex:1;overflow-y:auto;padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px}
+.mission{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--card);box-shadow:0 2px 8px rgba(60,40,80,.07);animation:pop .25s both}
+.mission.done{opacity:.55}
+.mission.soon{opacity:.6;border:1.5px dashed var(--ink-2);box-shadow:none}
+.mlist.locked .mission{filter:grayscale(1);opacity:.5}
+.m-ico{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--chip-bg);color:var(--primary)}
+.m-body{flex:1;min-width:0}
+.m-title{font-size:14px;font-weight:800}
+.m-desc{font-size:11px;color:var(--ink-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-prog{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:10px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.m-prog .track{flex:1;height:5px}
+.m-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.rewards{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.reward{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;white-space:nowrap}
+.reward svg.i{width:13px;height:13px;color:#e0950e}
+.reward.ritem{font-size:11px;color:var(--accent)}
+.reward.ritem svg.i{color:var(--accent)}
+.claim{height:28px;min-width:58px;padding:0 10px;border-radius:9px;background:var(--primary);color:#fff;font-size:12px;font-weight:800;transition:transform .12s}
+.claim:active{transform:scale(.94)}
+.claim[disabled]{background:var(--chip-bg);color:var(--ink-2);cursor:default}
+.locked-note{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:var(--chip-bg);font-size:12px;font-weight:700;color:var(--ink-2)}
+.locked-note svg.i{width:16px;height:16px;flex:none}
+.badge[hidden]{display:none}
+.badge.ping{animation:ping .5s}
+@keyframes ping{50%{transform:scale(1.4)}}
+
 
 
 @keyframes floatUp{from{opacity:0;transform:translate(-50%,0) scale(.8)}20%{opacity:1;transform:translate(-50%,-10px) scale(1.05)}to{opacity:0;transform:translate(-50%,-60px)}}
@@ -231,6 +277,10 @@ button:active .disc{transform:scale(.92)}
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
   <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="3"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="5" rx="1.5"/><path d="M5 13v7h14v-7M12 8v12M12 8c-1.5-3-5.5-4-5.5-1.5S9.5 8 12 8zm0 0c1.5-3 5.5-4 5.5-1.5S14.5 8 12 8z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.6-3 8.1-7 9.5-4-1.4-7-4.9-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
 </svg>
 
@@ -312,7 +362,7 @@ button:active .disc{transform:scale(.92)}
   <!-- 오른쪽 위: 상점 · 미션 -->
   <nav class="hud side-r">
     <button class="rbtn" id="shopBtn" aria-haspopup="dialog"><span class="disc glass"><svg class="i"><use href="#i-bag"/></svg></span>상점</button>
-    <button class="rbtn" data-msg="미션은 다음 단계에서 만들어요"><span class="disc glass"><svg class="i"><use href="#i-mission"/></svg><span class="badge">3</span></span>미션</button>
+    <button class="rbtn" id="missionBtn" aria-haspopup="dialog"><span class="disc glass"><svg class="i"><use href="#i-mission"/></svg><span class="badge" id="missionBadge">!</span></span>미션</button>
   </nav>
 
   <!-- 아래 -->
@@ -366,6 +416,18 @@ button:active .disc{transform:scale(.92)}
     </footer>
   </section>
 
+  <!-- 미션 -->
+  <section class="sheet" id="missions" role="dialog" aria-modal="true" aria-labelledby="missionTitle" aria-hidden="true">
+    <header class="sheet-head">
+      <h2 id="missionTitle">미션</h2>
+      <div class="wallet"><svg class="i"><use href="#i-coin"/></svg><span id="mWalletAmt">120</span></div>
+      <button class="close" data-close aria-label="닫기"><svg class="i"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="tiers" role="tablist" id="tiers"></div>
+    <div class="tier-head" id="tierHead"></div>
+    <div class="mlist" id="mlist"></div>
+  </section>
+
   <div class="toast" id="toast"></div>
 </main>
 
@@ -387,10 +449,18 @@ function render() {
   $('depth').textContent = `${state.depth}단계`;
 }
 
+const toastQ = [];
+let toastBusy = false;
 function toast(msg) {
-  const t = $('toast');
+  if (toastQ.length < 3) toastQ.push(msg);
+  if (!toastBusy) nextToast();
+}
+function nextToast() {
+  const t = $('toast'), msg = toastQ.shift();
+  if (!msg) { toastBusy = false; return; }
+  toastBusy = true;
   t.textContent = msg; t.classList.add('on');
-  clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove('on'), 1400);
+  setTimeout(() => { t.classList.remove('on'); setTimeout(nextToast, 250); }, 1300);
 }
 
 function float(text, color, delay = 0) {
@@ -417,10 +487,12 @@ document.querySelectorAll('[data-care]').forEach(b => b.onclick = () => {
   }
   const before = Math.floor(state.cares / 10);
   state.cash -= COST; state.cares++;
+  stats[b.dataset.care]++;
   render(); hop();
   float(`${b.dataset.label}! +1 EXP`, '#7c6cf6');
   float(`-${COST}`, '#e0950e', 180);
-  if (Math.floor(state.cares / 10) > before) setTimeout(() => toast(`레벨 업! Lv.${before + 1}`), 400);
+  if (Math.floor(state.cares / 10) > before) toast(`레벨 업! Lv.${before + 1}`);
+  checkMissions();
 });
 
 
@@ -430,6 +502,8 @@ $('mode').onclick = () => {
   retrigger(room, 'flash');
   $('mode').setAttribute('aria-pressed', state.war);
   toast(state.war ? '전쟁모드로 전환했어요' : '애완모드로 전환했어요');
+  stats.modeSwitch++;
+  checkMissions();
 };
 
 // ── 상점 (더미 아이템, 이미지는 나중에 교체) ──
@@ -480,8 +554,11 @@ $('shopGrid').onclick = e => {
   }
   state.cash -= price;
   if (shopCat !== 'food') owned.add(b.dataset.name);
+  stats.buy++;
+  if (shopCat === 'clothes') stats.buyClothes++;
   render(); renderShop();
   toast(`${b.dataset.name} 구매 완료!`);
+  checkMissions();
 };
 
 // ── 캐릭터 설정 (모두 무료) ──
@@ -623,6 +700,8 @@ $('saveCustom').onclick = () => {
   closeSheet();
   hop();
   toast('캐릭터를 저장했어요');
+  stats.customSave++;
+  checkMissions();
 };
 
 // ── 공용: 아이콘에서 튀어나오는 90% 팝업 ──
@@ -650,10 +729,165 @@ function closeSheet() {
   openSheetEl = null;
 }
 
-function openShop() { renderShop(); openSheet($('shop'), $('shopBtn').querySelector('.disc')); }
+// ── 미션 (더미 진행도. 나중에 care_logs·cash_logs 등을 세서 계산) ──
+const stats = {
+  feed: 0, clean: 0, shower: 0, shopOpen: 0, customSave: 0, modeSwitch: 0, buy: 0, buyClothes: 0,
+  invites: 0, visits: 0, gifts: 0, battleWins: 0, clanWins: 0, chainDepth: 0,   // 아직 없는 기능은 0에 머문다
+};
+const careTotal = () => stats.feed + stats.clean + stats.shower;
+const level = () => Math.floor(state.cares / 10);
+const M = (id, icon, title, desc, goal, get, reward, soon) => ({ id, icon, title, desc, goal, get, reward, soon });
+
+// 단계가 오를수록 목표가 커지고 보상도 커진다. 보상은 그 단계에서 쓰는 캐시(돌봄 1회 10)보다 조금 많게.
+// soon: 아직 없는 기능(초대·방문·선물·대전). 기능이 생기면 soon만 지우면 된다.
+const MISSION_TIERS = [
+  { lv: 1, name: '입문', title: '튜토리얼', desc: '버튼을 하나씩 눌러 보며 익혀요', bonus: 50, missions: [
+    M('t-feed',   'i-bowl',    '첫 밥주기',     '아래 밥주기 버튼을 눌러요',            1, () => stats.feed,       { cash: 15 }),
+    M('t-clean',  'i-sparkle', '첫 청소',       '아래 청소 버튼을 눌러요',              1, () => stats.clean,      { cash: 15 }),
+    M('t-shower', 'i-drop',    '첫 샤워',       '아래 샤워 버튼을 눌러요',              1, () => stats.shower,     { cash: 15 }),
+    M('t-shop',   'i-bag',     '상점 구경',     '오른쪽 위 상점을 열어 봐요',            1, () => stats.shopOpen,   { cash: 10 }),
+    M('t-buy',    'i-coin',    '첫 쇼핑',       '상점에서 아무 물건이나 사요',           1, () => stats.buy,        { cash: 20, item: '벽 액자' }),
+    M('t-custom', 'i-edit',    '나만의 캐릭터', '캐릭터를 눌러 꾸미고 저장해요',         1, () => stats.customSave, { cash: 20 }),
+    M('t-mode',   'i-swords',  '전쟁모드 구경', '위쪽 가운데 스위치를 눌러요',           1, () => stats.modeSwitch, { cash: 10 }),
+  ]},
+  { lv: 2, name: '초보', title: '초보 집사', desc: '꾸준히 돌보고 첫 친구를 데려와요', bonus: 100, missions: [
+    M('b-care',   'i-heart',   '돌봄 10번',     '밥주기·청소·샤워 아무거나',             10, careTotal,              { cash: 60 }),
+    M('b-feed',   'i-bowl',    '밥주기 5번',    '배고프지 않게 챙겨 줘요',               5,  () => stats.feed,       { cash: 30 }),
+    M('b-lv',     'i-star',    '레벨 2 달성',   '돌봄 20번이면 레벨 2예요',              2,  level,                  { cash: 80 }),
+    M('b-clothes','i-shirt',   '새 옷 사기',    '상점에서 옷을 1벌 사요',                1,  () => stats.buyClothes, { item: '털모자' }),
+    M('b-invite', 'i-invite',  '첫 친구 초대',  '초대 링크로 친구 1명을 데려와요',        1,  () => stats.invites,    { cash: 100, item: '초록 화분' }, true),
+  ]},
+  { lv: 3, name: '숙련', title: '숙련 집사', desc: '친구들과 우정을 쌓아요', bonus: 200, missions: [
+    M('s-care',   'i-heart',   '돌봄 30번',     '밥주기·청소·샤워 아무거나',             30, careTotal,              { cash: 150 }),
+    M('s-lv',     'i-star',    '레벨 4 달성',   '돌봄 40번이면 레벨 4예요',              4,  level,                  { cash: 150, item: '스탠드 조명' }),
+    M('s-visit',  'i-home',    '친구 집 방문 3번','친구 집에 놀러 가요',                 3,  () => stats.visits,     { cash: 80 }, true),
+    M('s-gift',   'i-gift',    '선물 5번',      '친구 펫에게 밥·청소를 대신 해 줘요',     5,  () => stats.gifts,      { cash: 120, item: '원목 의자' }, true),
+    M('s-invite', 'i-invite',  '친구 3명 초대', '내 초대 링크로 3명을 데려와요',          3,  () => stats.invites,    { cash: 250 }, true),
+  ]},
+  { lv: 4, name: '마스터', title: '클랜 마스터', desc: '클랜을 키우고 전쟁에서 이겨요', bonus: 500, missions: [
+    M('m-care',   'i-heart',   '돌봄 100번',    '최고의 집사가 되어요',                  100, careTotal,             { cash: 500 }),
+    M('m-lv',     'i-star',    '레벨 8 달성',   '돌봄 80번이면 레벨 8이에요',            8,  level,                  { cash: 400 }),
+    M('m-chain',  'i-link',    '친구의 친구의 친구','내 초대가 3단계까지 이어지게 해요',   3,  () => stats.chainDepth, { cash: 500, item: '푹신 소파' }, true),
+    M('m-invite', 'i-invite',  '친구 10명 초대','내 초대 링크로 10명을 데려와요',          10, () => stats.invites,    { cash: 600 }, true),
+    M('m-battle', 'i-swords',  '대전 5번 승리', '전쟁모드에서 대전을 신청해요',           5,  () => stats.battleWins, { cash: 300 }, true),
+    M('m-clan',   'i-shield',  '클랜전 승리',   '클랜원과 함께 클랜전에서 이겨요',        1,  () => stats.clanWins,   { cash: 400 }, true),
+  ]},
+];
+const claimed = new Set(), bonusClaimed = new Set(), notified = new Set();
+let missionTier = 1, missionSeen = false;
+
+const findMission = id => MISSION_TIERS.flatMap(t => t.missions).find(m => m.id === id);
+const progress = m => Math.min(m.goal, m.get());
+const isDone = m => progress(m) >= m.goal;
+const tierUnlocked = lv => lv === 1 || bonusClaimed.has(lv - 1);
+const tierAllClaimed = t => t.missions.every(m => m.soon || claimed.has(m.id));
+const tierClaimable = t => tierUnlocked(t.lv) &&
+  (t.missions.filter(m => isDone(m) && !claimed.has(m.id)).length + (tierAllClaimed(t) && !bonusClaimed.has(t.lv) ? 1 : 0));
+
+function rewardHTML(r) {
+  return `<div class="rewards">${r.cash ? `<span class="reward"><svg class="i"><use href="#i-coin"/></svg>${r.cash}</span>` : ''}${
+    r.item ? `<span class="reward ritem"><svg class="i"><use href="#i-gift"/></svg>${r.item}</span>` : ''}</div>`;
+}
+
+function renderMissions() {
+  $('mWalletAmt').textContent = state.cash.toLocaleString();
+  $('tiers').innerHTML = MISSION_TIERS.map(t => {
+    const open = tierUnlocked(t.lv);
+    return `<button class="tier-tab${open ? '' : ' locked'}${tierClaimable(t) ? ' has' : ''}" role="tab" data-lv="${t.lv}" aria-selected="${t.lv === missionTier}">${
+      open ? '' : '<svg class="i"><use href="#i-lock"/></svg>'}Lv.${t.lv}<small>${t.name}</small></button>`;
+  }).join('');
+
+  const t = MISSION_TIERS[missionTier - 1], open = tierUnlocked(t.lv);
+  const real = t.missions.filter(m => !m.soon), doneN = real.filter(m => claimed.has(m.id)).length;
+  const canBonus = doneN === real.length && !bonusClaimed.has(t.lv);
+  $('tierHead').innerHTML = `<h3>Lv.${t.lv} ${t.title}</h3><p>${t.desc}</p>
+    <div class="tier-prog"><div class="track"><i style="width:${doneN / real.length * 100}%"></i></div>${doneN} / ${real.length}</div>
+    <div class="bonus"><svg class="i"><use href="#i-star"/></svg>모두 완료 보너스 <b>+${t.bonus}</b>${t.lv < MISSION_TIERS.length ? ' · 다음 단계 열림' : ''}
+      <button id="bonusBtn" ${canBonus ? '' : 'disabled'}>${bonusClaimed.has(t.lv) ? '받음' : '받기'}</button></div>`;
+
+  const order = m => m.soon ? 3 : claimed.has(m.id) ? 2 : isDone(m) ? 0 : 1;   // 받을 수 있는 것 → 진행 중 → 완료 순
+  const list = [...t.missions].sort((a, b) => order(a) - order(b));
+  $('mlist').className = 'mlist' + (open ? '' : ' locked');
+  $('mlist').innerHTML = (open ? '' : `<div class="locked-note"><svg class="i"><use href="#i-lock"/></svg>Lv.${t.lv - 1} 미션을 모두 끝내고 보너스를 받으면 열려요</div>`) +
+    list.map((m, i) => {
+      const p = progress(m), c = claimed.has(m.id), d = p >= m.goal;
+      if (m.soon) return `<article class="mission soon" style="animation-delay:${i * 30}ms">
+        <span class="m-ico"><svg class="i"><use href="#${m.icon}"/></svg></span>
+        <div class="m-body"><div class="m-title">${m.title}</div><div class="m-desc">${m.desc}</div></div>
+        <div class="m-side">${rewardHTML(m.reward)}<button class="claim" disabled>준비 중</button></div></article>`;
+      return `<article class="mission${c ? ' done' : ''}" style="animation-delay:${i * 30}ms">
+        <span class="m-ico"><svg class="i"><use href="#${m.icon}"/></svg></span>
+        <div class="m-body"><div class="m-title">${m.title}</div><div class="m-desc">${m.desc}</div>
+          <div class="m-prog"><div class="track"><i style="width:${p / m.goal * 100}%"></i></div>${p} / ${m.goal}</div></div>
+        <div class="m-side">${rewardHTML(m.reward)}<button class="claim" data-id="${m.id}" ${open && d && !c ? '' : 'disabled'}>${c ? '완료' : d ? '받기' : '진행 중'}</button></div>
+      </article>`;
+    }).join('');
+}
+
+function grant(r) {
+  if (r.cash) state.cash += r.cash;
+  if (r.item) owned.add(r.item);   // 상점에서 '보유'로 표시된다
+  render();
+  toast(`보상: ${[r.cash && `${r.cash} 캐시`, r.item].filter(Boolean).join(' + ')}`);
+}
+
+function updateMissionBadge() {
+  const b = $('missionBadge');
+  const n = MISSION_TIERS.reduce((sum, t) => sum + tierClaimable(t), 0);
+  const text = n ? String(n) : missionSeen ? '' : '!';
+  if (text && text !== b.textContent) retrigger(b, 'ping');
+  b.textContent = text;
+  b.hidden = !text;
+}
+
+// 행동 뒤에 불러서 새로 끝난 미션을 알려 준다
+function checkMissions() {
+  MISSION_TIERS.forEach(t => {
+    if (!tierUnlocked(t.lv)) return;
+    t.missions.forEach(m => {
+      if (isDone(m) && !claimed.has(m.id) && !notified.has(m.id)) { notified.add(m.id); toast(`미션 완료! ${m.title}`); }
+    });
+  });
+  updateMissionBadge();
+}
+
+$('tiers').onclick = e => {
+  const b = e.target.closest('.tier-tab');
+  if (b && +b.dataset.lv !== missionTier) { missionTier = +b.dataset.lv; renderMissions(); $('mlist').scrollTop = 0; }
+};
+$('mlist').onclick = e => {
+  const b = e.target.closest('.claim');
+  if (!b || b.disabled) return;
+  const m = findMission(b.dataset.id);
+  claimed.add(m.id);
+  grant(m.reward);
+  renderMissions(); updateMissionBadge();
+};
+$('tierHead').onclick = e => {
+  const b = e.target.closest('#bonusBtn');
+  if (!b || b.disabled) return;
+  const t = MISSION_TIERS[missionTier - 1];
+  bonusClaimed.add(t.lv);
+  grant({ cash: t.bonus });
+  if (t.lv < MISSION_TIERS.length) { missionTier = t.lv + 1; toast(`Lv.${t.lv + 1} ${MISSION_TIERS[t.lv].name} 미션이 열렸어요!`); }
+  renderMissions(); checkMissions();
+};
+
+function openMissions() {
+  missionSeen = true;
+  // 아직 끝나지 않은 가장 낮은 단계를 먼저 보여 준다
+  const cur = MISSION_TIERS.find(t => tierUnlocked(t.lv) && !bonusClaimed.has(t.lv));
+  missionTier = (cur || MISSION_TIERS[MISSION_TIERS.length - 1]).lv;
+  renderMissions();
+  openSheet($('missions'), $('missionBtn').querySelector('.disc'));
+  updateMissionBadge();
+}
+
+function openShop() { renderShop(); openSheet($('shop'), $('shopBtn').querySelector('.disc')); stats.shopOpen++; checkMissions(); }
 function openCustom() { draft = { ...charCfg }; customTab = 'gender'; renderCustom(); openSheet($('custom'), $('pet')); }
 
 $('shopBtn').onclick = openShop;
+$('missionBtn').onclick = openMissions;
 $('pet').onclick = () => { hop(); openCustom(); };
 $('scrim').onclick = closeSheet;
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = closeSheet);
@@ -662,8 +896,10 @@ drawCharacter();
 // 개발용: home.html#shop / #custom 으로 바로 열기
 if (location.hash === '#shop') openShop();
 if (location.hash === '#custom') openCustom();
+if (location.hash === '#missions') openMissions();
 
 render();
+updateMissionBadge();
 </script>
 </body>
 </html>
