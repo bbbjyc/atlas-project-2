@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>내 집 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* ── 테마 토큰: 애완모드(기본) / 전쟁모드(.war) ── */
+.room{
+  --safe-t:max(14px,env(safe-area-inset-top));
+  --safe-b:max(18px,env(safe-area-inset-bottom));
+  --wall-1:#fdf3e7; --wall-2:#f6e1ca; --dot:rgba(214,160,110,.16);
+  --base:#ebcfac; --floor-1:#e0b287; --floor-2:#cc976a; --seam:rgba(120,70,35,.13);
+  --rug-1:#ffd3df; --rug-2:#ffb3c7;
+  --glass:rgba(255,255,255,.84); --glass-line:rgba(255,255,255,.95);
+  --ink:#3a2d4f; --ink-2:#8c81a5; --track:#eee8f7;
+  --accent:#ff6f9f; --accent-2:#ff9a76; --primary:#7c6cf6;
+  --shadow:0 6px 18px rgba(92,60,40,.13),0 1px 3px rgba(92,60,40,.08);
+  --sheet:#fffaf5; --card:#fff; --chip-bg:#f3edf8;
+}
+.room.war{
+  --wall-1:#3b3055; --wall-2:#281f3d; --dot:rgba(255,255,255,.05);
+  --base:#1f1830; --floor-1:#2e2540; --floor-2:#1f192d; --seam:rgba(0,0,0,.28);
+  --rug-1:#8a2940; --rug-2:#b8425a;
+  --glass:rgba(34,26,52,.8); --glass-line:rgba(255,255,255,.1);
+  --ink:#fff; --ink-2:#b3a8cf; --track:rgba(255,255,255,.12);
+  --accent:#ff5d6c; --accent-2:#ff9f4a; --primary:#ff5d6c;
+  --shadow:0 8px 22px rgba(0,0,0,.35);
+  --sheet:#231b35; --card:#2f2647; --chip-bg:rgba(255,255,255,.08);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#1c1629;font-family:Pretendard,-apple-system,"Malgun Gothic",sans-serif;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── 방 ── */
+.room{position:relative;width:100%;max-width:430px;height:100vh;height:100dvh;overflow:hidden;color:var(--ink);isolation:isolate}
+.wall{position:absolute;inset:0 0 38% 0;background:radial-gradient(var(--dot) 1.6px,transparent 1.9px) 0 0/22px 22px,linear-gradient(var(--wall-1),var(--wall-2))}
+.floor{position:absolute;inset:62% 0 0 0;background:
+  repeating-linear-gradient(90deg,transparent 0 70px,var(--seam) 70px 72px),
+  repeating-linear-gradient(0deg,transparent 0 44px,var(--seam) 44px 46px),
+  linear-gradient(var(--floor-1),var(--floor-2))}
+.floor::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px;background:var(--base)}
+.floor::after{content:"";position:absolute;left:0;right:0;top:0;height:48px;background:linear-gradient(rgba(0,0,0,.1),transparent)}
+.room::after{content:"";position:absolute;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none}
+.room.flash::after{animation:flash .45s ease-out}
+@keyframes flash{30%{opacity:.35}}
+
+.decor{position:absolute;z-index:1;filter:drop-shadow(0 4px 6px rgba(60,35,20,.12))}
+.window{left:57%;top:15%;width:132px;transform:translateX(-50%)}
+.frame{left:9%;top:34%;width:66px}
+.lamp{left:4%;bottom:33%;width:46px}
+.plant{right:5%;bottom:32%;width:60px}
+.rug{position:absolute;z-index:1;left:50%;bottom:calc(29% - 26px);width:250px;transform:translateX(-50%)}
+.rug .r1{fill:var(--rug-1)} .rug .r2{stroke:var(--rug-2)}
+
+/* 장식 색 (SVG 안) */
+.sky1{stop-color:#bfe4ff} .sky2{stop-color:#eef8ff}
+.war .sky1{stop-color:#1c2152} .war .sky2{stop-color:#3d2c6b}
+.wood{fill:#fff} .war .wood{fill:#4a3d63}
+.curtain{fill:#ffb3c7} .war .curtain{fill:#7d2436}
+.metal{fill:#c9a27a} .war .metal{fill:#5b4d73}
+.shade{fill:#fff4dc} .war .shade{fill:#ff9f6b}
+.leaf{fill:#7cc58b} .war .leaf{fill:#44604d}
+.pot{fill:#f3a07a} .war .pot{fill:#57466e}
+.room .night{display:none} .room.war .night{display:inline} .room.war .day{display:none}
+
+/* ── 캐릭터 ── */
+.char-wrap{position:absolute;z-index:2;left:50%;bottom:29%;width:168px;transform:translateX(-50%);cursor:pointer}
+.char{display:block;width:100%;height:auto;transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateY(-2px) scaleY(1.012)}}
+.char-wrap.hop .char{animation:hop .5s cubic-bezier(.3,.7,.4,1)}
+@keyframes hop{30%{transform:translateY(-18px) scaleY(1.03)}65%{transform:translateY(0) scaleY(.95)}100%{transform:none}}
+.eyes{animation:blink 4.5s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.hood1{stop-color:#a495ff} .hood2{stop-color:#7361ef} .collar{fill:#5f4fdc}
+.war .hood1{stop-color:#636a8c} .war .hood2{stop-color:#3d4260} .war .collar{fill:#2f3350}
+
+/* ── HUD 공통 ── */
+.glass{background:var(--glass);border:1px solid var(--glass-line);box-shadow:var(--shadow);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2)}
+.hud{position:absolute;z-index:5}
+
+/* 왼쪽 위: 프로필 + 스탯 */
+.profile{left:12px;top:var(--safe-t);height:44px;max-width:calc(50% - 76px);display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:22px}
+.avatar{position:relative;flex:none;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffe1ec,#e4dcff)}
+.avatar svg{width:100%;height:100%;border-radius:50%}
+.lvb{position:absolute;right:-5px;bottom:-4px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--primary);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+.who{min-width:0;line-height:1.25}
+.who b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:11px;color:var(--ink-2);font-weight:600}
+.stats{left:12px;top:calc(var(--safe-t) + 52px);width:138px;padding:12px;border-radius:18px}
+.xp-top{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2);font-weight:600;margin-bottom:6px}
+.xp-top b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.track{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.stats ul{list-style:none;margin-top:12px;display:grid;gap:8px}
+.stats li{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);font-weight:600}
+.stats li b{margin-left:auto;color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums}
+.chip{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center}
+.chip svg.i{width:14px;height:14px;stroke-width:2.3}
+.c-love{background:#ffe3ea;color:#ff5d86} .c-pow{background:#ece7ff;color:#6f5cf0}
+.c-cash{background:#fff0d2;color:#e0950e} .c-link{background:#dbf4ee;color:#1ea88b}
+.war .chip{background:rgba(255,255,255,.08)}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* 가운데 위: 모드 전환 */
+.mode{left:50%;top:var(--safe-t);transform:translateX(-50%);width:120px;height:44px;padding:4px;border-radius:22px;display:grid;grid-template-columns:1fr 1fr;align-items:center}
+.mode:active{transform:translateX(-50%) scale(.96)}
+.thumb{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:34px;border-radius:17px;background:linear-gradient(135deg,#9585ff,#6c5cf0);box-shadow:0 3px 8px rgba(108,92,240,.35);transition:transform .35s cubic-bezier(.3,1.3,.5,1)}
+.war .thumb{transform:translateX(100%);background:linear-gradient(135deg,#ff7a6b,#e8434f);box-shadow:0 3px 10px rgba(232,67,79,.45)}
+.opt{position:relative;display:flex;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:700;color:var(--ink-2);transition:color .3s}
+.opt svg.i{width:14px;height:14px}
+.room:not(.war) .opt-pet,.war .opt-war{color:#fff}
+
+/* 오른쪽 위: 상점 / 미션 */
+.side-r{right:12px;top:var(--safe-t);display:flex;flex-direction:column;gap:10px}
+.rbtn{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700}
+.disc{position:relative;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;transition:transform .15s}
+.disc svg.i{width:22px;height:22px}
+button:active .disc{transform:scale(.92)}
+.badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+
+/* 아래: 설정 / 돌봄 독 / 친구 초대 */
+.settings{left:12px;bottom:var(--safe-b)}
+.invite{right:12px;bottom:var(--safe-b)}
+.invite .disc{width:56px;height:56px;border-radius:20px;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:0 8px 18px rgba(255,111,159,.45)}
+.dock{left:50%;bottom:var(--safe-b);transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:24px}
+.act{width:62px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 5px;border-radius:18px;transition:background .2s}
+.act:active{background:rgba(0,0,0,.05)}
+.act:active .ico{transform:scale(.92)}
+.ico{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;transition:transform .15s}
+.act small{font-size:11px;font-weight:700}
+.act em{font-style:normal;font-size:10px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:2px}
+.act em svg.i{width:11px;height:11px;stroke-width:2.4;color:#e0950e}
+.ico.feed{background:#ffe9d8;color:#f07a2a} .ico.clean{background:#e6f6e9;color:#2fa860} .ico.shower{background:#e3efff;color:#3f7cf0}
+.ico.duel{background:rgba(255,93,108,.18);color:#ff8791} .ico.clan{background:rgba(255,159,74,.18);color:#ffb36e}
+.war-only{display:none} .room.war .war-only{display:flex} .room.war .pet-only{display:none}
+
+/* 피드백 */
+.toast{position:absolute;z-index:40;left:50%;top:36%;transform:translate(-50%,-8px);padding:10px 16px;border-radius:14px;background:rgba(30,22,45,.9);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.float{position:absolute;z-index:8;left:50%;bottom:calc(29% + 210px);font-size:15px;font-weight:800;white-space:nowrap;pointer-events:none;animation:floatUp 1s ease-out forwards;text-shadow:0 2px 0 rgba(255,255,255,.8)}
+.war .float{text-shadow:0 2px 4px rgba(0,0,0,.6)}
+/* ── 상점 (아이콘에서 튀어나오는 90% 창) ── */
+.scrim{position:absolute;inset:0;z-index:30;background:rgba(14,9,24,.6);opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;z-index:31;left:5%;top:5%;width:90%;height:90%;display:flex;flex-direction:column;border-radius:26px;overflow:hidden;background:var(--sheet);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.35);opacity:0;transform:scale(.06);pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1.04),opacity .22s}
+.sheet.on{opacity:1;transform:none;pointer-events:auto}
+.sheet-head{display:flex;align-items:center;gap:8px;padding:18px 16px 14px 20px}
+.sheet-head h2{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.wallet{margin-left:auto;display:flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:17px;background:var(--chip-bg);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.wallet svg.i{width:16px;height:16px;color:#e0950e}
+.close{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--chip-bg)}
+.close svg.i{width:18px;height:18px}
+.tabs{position:relative;display:grid;grid-template-columns:repeat(3,1fr);margin:0 16px;padding:4px;border-radius:16px;background:var(--chip-bg)}
+.tab-thumb{position:absolute;top:4px;left:4px;width:calc((100% - 8px)/3);height:38px;border-radius:12px;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .3s cubic-bezier(.3,1.2,.5,1)}
+.tab{position:relative;height:38px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:13px;font-weight:700;color:var(--ink-2);transition:color .25s}
+.tab svg.i{width:16px;height:16px}
+.tab[aria-selected="true"]{color:var(--ink)}
+.grid{flex:1;overflow-y:auto;padding:16px 16px 24px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;align-content:start;grid-auto-rows:max-content}
+.grid[data-cat="clothes"]{--ph-bg:#efeaff;--ph-ink:#8b7cf6}
+.grid[data-cat="deco"]{--ph-bg:#ffeedf;--ph-ink:#ef8a4a}
+.grid[data-cat="food"]{--ph-bg:#e4f6e9;--ph-ink:#34a862}
+.war .grid{--ph-bg:rgba(255,255,255,.06)}
+.item{display:flex;flex-direction:column;border-radius:18px;background:var(--card);box-shadow:0 2px 10px rgba(60,40,80,.08);overflow:hidden;animation:pop .3s both}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.ph{aspect-ratio:1/.8;display:grid;place-items:center;background:var(--ph-bg)}
+.ph svg.i{width:38%;height:38%;stroke-width:1.4;color:var(--ph-ink)}
+.item-body{padding:10px 12px 12px}
+.item-name{font-size:13px;font-weight:700}
+.item-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.price{display:flex;align-items:center;gap:3px;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.price svg.i{width:14px;height:14px;color:#e0950e}
+.buy{height:30px;padding:0 12px;border-radius:10px;background:var(--primary);color:#fff;font-size:12px;font-weight:800;transition:transform .12s}
+.buy:active{transform:scale(.94)}
+.buy[disabled]{background:var(--chip-bg);color:var(--ink-2);cursor:default}
+/* ── 캐릭터 꾸미기 ── */
+.edit-hint{position:absolute;right:4px;top:30%;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--primary);pointer-events:none}
+.edit-hint svg.i{width:15px;height:15px;stroke-width:2.3}
+.free{font-size:11px;font-weight:800;color:#1ea88b;background:#dbf4ee;padding:5px 9px;border-radius:9px}
+.war .free{background:rgba(30,168,139,.18);color:#5fd3b5}
+.push{margin-left:auto}
+.preview{position:relative;flex:none;height:32%;margin:0 16px;border-radius:20px;background:radial-gradient(ellipse 42% 9% at 50% 90%,var(--rug-1) 0 98%,transparent 100%),var(--chip-bg);display:grid;place-items:center;overflow:hidden}
+.preview svg{height:94%;width:auto;margin-top:4%}
+.dice{position:absolute;right:10px;top:10px;height:30px;padding:0 10px;border-radius:10px;background:var(--card);font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.dice svg.i{width:15px;height:15px}
+.ctabs{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:12px 16px 0;padding:4px;border-radius:14px;background:var(--chip-bg)}
+.ctab{height:34px;border-radius:10px;font-size:12px;font-weight:700;color:var(--ink-2);white-space:nowrap;transition:background .2s,color .2s}
+.ctab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.opts{flex:1;overflow-y:auto;padding:14px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start;grid-auto-rows:max-content}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 6px 8px;border-radius:16px;background:var(--card);border:2px solid transparent;box-shadow:0 2px 8px rgba(60,40,80,.07);font-size:12px;font-weight:700;color:var(--ink-2);animation:pop .25s both}
+.tile[aria-pressed="true"]{border-color:var(--primary);color:var(--ink)}
+.tile[aria-pressed="true"]::after{content:"✓";position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid var(--sheet)}
+.fp{width:100%;aspect-ratio:1.3;border-radius:11px;background:var(--chip-bg);display:grid;place-items:center;overflow:hidden}
+.fp svg{width:100%;height:100%}
+.sw{width:42px;height:42px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.65),0 2px 6px rgba(0,0,0,.15)}
+.sheet-foot{display:flex;gap:8px;padding:12px 16px 16px;border-top:1px solid var(--chip-bg)}
+.sheet-foot button{flex:1;height:46px;border-radius:14px;font-size:15px;font-weight:800;transition:transform .12s}
+.sheet-foot button:active{transform:scale(.97)}
+.btn-ghost{background:var(--chip-bg);color:var(--ink)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 6px 14px rgba(124,108,246,.3)}
+
+
+@keyframes floatUp{from{opacity:0;transform:translate(-50%,0) scale(.8)}20%{opacity:1;transform:translate(-50%,-10px) scale(1.05)}to{opacity:0;transform:translate(-50%,-60px)}}
+</style>
+</head>
+<body>
+
+<!-- 아이콘 세트 (모두 같은 선 굵기) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></symbol>
+  <symbol id="i-mission" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3h6v3H9z"/><path d="M9 13l2 2 4-4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-invite" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M19 8v6M16 11h6"/></symbol>
+  <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M9 8.5c0-1.5 1.5-1.5 1.5-3M14 8.5c0-1.5 1.5-1.5 1.5-3"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.9 4.6 4.6 1.9-4.6 1.9L11 16l-1.9-4.6-4.6-1.9 4.6-1.9z"/><path d="M18.5 14l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c3.3 4 6.5 7.4 6.5 11a6.5 6.5 0 0 1-13 0C5.5 10.4 8.7 7 12 3z"/><path d="M9 15a3 3 0 0 0 3 3"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-sword" viewBox="0 0 24 24"><path d="M19.5 4.5l-9.8 9.8M15 4.5h4.5V9"/><path d="M6.5 12.5l5 5M9 15l-4.5 4.5"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.8"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
+  <symbol id="i-paw" viewBox="0 0 24 24"><path d="M12 12.5c-3 0-5.5 3-5.5 5 0 1.5 1.2 2.5 2.7 2.5 1.2 0 1.8-.6 2.8-.6s1.6.6 2.8.6c1.5 0 2.7-1 2.7-2.5 0-2-2.5-5-5.5-5z"/><circle cx="6.5" cy="10" r="1.8"/><circle cx="10" cy="6.5" r="1.8"/><circle cx="14" cy="6.5" r="1.8"/><circle cx="17.5" cy="10" r="1.8"/></symbol>
+  <symbol id="i-swords" viewBox="0 0 24 24"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M8.5 3.5L3.5 6l1.8 4.4 2.7-1V20h8V9.4l2.7 1L20.5 6l-5-2.5a3.5 3.5 0 0 1-7 0z"/></symbol>
+  <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5.5 11V8.5a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3V11"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/><path d="M6 18v2M18 18v2"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M12 7.5c-1.6-1-5.2-1.4-6.6 1.6-1.3 2.9-.4 7.2 2 9.9 1.5 1.7 3 1.5 4.6.8 1.6.7 3.1.9 4.6-.8 2.4-2.7 3.3-7 2-9.9-1.4-3-5-2.6-6.6-1.6z"/><path d="M12 7.5c0-2 1-3.6 3-4.5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.6-3 8.1-7 9.5-4-1.4-7-4.9-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+</svg>
+
+<main class="room" id="room">
+  <div class="wall"></div>
+  <div class="floor"></div>
+
+  <!-- 창문 -->
+  <svg class="decor window" viewBox="0 0 160 140" aria-hidden="true">
+    <defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky1"/><stop offset="1" class="sky2"/></linearGradient></defs>
+    <rect x="20" y="12" width="120" height="104" rx="12" class="wood"/>
+    <rect x="28" y="20" width="104" height="88" rx="7" fill="url(#gSky)"/>
+    <g class="day"><circle cx="106" cy="44" r="10" fill="#ffdc7a"/><path d="M42 84a9 9 0 0 1 16-6 8 8 0 0 1 14 4 6.5 6.5 0 0 1-2 12.8H46a7.5 7.5 0 0 1-4-10.8z" fill="#fff"/></g>
+    <g class="night"><path d="M104 34a12 12 0 1 0 11 18 10 10 0 1 1-11-18z" fill="#ffe7a8"/><circle cx="48" cy="40" r="1.6" fill="#fff"/><circle cx="64" cy="58" r="1.2" fill="#fff"/><circle cx="90" cy="84" r="1.4" fill="#fff"/><circle cx="118" cy="92" r="1.1" fill="#fff"/></g>
+    <rect x="78" y="20" width="4" height="88" class="wood"/><rect x="28" y="62" width="104" height="4" class="wood"/>
+    <rect x="12" y="114" width="136" height="10" rx="5" class="wood"/>
+    <rect x="4" y="4" width="152" height="6" rx="3" class="metal"/>
+    <path d="M6 8h30c-4 28-8 48-12 68 6 16 8 30 6 46H6z" class="curtain"/>
+    <path d="M154 8h-30c4 28 8 48 12 68-6 16-8 30-6 46h24z" class="curtain"/>
+  </svg>
+
+  <!-- 액자 (전쟁모드: 깃발) -->
+  <svg class="decor frame" viewBox="0 0 80 80" aria-hidden="true">
+    <g class="day"><rect x="6" y="8" width="68" height="54" rx="6" class="wood"/><rect x="12" y="14" width="56" height="42" rx="3" fill="#cfe9ff"/><path d="M12 56l16-18 11 11 9-9 20 16z" fill="#8fd19e"/><circle cx="56" cy="25" r="5" fill="#ffd66e"/></g>
+    <g class="night"><rect x="10" y="2" width="60" height="6" rx="3" fill="#caa56a"/><path d="M16 6h48v64L40 58 16 70z" fill="#b8324a"/><path d="M31 24l18 18M49 24L31 42" stroke="#ffd98a" stroke-width="3.2" stroke-linecap="round"/></g>
+  </svg>
+
+  <!-- 스탠드 -->
+  <svg class="decor lamp" viewBox="0 0 60 160" aria-hidden="true">
+    <ellipse cx="30" cy="154" rx="18" ry="4" fill="#000" opacity=".12"/>
+    <rect x="28" y="46" width="4" height="104" rx="2" class="metal"/>
+    <ellipse cx="30" cy="150" rx="14" ry="4.5" class="metal"/>
+    <path d="M10 50h40L41 12H19z" class="shade"/>
+  </svg>
+
+  <!-- 화분 -->
+  <svg class="decor plant" viewBox="0 0 70 110" aria-hidden="true">
+    <ellipse cx="35" cy="106" rx="20" ry="4" fill="#000" opacity=".12"/>
+    <path d="M35 64C20 56 10 40 14 24c12 6 20 20 21 40zM35 64c14-8 24-24 20-40-12 6-19 20-20 40zM35 62c-4-16 0-34 8-46 6 14 2 32-8 46z" class="leaf"/>
+    <path d="M18 66h34l-5 38H23z" class="pot"/>
+    <rect x="15" y="60" width="40" height="9" rx="4" class="pot"/>
+  </svg>
+
+  <!-- 러그 -->
+  <svg class="rug" viewBox="0 0 260 70" aria-hidden="true">
+    <ellipse cx="130" cy="35" rx="128" ry="33" class="r1"/>
+    <ellipse cx="130" cy="35" rx="108" ry="24" fill="none" class="r2" stroke-width="3" stroke-dasharray="1 8" stroke-linecap="round"/>
+  </svg>
+
+  <!-- 캐릭터 (2.5등신, JS가 설정값으로 그림) · 탭하면 꾸미기 -->
+  <div class="char-wrap" id="pet" role="button" aria-label="캐릭터 꾸미기 열기">
+    <svg class="char" id="charSvg" viewBox="0 0 200 264"></svg>
+    <span class="edit-hint glass"><svg class="i"><use href="#i-edit"/></svg></span>
+  </div>
+
+  <!-- 왼쪽 위: 프로필 · 스탯 -->
+  <header class="hud glass profile">
+    <div class="avatar"><svg id="avatarSvg" viewBox="40 26 120 120"></svg><span class="lvb" id="lvBadge">3</span></div>
+    <div class="who"><b id="nick">고양이집사</b><span>Lv.<span id="lv">3</span></span></div>
+  </header>
+  <section class="hud glass stats">
+    <div class="xp-top"><span>경험치</span><b id="xpTxt">4 / 10</b></div>
+    <div class="track"><i id="xpBar"></i></div>
+    <ul>
+      <li><span class="chip c-love"><svg class="i"><use href="#i-heart"/></svg></span>애정<b id="love">12</b></li>
+      <li><span class="chip c-pow"><svg class="i"><use href="#i-sword"/></svg></span>전투력<b id="power">42</b></li>
+      <li id="cashRow"><span class="chip c-cash"><svg class="i"><use href="#i-coin"/></svg></span>캐시<b id="cash">120</b></li>
+      <li><span class="chip c-link"><svg class="i"><use href="#i-link"/></svg></span>초대<b id="depth">2단계</b></li>
+    </ul>
+  </section>
+
+  <!-- 가운데 위: 모드 전환 -->
+  <button class="hud glass mode" id="mode" aria-pressed="false" aria-label="애완모드 / 전쟁모드 전환">
+    <span class="thumb"></span>
+    <span class="opt opt-pet"><svg class="i"><use href="#i-paw"/></svg>애완</span>
+    <span class="opt opt-war"><svg class="i"><use href="#i-swords"/></svg>전쟁</span>
+  </button>
+
+  <!-- 오른쪽 위: 상점 · 미션 -->
+  <nav class="hud side-r">
+    <button class="rbtn" id="shopBtn" aria-haspopup="dialog"><span class="disc glass"><svg class="i"><use href="#i-bag"/></svg></span>상점</button>
+    <button class="rbtn" data-msg="미션은 다음 단계에서 만들어요"><span class="disc glass"><svg class="i"><use href="#i-mission"/></svg><span class="badge">3</span></span>미션</button>
+  </nav>
+
+  <!-- 아래 -->
+  <button class="hud rbtn settings" data-msg="설정은 다음 단계에서 만들어요"><span class="disc glass"><svg class="i"><use href="#i-settings"/></svg></span>설정</button>
+
+  <div class="hud glass dock pet-only">
+    <button class="act" data-care="feed" data-label="밥주기"><span class="ico feed"><svg class="i"><use href="#i-bowl"/></svg></span><small>밥주기</small><em><svg class="i"><use href="#i-coin"/></svg>10</em></button>
+    <button class="act" data-care="clean" data-label="청소"><span class="ico clean"><svg class="i"><use href="#i-sparkle"/></svg></span><small>청소</small><em><svg class="i"><use href="#i-coin"/></svg>10</em></button>
+    <button class="act" data-care="shower" data-label="샤워"><span class="ico shower"><svg class="i"><use href="#i-drop"/></svg></span><small>샤워</small><em><svg class="i"><use href="#i-coin"/></svg>10</em></button>
+  </div>
+  <div class="hud glass dock war-only">
+    <button class="act" data-msg="대전은 다음 단계에서 만들어요"><span class="ico duel"><svg class="i"><use href="#i-swords"/></svg></span><small>대전 신청</small></button>
+    <button class="act" data-msg="클랜전은 다음 단계에서 만들어요"><span class="ico clan"><svg class="i"><use href="#i-shield"/></svg></span><small>클랜전</small></button>
+  </div>
+
+  <button class="hud rbtn invite" data-msg="친구 초대는 다음 단계에서 만들어요"><span class="disc"><svg class="i"><use href="#i-invite"/></svg></span>친구 초대</button>
+
+  <!-- 상점 -->
+  <div class="scrim" id="scrim"></div>
+  <section class="sheet" id="shop" role="dialog" aria-modal="true" aria-labelledby="shopTitle" aria-hidden="true">
+    <header class="sheet-head">
+      <h2 id="shopTitle">상점</h2>
+      <div class="wallet" id="wallet"><svg class="i"><use href="#i-coin"/></svg><span id="walletAmt">120</span></div>
+      <button class="close" data-close aria-label="닫기"><svg class="i"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="tabs" role="tablist">
+      <span class="tab-thumb" id="tabThumb"></span>
+      <button class="tab" role="tab" data-cat="clothes" aria-selected="true"><svg class="i"><use href="#i-shirt"/></svg>옷</button>
+      <button class="tab" role="tab" data-cat="deco" aria-selected="false"><svg class="i"><use href="#i-sofa"/></svg>집 꾸미기</button>
+      <button class="tab" role="tab" data-cat="food" aria-selected="false"><svg class="i"><use href="#i-food"/></svg>음식</button>
+    </div>
+    <div class="grid" id="shopGrid" data-cat="clothes"></div>
+  </section>
+
+  <!-- 캐릭터 꾸미기 (모두 무료) -->
+  <section class="sheet" id="custom" role="dialog" aria-modal="true" aria-labelledby="customTitle" aria-hidden="true">
+    <header class="sheet-head">
+      <h2 id="customTitle">캐릭터 꾸미기</h2>
+      <span class="free">모두 무료</span>
+      <button class="close push" data-close aria-label="닫기"><svg class="i"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="preview">
+      <svg id="previewSvg" viewBox="0 0 200 264"></svg>
+      <button class="dice" id="randomBtn"><svg class="i"><use href="#i-dice"/></svg>랜덤</button>
+    </div>
+    <div class="ctabs" role="tablist" id="ctabs"></div>
+    <div class="opts" id="opts"></div>
+    <footer class="sheet-foot">
+      <button class="btn-ghost" data-close>취소</button>
+      <button class="btn-primary" id="saveCustom">저장</button>
+    </footer>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</main>
+
+<script>
+// 더미 데이터. 나중에 getMyLevel / getCashBalance / addCareLog 호출로 교체
+const COST = 10;
+const state = { cares: 34, love: 12, cash: 120, depth: 2, war: false };
+const $ = id => document.getElementById(id);
+const room = $('room');
+
+function render() {
+  const lv = Math.floor(state.cares / 10), xp = state.cares % 10;
+  $('lv').textContent = $('lvBadge').textContent = lv;
+  $('xpTxt').textContent = `${xp} / 10`;
+  $('xpBar').style.width = xp * 10 + '%';
+  $('love').textContent = state.love;
+  $('power').textContent = lv * 10 + state.love;
+  $('cash').textContent = state.cash.toLocaleString();
+  $('depth').textContent = `${state.depth}단계`;
+}
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove('on'), 1400);
+}
+
+function float(text, color, delay = 0) {
+  setTimeout(() => {
+    const f = document.createElement('div');
+    f.className = 'float'; f.textContent = text; f.style.color = color;
+    room.appendChild(f); setTimeout(() => f.remove(), 1000);
+  }, delay);
+}
+
+function hop() {
+  const p = $('pet'); p.classList.remove('hop'); void p.offsetWidth; p.classList.add('hop');
+}
+
+function retrigger(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+
+document.querySelectorAll('[data-msg]').forEach(b => b.onclick = () => toast(b.dataset.msg));
+
+document.querySelectorAll('[data-care]').forEach(b => b.onclick = () => {
+  if (state.cash < COST) {
+    retrigger($('cashRow'), 'shake');
+    toast('캐시가 부족해요 · 충전 팝업은 다음 단계');
+    return;
+  }
+  const before = Math.floor(state.cares / 10);
+  state.cash -= COST; state.cares++;
+  render(); hop();
+  float(`${b.dataset.label}! +1 EXP`, '#7c6cf6');
+  float(`-${COST}`, '#e0950e', 180);
+  if (Math.floor(state.cares / 10) > before) setTimeout(() => toast(`레벨 업! Lv.${before + 1}`), 400);
+});
+
+
+$('mode').onclick = () => {
+  state.war = !state.war;
+  room.classList.toggle('war', state.war);
+  retrigger(room, 'flash');
+  $('mode').setAttribute('aria-pressed', state.war);
+  toast(state.war ? '전쟁모드로 전환했어요' : '애완모드로 전환했어요');
+};
+
+// ── 상점 (더미 아이템, 이미지는 나중에 교체) ──
+const SHOP = {
+  clothes: { icon: 'i-shirt', items: [['기본 티셔츠', 30], ['줄무늬 후드', 80], ['멜빵 바지', 60], ['털모자', 40], ['운동화', 50], ['반짝 왕관', 200]] },
+  deco:    { icon: 'i-sofa',  items: [['원목 의자', 60], ['푹신 소파', 150], ['동그란 러그', 70], ['스탠드 조명', 90], ['초록 화분', 40], ['벽 액자', 50]] },
+  food:    { icon: 'i-food',  items: [['사과', 10], ['쿠키', 15], ['우유', 12], ['샌드위치', 25], ['조각 케이크', 40], ['스테이크', 60]] },
+};
+const owned = new Set();   // 옷·꾸미기는 한 번만 구매, 음식은 계속 구매 가능
+let shopCat = 'clothes';
+
+function renderShop() {
+  const { icon, items } = SHOP[shopCat];
+  const grid = $('shopGrid');
+  grid.dataset.cat = shopCat;
+  grid.innerHTML = items.map(([name, price], i) => {
+    const has = shopCat !== 'food' && owned.has(name);
+    return `<article class="item" style="animation-delay:${i * 35}ms">
+      <div class="ph"><svg class="i"><use href="#${icon}"/></svg></div>
+      <div class="item-body">
+        <div class="item-name">${name}</div>
+        <div class="item-row">
+          <span class="price"><svg class="i"><use href="#i-coin"/></svg>${price}</span>
+          <button class="buy" data-name="${name}" data-price="${price}" ${has ? 'disabled' : ''}>${has ? '보유' : '구매'}</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+  const idx = Object.keys(SHOP).indexOf(shopCat);
+  $('tabThumb').style.transform = `translateX(${idx * 100}%)`;
+  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.cat === shopCat));
+  $('walletAmt').textContent = state.cash.toLocaleString();
+}
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  if (t.dataset.cat === shopCat) return;
+  shopCat = t.dataset.cat; renderShop(); $('shopGrid').scrollTop = 0;
+});
+
+$('shopGrid').onclick = e => {
+  const b = e.target.closest('.buy');
+  if (!b || b.disabled) return;
+  const price = +b.dataset.price;
+  if (state.cash < price) {
+    retrigger($('wallet'), 'shake');
+    toast('캐시가 부족해요 · 충전 팝업은 다음 단계');
+    return;
+  }
+  state.cash -= price;
+  if (shopCat !== 'food') owned.add(b.dataset.name);
+  render(); renderShop();
+  toast(`${b.dataset.name} 구매 완료!`);
+};
+
+// ── 캐릭터 설정 (모두 무료) ──
+const SKINS = [['#fff1e6', '#ffd8c2'], ['#ffe6cf', '#f4c39c'], ['#f1c69c', '#dca273'], ['#d49a70', '#b97c53'], ['#a56d4a', '#865436']];
+const EYE_COLORS = { brown: '#9a6048', black: '#4b4656', blue: '#3f86e0', green: '#34a070', purple: '#9464d6', amber: '#dc9a24' };
+const DEFAULT_CFG = { gender: 'boy', skin: 0, eyeShape: 'round', eyeColor: 'brown', nose: 'none', mouth: 'open' };
+let charCfg = { ...DEFAULT_CFG };
+try { Object.assign(charCfg, JSON.parse(localStorage.getItem('atlas.charCfg') || '{}')); } catch (e) {}
+
+const LINE = '#3a2530';
+function eyeMarkup(shape, cx, flip, I, skin, girl) {
+  const st = `fill="none" stroke="${LINE}" stroke-linecap="round" stroke-width`;
+  const shapes = {
+    round:  `<ellipse rx="9" ry="11" fill="${I}"/><circle cx="3.5" cy="-5" r="3.6" fill="#fff"/><circle cx="-3" cy="5" r="1.7" fill="#fff"/><path d="M-11-7q11-9 22 0" ${st}="2.8"/>`,
+    big:    `<ellipse rx="11" ry="13" fill="${I}"/><circle cx="4" cy="-6" r="4.6" fill="#fff"/><circle cx="-4" cy="5" r="2.3" fill="#fff"/><circle cx="3.5" cy="7.5" r="1.1" fill="#fff"/><path d="M-13-8q13-11 26 0l3-3" ${st}="3"/>`,
+    smile:  `<path d="M-9 3q9-12 18 0" ${st}="3.2"/>`,
+    sleepy: `<ellipse rx="9" ry="11" fill="${I}"/><circle cx="3" cy="2" r="2.6" fill="#fff"/><path d="M-12-13h24v12q-12 5-24 0z" fill="${skin}"/><path d="M-11-1q11 5 22 0" ${st}="2.8"/>`,
+    sharp:  `<path d="M-10 3Q-5-10 10-7Q8 9-10 3z" fill="${I}"/><circle cx="3" cy="-3" r="2.8" fill="#fff"/><path d="M-11 3Q-5-12 12-8" ${st}="2.8"/>`,
+  };
+  const lash = girl && shape !== 'smile' ? `<path d="M10.5-7.5l4-3.5M11.5-3.5l4.5-1" ${st}="2.2"/>` : '';
+  return `<g transform="translate(${cx} 96)${flip ? ' scale(-1 1)' : ''}">${shapes[shape]}${lash}</g>`;
+}
+const NOSES = {
+  none: '',
+  dot: '<ellipse cx="100" cy="104" rx="1.7" ry="1.3" fill="#c98470" opacity=".8"/>',
+  button: '<path d="M97.5 103.5q2.5 2.5 5 0" fill="none" stroke="#c98470" stroke-width="1.8" stroke-linecap="round"/>',
+  line: '<path d="M101 98.5l-2.2 5.5h3.2" fill="none" stroke="#c98470" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+};
+const MOUTHS = {
+  open: `<path d="M94 110q6 8 12 0z" fill="#d9536b" stroke="${LINE}" stroke-width="2" stroke-linejoin="round"/><ellipse cx="100" cy="114" rx="2.6" ry="1.3" fill="#ff9aa8"/>`,
+  smile: `<path d="M95 110q5 5 10 0" fill="none" stroke="${LINE}" stroke-width="2.2" stroke-linecap="round"/>`,
+  cat: `<path d="M93 110q3.5 4 7 0q3.5 4 7 0" fill="none" stroke="${LINE}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+  o: `<ellipse cx="100" cy="112" rx="3" ry="3.6" fill="#d9536b" stroke="${LINE}" stroke-width="2"/>`,
+  tongue: `<path d="M101 111v3.5a2.5 2.5 0 0 0 5 0V111" fill="#ff8fa3" stroke="${LINE}" stroke-width="1.8"/><path d="M94 110.5q6 3 12 0" fill="none" stroke="${LINE}" stroke-width="2.2" stroke-linecap="round"/>`,
+  grin: `<path d="M93 109h14q-1 7-7 7t-7-7z" fill="#fff" stroke="${LINE}" stroke-width="2" stroke-linejoin="round"/><path d="M94 111.5h12" stroke="${LINE}" stroke-width="1"/>`,
+};
+
+// cfg 설정으로 캐릭터 SVG 속을 만든다. p는 그라데이션 id 접두사(같은 화면에 여러 개 그리기 위해)
+function charMarkup(cfg, p, headOnly = false) {
+  const [s1, s2] = SKINS[cfg.skin];
+  const ec = EYE_COLORS[cfg.eyeColor];
+  const girl = cfg.gender === 'girl';
+  const S = `url(#${p}S)`, H = `url(#${p}H)`, HD = `url(#${p}D)`, I = `url(#${p}I)`;
+  const defs = `<defs>
+    <linearGradient id="${p}S" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s1}"/><stop offset="1" stop-color="${s2}"/></linearGradient>
+    <linearGradient id="${p}H" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d523e"/><stop offset="1" stop-color="#4b2d24"/></linearGradient>
+    <linearGradient id="${p}D" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="hood1"/><stop offset="1" class="hood2"/></linearGradient>
+    <linearGradient id="${p}I" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f1520"/><stop offset=".55" stop-color="${ec}" stop-opacity=".8"/><stop offset="1" stop-color="${ec}"/></linearGradient>
+    <radialGradient id="${p}B"><stop offset="0" stop-color="#ff8fa8" stop-opacity="${girl ? .85 : .7}"/><stop offset="1" stop-color="#ff8fa8" stop-opacity="0"/></radialGradient>
+  </defs>`;
+  const body = headOnly ? '' : `<ellipse cx="100" cy="254" rx="46" ry="7" fill="${LINE}" opacity=".16"/>
+  <g stroke="${LINE}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="80" y="192" width="17" height="50" rx="8.5" fill="#434a7e"/><rect x="103" y="192" width="17" height="50" rx="8.5" fill="#434a7e"/>
+    <ellipse cx="86" cy="245" rx="15" ry="8.5" fill="#fff"/><ellipse cx="114" cy="245" rx="15" ry="8.5" fill="#fff"/>
+    <path d="M78 243q8-4 16 0M106 243q8-4 16 0" fill="none" stroke="#ff8fb1" stroke-width="2.2"/>
+    <rect x="52" y="134" width="18" height="50" rx="9" fill="${HD}" transform="rotate(14 61 138)"/>
+    <rect x="130" y="134" width="18" height="50" rx="9" fill="${HD}" transform="rotate(-14 139 138)"/>
+    <circle cx="50" cy="184" r="9" fill="${S}"/><circle cx="150" cy="184" r="9" fill="${S}"/>
+    <path d="M64 138c0-10 16-16 36-16s36 6 36 16v56c0 6-4 9-10 9H74c-6 0-10-3-10-9z" fill="${HD}"/>
+    <ellipse cx="100" cy="128" rx="30" ry="9" class="collar"/>
+    <path d="M84 176h32a6 6 0 0 1 6 6v8a4 4 0 0 1-4 4H82a4 4 0 0 1-4-4v-8a6 6 0 0 1 6-6z" fill="#fff" fill-opacity=".16"/>
+    <path d="M92 134v16M108 134v16" fill="none" stroke-width="2"/>
+    <circle cx="92" cy="152" r="2.6" fill="#fff"/><circle cx="108" cy="152" r="2.6" fill="#fff"/>
+  </g>`;
+  const hairBack = girl
+    ? `<path d="M40 88c0-34 26-56 60-56s60 22 60 56c0 22 3 42-4 56-8 5-18 3-22-5H66c-4 8-14 10-22 5-7-14-4-34-4-56z" fill="${H}"/>`
+    : `<path d="M44 88c0-34 24-56 56-56s56 22 56 56c0 16-4 30-10 38H54c-6-8-10-22-10-38z" fill="${H}"/>`;
+  const hairExtra = girl
+    ? `<path d="M47 82c-5 16-5 32 0 46 5-2 9-9 9-18 0-11-3-20-9-28zM153 82c5 16 5 32 0 46-5-2-9-9-9-18 0-11 3-20 9-28z" fill="${H}"/>
+       <g transform="translate(138 50) rotate(18)"><path d="M0 0l-11-7v14zM0 0l11-7v14z" fill="#ff7fa5"/><circle r="3.6" fill="#ff5d8f"/></g>`
+    : `<path d="M100 33c-3-12 5-19 14-15-7 2-9 8-8 15" fill="${H}"/>`;
+  const flipL = girl || cfg.eyeShape === 'big' || cfg.eyeShape === 'sharp';
+  const head = `<g stroke="${LINE}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+    ${hairBack}
+    <circle cx="50" cy="94" r="8" fill="${S}"/><circle cx="150" cy="94" r="8" fill="${S}"/>
+    <ellipse cx="100" cy="88" rx="50" ry="40" fill="${S}"/>
+    <path d="M46 90C42 52 66 32 100 32s58 20 54 58c-6-12-14-20-24-24-2 8-10 12-20 10 4-6 3-11 0-14-8 10-22 14-36 12 3-5 3-9 1-12-12 5-20 12-24 18z" fill="${H}"/>
+    ${hairExtra}
+    <path d="M68 46c10-7 24-10 38-9" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="4"/>
+  </g>
+  <g class="${cfg.eyeShape === 'smile' ? '' : 'eyes'}">${eyeMarkup(cfg.eyeShape, 80, flipL, I, s1, girl)}${eyeMarkup(cfg.eyeShape, 120, false, I, s1, girl)}</g>
+  <ellipse cx="65" cy="110" rx="10" ry="6" fill="url(#${p}B)"/><ellipse cx="135" cy="110" rx="10" ry="6" fill="url(#${p}B)"/>
+  ${NOSES[cfg.nose]}${MOUTHS[cfg.mouth]}`;
+  const band = headOnly ? '' : `<g class="night" stroke="${LINE}" stroke-width="2.4" stroke-linejoin="round"><path d="M51 66Q100 44 149 66l-1 9Q100 54 52 75z" fill="#ff5d6c"/><path d="M147 68l16-8-3 12zM147 72l13 9-11 2z" fill="#ff5d6c"/></g>`;
+  return defs + body + head + band;
+}
+
+function drawCharacter() {
+  $('charSvg').innerHTML = charMarkup(charCfg, 'm');
+  $('avatarSvg').innerHTML = charMarkup(charCfg, 'a', true);
+}
+
+// ── 꾸미기 창 ──
+const CUSTOM_TABS = [
+  { key: 'gender',   label: '성별',   view: '34 16 132 132', opts: [['boy', '남자'], ['girl', '여자']] },
+  { key: 'skin',     label: '피부',   swatch: i => `linear-gradient(135deg,${SKINS[i][0]},${SKINS[i][1]})`,
+    opts: [[0, '밝은'], [1, '아이보리'], [2, '베이지'], [3, '황갈색'], [4, '브라운']] },
+  { key: 'eyeShape', label: '눈 모양', view: '56 72 88 52', opts: [['round', '동글'], ['big', '초롱'], ['smile', '웃음'], ['sleepy', '졸림'], ['sharp', '또렷']] },
+  { key: 'eyeColor', label: '눈 색',  swatch: c => `radial-gradient(circle at 35% 30%,#fff6 0 18%,transparent 20%),linear-gradient(#1f1520,${EYE_COLORS[c]} 75%)`,
+    opts: [['brown', '갈색'], ['black', '검정'], ['blue', '파랑'], ['green', '초록'], ['purple', '보라'], ['amber', '호박']] },
+  { key: 'nose',     label: '코',     view: '80 90 40 28', opts: [['none', '없음'], ['dot', '점'], ['button', '동글'], ['line', '콧대']] },
+  { key: 'mouth',    label: '입',     view: '78 97 44 30', opts: [['open', '활짝'], ['smile', '미소'], ['cat', '고양이'], ['o', '오'], ['tongue', '메롱'], ['grin', '씨익']] },
+];
+let draft = { ...charCfg };
+let customTab = 'gender';
+
+function renderCustom() {
+  $('previewSvg').innerHTML = charMarkup(draft, 'pv');
+  $('ctabs').innerHTML = CUSTOM_TABS.map(t =>
+    `<button class="ctab" role="tab" data-tab="${t.key}" aria-selected="${t.key === customTab}">${t.label}</button>`).join('');
+  const tab = CUSTOM_TABS.find(t => t.key === customTab);
+  $('opts').innerHTML = tab.opts.map(([val, label], i) => {
+    const art = tab.swatch
+      ? `<span class="sw" style="background:${tab.swatch(val)}"></span>`
+      : `<svg viewBox="${tab.view}">${charMarkup({ ...draft, [tab.key]: val }, `t${i}`, true)}</svg>`;
+    return `<button class="tile" data-val="${val}" aria-pressed="${draft[tab.key] === val}" style="animation-delay:${i * 25}ms"><span class="fp">${art}</span>${label}</button>`;
+  }).join('');
+}
+
+$('ctabs').onclick = e => {
+  const b = e.target.closest('.ctab');
+  if (b && b.dataset.tab !== customTab) { customTab = b.dataset.tab; renderCustom(); }
+};
+$('opts').onclick = e => {
+  const b = e.target.closest('.tile');
+  if (!b) return;
+  const raw = b.dataset.val;
+  draft[customTab] = customTab === 'skin' ? +raw : raw;
+  renderCustom();
+};
+$('randomBtn').onclick = () => {
+  CUSTOM_TABS.forEach(t => { draft[t.key] = t.opts[Math.floor(Math.random() * t.opts.length)][0]; });
+  renderCustom();
+};
+$('saveCustom').onclick = () => {
+  charCfg = { ...draft };
+  try { localStorage.setItem('atlas.charCfg', JSON.stringify(charCfg)); } catch (e) {}
+  drawCharacter();
+  closeSheet();
+  hop();
+  toast('캐릭터를 저장했어요');
+};
+
+// ── 공용: 아이콘에서 튀어나오는 90% 팝업 ──
+let openSheetEl = null;
+function openSheet(sheet, originEl) {
+  const r = room.getBoundingClientRect();
+  const b = originEl.getBoundingClientRect();
+  const x = b.left + b.width / 2 - r.left - r.width * 0.05;
+  const y = b.top + b.height / 2 - r.top - r.height * 0.05;
+  sheet.style.transformOrigin = `${x}px ${y}px`;
+  // 뒤쪽 아이콘은 터치·클릭·키보드 모두 막는다
+  [...room.children].forEach(el => { if (el !== sheet && !['scrim', 'toast'].includes(el.id)) el.inert = true; });
+  $('scrim').classList.add('on');
+  sheet.classList.add('on');
+  sheet.setAttribute('aria-hidden', 'false');
+  openSheetEl = sheet;
+}
+function closeSheet() {
+  const sheet = openSheetEl;
+  if (!sheet) return;
+  $('scrim').classList.remove('on');
+  sheet.classList.remove('on');
+  sheet.setAttribute('aria-hidden', 'true');
+  [...room.children].forEach(el => el.inert = false);
+  openSheetEl = null;
+}
+
+function openShop() { renderShop(); openSheet($('shop'), $('shopBtn').querySelector('.disc')); }
+function openCustom() { draft = { ...charCfg }; customTab = 'gender'; renderCustom(); openSheet($('custom'), $('pet')); }
+
+$('shopBtn').onclick = openShop;
+$('pet').onclick = () => { hop(); openCustom(); };
+$('scrim').onclick = closeSheet;
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = closeSheet);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+drawCharacter();
+// 개발용: home.html#shop / #custom 으로 바로 열기
+if (location.hash === '#shop') openShop();
+if (location.hash === '#custom') openCustom();
+
+render();
+</script>
+</body>
+</html>
