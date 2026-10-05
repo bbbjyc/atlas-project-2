@@ -1,8 +1,20 @@
+'use client';
+
+import { useState } from 'react';
+import { Pet } from '@/types/pet';
+import PetCreation from '@/components/PetCreation';
+import GameScreen from '@/components/GameScreen';
+
 export default function Home() {
+  const [pet, setPet] = useState<Pet | null>(null);
+
   return (
-    <main>
-      <h1>atlas-project-2</h1>
-      <p>뼈대입니다. 화면은 하재영님이 이 파일부터 채워 주세요.</p>
-    </main>
+    <>
+      {!pet ? (
+        <PetCreation onPetCreated={setPet} />
+      ) : (
+        <GameScreen pet={pet} />
+      )}
+    </>
   );
 }

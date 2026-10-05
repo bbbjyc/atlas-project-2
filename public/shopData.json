@@ -1,0 +1,242 @@
+{
+  "outfit": [
+    {
+      "id": "outfit_001",
+      "name": "분홍 드레스",
+      "price": 50,
+      "description": "귀여운 분홍색 드레스"
+    },
+    {
+      "id": "outfit_002",
+      "name": "파란 셔츠",
+      "price": 70,
+      "description": "시원한 파란색 셔츠"
+    },
+    {
+      "id": "outfit_003",
+      "name": "노란 스웨터",
+      "price": 60,
+      "description": "따뜻한 노란색 스웨터"
+    },
+    {
+      "id": "outfit_004",
+      "name": "초록 점프수트",
+      "price": 80,
+      "description": "활동적인 초록색 점프수트"
+    },
+    {
+      "id": "outfit_005",
+      "name": "빨간 파티 드레스",
+      "price": 100,
+      "description": "화려한 빨간색 파티 드레스"
+    },
+    {
+      "id": "outfit_006",
+      "name": "보라색 가운",
+      "price": 120,
+      "description": "우아한 보라색 가운"
+    },
+    {
+      "id": "outfit_007",
+      "name": "흰 티셔츠",
+      "price": 40,
+      "description": "심플한 흰색 티셔츠"
+    },
+    {
+      "id": "outfit_008",
+      "name": "검은 정장",
+      "price": 150,
+      "description": "세련된 검은색 정장"
+    },
+    {
+      "id": "outfit_009",
+      "name": "무지개색 옷",
+      "price": 90,
+      "description": "알록달록한 무지개색 옷"
+    },
+    {
+      "id": "outfit_010",
+      "name": "스트라이프 셔츠",
+      "price": 55,
+      "description": "줄무늬 패턴의 셔츠"
+    }
+  ],
+  "background": [
+    {
+      "id": "bg_001",
+      "name": "하늘색",
+      "price": 30,
+      "description": "밝고 청명한 하늘색"
+    },
+    {
+      "id": "bg_002",
+      "name": "분홍색",
+      "price": 35,
+      "description": "부드러운 분홍색"
+    },
+    {
+      "id": "bg_003",
+      "name": "초록색",
+      "price": 30,
+      "description": "상큼한 초록색"
+    },
+    {
+      "id": "bg_004",
+      "name": "노란색",
+      "price": 35,
+      "description": "따뜻한 노란색"
+    },
+    {
+      "id": "bg_005",
+      "name": "보라색",
+      "price": 40,
+      "description": "신비로운 보라색"
+    },
+    {
+      "id": "bg_006",
+      "name": "주황색",
+      "price": 35,
+      "description": "활발한 주황색"
+    },
+    {
+      "id": "bg_007",
+      "name": "회색",
+      "price": 30,
+      "description": "차분한 회색"
+    },
+    {
+      "id": "bg_008",
+      "name": "빨간색",
+      "price": 40,
+      "description": "열정적인 빨간색"
+    },
+    {
+      "id": "bg_009",
+      "name": "검은색",
+      "price": 50,
+      "description": "세련된 검은색"
+    }
+  ],
+  "furniture": [
+    {
+      "id": "furn_001",
+      "name": "침대",
+      "price": 40,
+      "description": "편한 침대"
+    },
+    {
+      "id": "furn_002",
+      "name": "책상",
+      "price": 50,
+      "description": "공부할 수 있는 책상"
+    },
+    {
+      "id": "furn_003",
+      "name": "의자",
+      "price": 30,
+      "description": "편한 의자"
+    },
+    {
+      "id": "furn_004",
+      "name": "선반",
+      "price": 45,
+      "description": "물건을 놓을 수 있는 선반"
+    },
+    {
+      "id": "furn_005",
+      "name": "거울",
+      "price": 35,
+      "description": "예쁜 거울"
+    },
+    {
+      "id": "furn_006",
+      "name": "카펫",
+      "price": 40,
+      "description": "부드러운 카펫"
+    },
+    {
+      "id": "furn_007",
+      "name": "등불",
+      "price": 50,
+      "description": "따뜻한 조명"
+    },
+    {
+      "id": "furn_008",
+      "name": "화분",
+      "price": 25,
+      "description": "초록색 식물"
+    },
+    {
+      "id": "furn_009",
+      "name": "그림",
+      "price": 55,
+      "description": "예쁜 그림"
+    },
+    {
+      "id": "furn_010",
+      "name": "쿠션",
+      "price": 30,
+      "description": "푹신한 쿠션"
+    },
+    {
+      "id": "furn_011",
+      "name": "소파",
+      "price": 80,
+      "description": "넓은 소파"
+    },
+    {
+      "id": "furn_012",
+      "name": "낚시대",
+      "price": 60,
+      "description": "재미있는 낚시대"
+    },
+    {
+      "id": "furn_013",
+      "name": "악기",
+      "price": 70,
+      "description": "예쁜 악기"
+    },
+    {
+      "id": "furn_014",
+      "name": "박스",
+      "price": 20,
+      "description": "숨을 수 있는 박스"
+    },
+    {
+      "id": "furn_015",
+      "name": "공",
+      "price": 15,
+      "description": "가지고 놀 수 있는 공"
+    },
+    {
+      "id": "furn_016",
+      "name": "트램펄린",
+      "price": 90,
+      "description": "뛸 수 있는 트램펄린"
+    },
+    {
+      "id": "furn_017",
+      "name": "미끄럼틀",
+      "price": 120,
+      "description": "재미있는 미끄럼틀"
+    },
+    {
+      "id": "furn_018",
+      "name": "식탁",
+      "price": 75,
+      "description": "음식을 먹을 수 있는 식탁"
+    },
+    {
+      "id": "furn_019",
+      "name": "시계",
+      "price": 40,
+      "description": "시간을 볼 수 있는 시계"
+    },
+    {
+      "id": "furn_020",
+      "name": "풍선",
+      "price": 25,
+      "description": "알록달록한 풍선"
+    }
+  ]
+}
