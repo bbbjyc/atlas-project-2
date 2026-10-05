@@ -1,242 +1,41 @@
 {
   "outfit": [
-    {
-      "id": "outfit_001",
-      "name": "분홍 드레스",
-      "price": 50,
-      "description": "귀여운 분홍색 드레스"
-    },
-    {
-      "id": "outfit_002",
-      "name": "파란 셔츠",
-      "price": 70,
-      "description": "시원한 파란색 셔츠"
-    },
-    {
-      "id": "outfit_003",
-      "name": "노란 스웨터",
-      "price": 60,
-      "description": "따뜻한 노란색 스웨터"
-    },
-    {
-      "id": "outfit_004",
-      "name": "초록 점프수트",
-      "price": 80,
-      "description": "활동적인 초록색 점프수트"
-    },
-    {
-      "id": "outfit_005",
-      "name": "빨간 파티 드레스",
-      "price": 100,
-      "description": "화려한 빨간색 파티 드레스"
-    },
-    {
-      "id": "outfit_006",
-      "name": "보라색 가운",
-      "price": 120,
-      "description": "우아한 보라색 가운"
-    },
-    {
-      "id": "outfit_007",
-      "name": "흰 티셔츠",
-      "price": 40,
-      "description": "심플한 흰색 티셔츠"
-    },
-    {
-      "id": "outfit_008",
-      "name": "검은 정장",
-      "price": 150,
-      "description": "세련된 검은색 정장"
-    },
-    {
-      "id": "outfit_009",
-      "name": "무지개색 옷",
-      "price": 90,
-      "description": "알록달록한 무지개색 옷"
-    },
-    {
-      "id": "outfit_010",
-      "name": "스트라이프 셔츠",
-      "price": 55,
-      "description": "줄무늬 패턴의 셔츠"
-    }
+    { "id": "outfit_001", "name": "분홍 원피스", "price": 80, "description": "귀여운 분홍색 원피스. 어떤 펫이든 잘 어울려요!" },
+    { "id": "outfit_002", "name": "하늘색 티셔츠", "price": 60, "description": "시원한 하늘색 반팔 티셔츠. 여름에 딱 좋아요." },
+    { "id": "outfit_003", "name": "보라색 드레스", "price": 120, "description": "우아한 보라색 드레스. 특별한 날에 입기 좋아요." },
+    { "id": "outfit_004", "name": "노란 후디", "price": 75, "description": "따뜻한 노란색 후디. 포근한 느낌이에요." },
+    { "id": "outfit_005", "name": "민트 스트라이프", "price": 90, "description": "상큼한 민트색 줄무늬 옷. 보기만 해도 기분이 좋아요!" },
+    { "id": "outfit_006", "name": "복숭아 카디건", "price": 100, "description": "부드러운 복숭아색 카디건. 따뜻하고 세련된 느낌." },
+    { "id": "outfit_007", "name": "라벤더 점프수트", "price": 130, "description": "고급스러운 라벤더색 점프수트. 펫을 더 돋보이게 해요." },
+    { "id": "outfit_008", "name": "연두 베스트", "price": 70, "description": "밝은 연두색 베스트. 활기찬 느낌을 주고 싶을 때!" },
+    { "id": "outfit_009", "name": "산호색 원피스", "price": 110, "description": "따뜻한 산호색 원피스. 펫을 더 생생하게 보이게 해요." },
+    { "id": "outfit_010", "name": "크림색 가운", "price": 150, "description": "우아하고 고급스러운 크림색 가운. 최고의 드레스 업 아이템!" }
   ],
   "background": [
-    {
-      "id": "bg_001",
-      "name": "하늘색",
-      "price": 30,
-      "description": "밝고 청명한 하늘색"
-    },
-    {
-      "id": "bg_002",
-      "name": "분홍색",
-      "price": 35,
-      "description": "부드러운 분홍색"
-    },
-    {
-      "id": "bg_003",
-      "name": "초록색",
-      "price": 30,
-      "description": "상큼한 초록색"
-    },
-    {
-      "id": "bg_004",
-      "name": "노란색",
-      "price": 35,
-      "description": "따뜻한 노란색"
-    },
-    {
-      "id": "bg_005",
-      "name": "보라색",
-      "price": 40,
-      "description": "신비로운 보라색"
-    },
-    {
-      "id": "bg_006",
-      "name": "주황색",
-      "price": 35,
-      "description": "활발한 주황색"
-    },
-    {
-      "id": "bg_007",
-      "name": "회색",
-      "price": 30,
-      "description": "차분한 회색"
-    },
-    {
-      "id": "bg_008",
-      "name": "빨간색",
-      "price": 40,
-      "description": "열정적인 빨간색"
-    },
-    {
-      "id": "bg_009",
-      "name": "검은색",
-      "price": 50,
-      "description": "세련된 검은색"
-    }
+    { "id": "bg_001", "name": "파스텔 핑크", "price": 30, "description": "부드러운 분홍빛 배경. 따뜻하고 편안한 느낌." },
+    { "id": "bg_002", "name": "라이트 블루", "price": 30, "description": "밝은 하늘색 배경. 상큼하고 차분해요." },
+    { "id": "bg_003", "name": "민트 그린", "price": 35, "description": "신선한 민트색 배경. 한눈에 기분이 좋아져요!" },
+    { "id": "bg_004", "name": "라벤더", "price": 35, "description": "고급스러운 라벤더 배경. 차분한 분위기를 만들어요." },
+    { "id": "bg_005", "name": "살구색", "price": 25, "description": "따뜻한 살구색 배경. 포근하고 아늑해요." },
+    { "id": "bg_006", "name": "연보라", "price": 40, "description": "부드러운 연보라색 배경. 신비로운 느낌을 줘요." },
+    { "id": "bg_007", "name": "크림 베이지", "price": 25, "description": "밝은 베이지 배경. 펫을 돋보이게 해요." },
+    { "id": "bg_008", "name": "부드러운 노랑", "price": 50, "description": "따뜻하고 밝은 노랑 배경. 긍정적인 기운이 느껴져요!" }
   ],
   "furniture": [
-    {
-      "id": "furn_001",
-      "name": "침대",
-      "price": 40,
-      "description": "편한 침대"
-    },
-    {
-      "id": "furn_002",
-      "name": "책상",
-      "price": 50,
-      "description": "공부할 수 있는 책상"
-    },
-    {
-      "id": "furn_003",
-      "name": "의자",
-      "price": 30,
-      "description": "편한 의자"
-    },
-    {
-      "id": "furn_004",
-      "name": "선반",
-      "price": 45,
-      "description": "물건을 놓을 수 있는 선반"
-    },
-    {
-      "id": "furn_005",
-      "name": "거울",
-      "price": 35,
-      "description": "예쁜 거울"
-    },
-    {
-      "id": "furn_006",
-      "name": "카펫",
-      "price": 40,
-      "description": "부드러운 카펫"
-    },
-    {
-      "id": "furn_007",
-      "name": "등불",
-      "price": 50,
-      "description": "따뜻한 조명"
-    },
-    {
-      "id": "furn_008",
-      "name": "화분",
-      "price": 25,
-      "description": "초록색 식물"
-    },
-    {
-      "id": "furn_009",
-      "name": "그림",
-      "price": 55,
-      "description": "예쁜 그림"
-    },
-    {
-      "id": "furn_010",
-      "name": "쿠션",
-      "price": 30,
-      "description": "푹신한 쿠션"
-    },
-    {
-      "id": "furn_011",
-      "name": "소파",
-      "price": 80,
-      "description": "넓은 소파"
-    },
-    {
-      "id": "furn_012",
-      "name": "낚시대",
-      "price": 60,
-      "description": "재미있는 낚시대"
-    },
-    {
-      "id": "furn_013",
-      "name": "악기",
-      "price": 70,
-      "description": "예쁜 악기"
-    },
-    {
-      "id": "furn_014",
-      "name": "박스",
-      "price": 20,
-      "description": "숨을 수 있는 박스"
-    },
-    {
-      "id": "furn_015",
-      "name": "공",
-      "price": 15,
-      "description": "가지고 놀 수 있는 공"
-    },
-    {
-      "id": "furn_016",
-      "name": "트램펄린",
-      "price": 90,
-      "description": "뛸 수 있는 트램펄린"
-    },
-    {
-      "id": "furn_017",
-      "name": "미끄럼틀",
-      "price": 120,
-      "description": "재미있는 미끄럼틀"
-    },
-    {
-      "id": "furn_018",
-      "name": "식탁",
-      "price": 75,
-      "description": "음식을 먹을 수 있는 식탁"
-    },
-    {
-      "id": "furn_019",
-      "name": "시계",
-      "price": 40,
-      "description": "시간을 볼 수 있는 시계"
-    },
-    {
-      "id": "furn_020",
-      "name": "풍선",
-      "price": 25,
-      "description": "알록달록한 풍선"
-    }
+    { "id": "furn_001", "name": "나무 침대", "price": 40, "description": "편안한 나무로 만든 침대. 펫이 충분히 쉴 수 있어요." },
+    { "id": "furn_002", "name": "분홍 쿠션", "price": 25, "description": "푹신한 분홍 쿠션. 펫이 편하게 앉을 수 있어요." },
+    { "id": "furn_003", "name": "선반", "price": 30, "description": "인테리어용 선반. 방을 정리정돈할 수 있어요." },
+    { "id": "furn_004", "name": "작은 테이블", "price": 35, "description": "귀여운 작은 테이블. 펫 친구들이 모여 앉을 수 있어요." },
+    { "id": "furn_005", "name": "초록 화분", "price": 20, "description": "신선한 초록 식물. 방을 활기차게 만들어요!" },
+    { "id": "furn_006", "name": "러그", "price": 45, "description": "포근한 러그. 방 분위기를 따뜻하게 바꿔줘요." },
+    { "id": "furn_007", "name": "하트 스탠드", "price": 50, "description": "귀여운 하트 모양의 스탠드. 은은한 불빛이 예뻐요." },
+    { "id": "furn_008", "name": "미니 냉장고", "price": 55, "description": "펫 크기의 냉장고. 간식을 보관할 수 있어요!" },
+    { "id": "furn_009", "name": "벽시계", "price": 30, "description": "시간을 알려주는 벽시계. 방을 더 꾸며줘요." },
+    { "id": "furn_010", "name": "꽃 그림", "price": 25, "description": "벽에 붙이는 꽃 그림. 아늑하고 밝은 느낌을 줘요." },
+    { "id": "furn_011", "name": "소파", "price": 60, "description": "편한 소파. 펫과 함께 쉴 수 있는 공간이 생겨요." },
+    { "id": "furn_012", "name": "뮤직박스", "price": 70, "description": "신비로운 뮤직박스. 방에 마법 같은 분위기를 만들어요." },
+    { "id": "furn_013", "name": "캐셀 (이젤)", "price": 35, "description": "화가용 캐셀. 펫의 예술적 감성을 표현할 수 있어요!" },
+    { "id": "furn_014", "name": "별 무늬 쿠션", "price": 40, "description": "밤하늘 같은 별 무늬 쿠션. 꿈 같은 느낌이에요." },
+    { "id": "furn_015", "name": "나무 선반 세트", "price": 65, "description": "감성적인 나무 선반들. 펫의 작은 보물들을 전시할 수 있어요." }
   ]
 }
