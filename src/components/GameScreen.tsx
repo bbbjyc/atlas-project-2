@@ -226,7 +226,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
       <div className="px-5 grid grid-cols-2 gap-3 mb-5">
         <button
           onClick={() => performAction('feed')}
-          disabled={cooldowns.feed && cooldowns.feed > 0}
+          disabled={!!(cooldowns.feed && cooldowns.feed > 0)}
           className={`bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans ${
             pet.hunger > 80 ? 'border-danger bg-red-50' : ''
           }`}
@@ -245,7 +245,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
 
         <button
           onClick={() => performAction('clean')}
-          disabled={cooldowns.clean && cooldowns.clean > 0}
+          disabled={!!(cooldowns.clean && cooldowns.clean > 0)}
           className="bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans"
         >
           <span className="text-2xl">🛁</span>
@@ -278,11 +278,11 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
 
         <button
           onClick={() => performAction('play')}
-          disabled={
+          disabled={!!(
             (cooldowns.play && cooldowns.play > 0) ||
             pet.tiredness >= 80 ||
             !pet.isAwake
-          }
+          )}
           className="bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans"
         >
           <span className="text-2xl">🎮</span>
