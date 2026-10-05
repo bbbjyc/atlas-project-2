@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Pet, ShopData } from '@/types/pet';
-import styles from './Shop.module.css';
 
 interface ShopProps {
   pet: Pet;
@@ -94,9 +93,9 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <p>로딩 중...</p>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-5 animate-fadeIn">
+        <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-modal animate-slideUp">
+          <p className="p-5 text-gray-600">로딩 중...</p>
         </div>
       </div>
     );
@@ -104,9 +103,9 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
 
   if (!shopData) {
     return (
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <p>상점 데이터를 불러올 수 없습니다.</p>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-5 animate-fadeIn">
+        <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-modal animate-slideUp">
+          <p className="p-5 text-gray-600">상점 데이터를 불러올 수 없습니다.</p>
         </div>
       </div>
     );
@@ -118,38 +117,53 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.container} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-5 animate-fadeIn" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-modal animate-slideUp" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className={styles.header}>
-          <h2>🛍️ 상점</h2>
-          <button className={styles.closeButton} onClick={onClose}>
+        <div className="flex justify-between items-center p-5 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 m-0">🛍️ 상점</h2>
+          <button
+            className="bg-none border-none text-2xl cursor-pointer text-gray-600 hover:text-gray-900 transition-colors p-0 w-9 h-9 flex items-center justify-center"
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
 
         {/* Cash Display */}
-        <div className={styles.cashDisplay}>
-          <span className={styles.cashIcon}>💰</span>
-          <span className={styles.cashAmount}>{pet.cash}</span>
+        <div className="flex items-center gap-2 p-3 bg-gray-100 font-bold border-b border-gray-200">
+          <span className="text-xl">💰</span>
+          <span className="text-lg text-primary">{pet.cash}</span>
         </div>
 
         {/* Tabs */}
-        <div className={styles.tabs}>
+        <div className="flex border-b border-gray-200 bg-white">
           <button
-            className={`${styles.tab} ${activeTab === 'outfit' ? styles.active : ''}`}
+            className={`flex-1 p-4 font-bold text-sm cursor-pointer transition-all border-b-4 ${
+              activeTab === 'outfit'
+                ? 'text-primary border-b-primary'
+                : 'text-gray-600 border-b-transparent hover:text-primary'
+            }`}
             onClick={() => setActiveTab('outfit')}
           >
             👗 의류
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'background' ? styles.active : ''}`}
+            className={`flex-1 p-4 font-bold text-sm cursor-pointer transition-all border-b-4 ${
+              activeTab === 'background'
+                ? 'text-primary border-b-primary'
+                : 'text-gray-600 border-b-transparent hover:text-primary'
+            }`}
             onClick={() => setActiveTab('background')}
           >
             🎨 배경
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'furniture' ? styles.active : ''}`}
+            className={`flex-1 p-4 font-bold text-sm cursor-pointer transition-all border-b-4 ${
+              activeTab === 'furniture'
+                ? 'text-primary border-b-primary'
+                : 'text-gray-600 border-b-transparent hover:text-primary'
+            }`}
             onClick={() => setActiveTab('furniture')}
           >
             🛋️ 가구
@@ -157,7 +171,7 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
         </div>
 
         {/* Items Grid */}
-        <div className={styles.itemsGrid}>
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
           {items.map((item, index) => {
             const itemId = getItemId(index);
             const isOwned = ownedItems.has(itemId);
@@ -166,23 +180,32 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
               (activeTab === 'background' && pet.backgroundColor === item.id);
 
             return (
-              <div key={item.id} className={styles.itemCard}>
-                <div className={styles.itemImage}>
+              <div
+                key={item.id}
+                className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex gap-3 hover:border-primary hover:shadow-card transition-all"
+              >
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center text-4xl flex-shrink-0 border border-gray-200">
                   {activeTab === 'outfit' && '👗'}
                   {activeTab === 'background' && '🎨'}
                   {activeTab === 'furniture' && '🛋️'}
                 </div>
 
-                <div className={styles.itemInfo}>
-                  <h3 className={styles.itemName}>{item.name}</h3>
-                  <p className={styles.itemDescription}>{item.description}</p>
-                  <p className={styles.itemPrice}>{item.price}캐시</p>
+                <div className="flex-1 flex flex-col justify-center min-w-0">
+                  <h3 className="text-sm font-bold text-gray-900 m-0">
+                    {item.name}
+                  </h3>
+                  <p className="text-xs text-gray-600 line-clamp-2 mt-1 m-0">
+                    {item.description}
+                  </p>
+                  <p className="text-sm font-bold text-primary mt-1 m-0">
+                    {item.price}캐시
+                  </p>
                 </div>
 
-                <div className={styles.itemAction}>
+                <div className="flex items-center flex-shrink-0">
                   {!isOwned ? (
                     <button
-                      className={`${styles.button} ${styles.purchase}`}
+                      className="px-4 py-2 bg-primary text-white border border-primary rounded-lg font-bold text-xs cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:opacity-60"
                       onClick={() =>
                         handlePurchase(itemId, item.price, activeTab)
                       }
@@ -191,12 +214,15 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
                       구매
                     </button>
                   ) : isEquipped ? (
-                    <button className={`${styles.button} ${styles.equipped}`} disabled>
+                    <button
+                      className="px-4 py-2 bg-blue-50 text-primary border border-primary rounded-lg font-bold text-xs cursor-default"
+                      disabled
+                    >
                       ✓ 장착
                     </button>
                   ) : (
                     <button
-                      className={`${styles.button} ${styles.equip}`}
+                      className="px-4 py-2 bg-white text-primary border border-primary rounded-lg font-bold text-xs cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-card active:translate-y-0"
                       onClick={() => handleEquip(itemId, activeTab)}
                     >
                       장착

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Pet } from '@/types/pet';
 import Shop from './Shop';
 import Friends from './Friends';
-import styles from './GameScreen.module.css';
 
 interface GameScreenProps {
   pet: Pet;
@@ -121,76 +120,98 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const { emoji, text } = getPetState();
 
   return (
-    <div className={styles.container}>
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-300 pb-[100px]">
       {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.petInfo}>
-          <h1>{pet.name}</h1>
-          <p className={styles.level}>Lv.{pet.level}</p>
+      <div className="flex justify-between items-center p-5 bg-white border-b border-gray-200">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 m-0">{pet.name}</h1>
+          <p className="text-sm text-gray-600 m-1">Lv.{pet.level}</p>
         </div>
-        <div className={styles.cash}>
-          <span className={styles.cashIcon}>💰</span>
-          <span className={styles.cashAmount}>{pet.cash}</span>
+        <div className="flex items-center gap-2 text-lg font-bold">
+          <span className="text-2xl">💰</span>
+          <span className="text-primary">{pet.cash}</span>
         </div>
       </div>
 
       {/* Pet Display */}
-      <div className={styles.petDisplay}>
-        <div className={styles.petContainer}>
-          <div className={styles.petEmoji} style={{ opacity: pet.isAwake ? 1 : 0.6 }}>
+      <div className="text-center py-10">
+        <div className="relative mb-3">
+          <div
+            className="text-9xl animate-bounce transition-opacity"
+            style={{ opacity: pet.isAwake ? 1 : 0.6 }}
+          >
             {emoji}
           </div>
-          {!pet.isAwake && <div className={styles.sleepZs}>zzz...</div>}
+          {!pet.isAwake && (
+            <div className="absolute top-0 -right-5 text-2xl animate-float">
+              zzz...
+            </div>
+          )}
         </div>
-        <p className={styles.petStatus}>{text}</p>
+        <p className="text-base font-bold text-primary m-0">{text}</p>
       </div>
 
       {/* Experience Bar */}
-      <div className={styles.expSection}>
-        <div className={styles.expLabel}>
+      <div className="p-5 bg-white mx-5 rounded-lg mb-5">
+        <div className="flex justify-between text-xs text-gray-600 mb-2 font-bold">
           <span>경험치</span>
-          <span>{pet.exp}/100</span>
+          <span>
+            {pet.exp}/100
+          </span>
         </div>
-        <div className={styles.expBar}>
+        <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
           <div
-            className={styles.expFill}
+            className="h-full bg-gradient-to-r from-primary to-secondary transition-all"
             style={{ width: `${pet.exp}%` }}
           ></div>
         </div>
       </div>
 
       {/* Stats Bars */}
-      <div className={styles.stats}>
-        {(['hunger', 'tiredness', 'cleanliness', 'happiness'] as const).map((stat) => (
-          <div key={stat} className={styles.statRow}>
-            <div className={styles.statLabel}>{STAT_LABELS[stat]}</div>
-            <div className={styles.statBar}>
-              <div
-                className={styles.statFill}
-                style={{
-                  width: `${pet[stat]}%`,
-                  backgroundColor: STAT_COLORS[stat],
-                }}
-              ></div>
+      <div className="px-5 flex flex-col gap-3 mb-5">
+        {(['hunger', 'tiredness', 'cleanliness', 'happiness'] as const).map(
+          (stat) => (
+            <div
+              key={stat}
+              className="bg-white p-3 rounded-lg flex items-center gap-3"
+            >
+              <div className="text-xs font-bold text-gray-600 min-w-12">
+                {STAT_LABELS[stat]}
+              </div>
+              <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+                <div
+                  className="h-full transition-all"
+                  style={{
+                    width: `${pet[stat]}%`,
+                    backgroundColor: STAT_COLORS[stat],
+                  }}
+                ></div>
+              </div>
+              <div className="text-xs font-bold text-gray-900 min-w-7 text-right">
+                {pet[stat]}
+              </div>
             </div>
-            <div className={styles.statValue}>{pet[stat]}</div>
-          </div>
-        ))}
+          )
+        )}
       </div>
 
       {/* Action Buttons */}
-      <div className={styles.actions}>
+      <div className="px-5 grid grid-cols-2 gap-3 mb-5">
         <button
           onClick={() => performAction('feed')}
           disabled={cooldowns.feed && cooldowns.feed > 0}
-          className={`${styles.button} ${pet.hunger > 80 ? styles.urgent : ''}`}
+          className={`bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans ${
+            pet.hunger > 80 ? 'border-danger bg-red-50' : ''
+          }`}
         >
-          <span className={styles.emoji}>{ACTION_EMOJIS.feed}</span>
+          <span className="text-2xl">🍖</span>
           <div>
-            <div className={styles.actionName}>밥주기</div>
-            <div className={styles.actionCost}>10캐시</div>
+            <div className="text-sm font-bold text-gray-900">밥주기</div>
+            <div className="text-xs text-gray-600">10캐시</div>
             {cooldowns.feed && cooldowns.feed > 0 && (
-              <div className={styles.cooldown}>{formatTime(cooldowns.feed)}</div>
+              <div className="text-xs text-primary font-bold">
+                {formatTime(cooldowns.feed)}
+              </div>
             )}
           </div>
         </button>
@@ -198,14 +219,16 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
         <button
           onClick={() => performAction('clean')}
           disabled={cooldowns.clean && cooldowns.clean > 0}
-          className={styles.button}
+          className="bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans"
         >
-          <span className={styles.emoji}>{ACTION_EMOJIS.clean}</span>
+          <span className="text-2xl">🛁</span>
           <div>
-            <div className={styles.actionName}>청소하기</div>
-            <div className={styles.actionCost}>15캐시</div>
+            <div className="text-sm font-bold text-gray-900">청소하기</div>
+            <div className="text-xs text-gray-600">15캐시</div>
             {cooldowns.clean && cooldowns.clean > 0 && (
-              <div className={styles.cooldown}>{formatTime(cooldowns.clean)}</div>
+              <div className="text-xs text-primary font-bold">
+                {formatTime(cooldowns.clean)}
+              </div>
             )}
           </div>
         </button>
@@ -213,12 +236,16 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
         <button
           onClick={() => performAction('sleep')}
           disabled={pet.isAwake === false}
-          className={`${styles.button} ${pet.tiredness > 80 ? styles.urgent : ''}`}
+          className={`bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans ${
+            pet.tiredness > 80 ? 'border-info bg-blue-50' : ''
+          }`}
         >
-          <span className={styles.emoji}>{ACTION_EMOJIS.sleep}</span>
+          <span className="text-2xl">😴</span>
           <div>
-            <div className={styles.actionName}>{pet.isAwake ? '재우기' : '깨우기'}</div>
-            <div className={styles.actionCost}>무료</div>
+            <div className="text-sm font-bold text-gray-900">
+              {pet.isAwake ? '재우기' : '깨우기'}
+            </div>
+            <div className="text-xs text-gray-600">무료</div>
           </div>
         </button>
 
@@ -229,32 +256,41 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
             pet.tiredness >= 80 ||
             !pet.isAwake
           }
-          className={styles.button}
+          className="bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-card active:enabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 font-sans"
         >
-          <span className={styles.emoji}>{ACTION_EMOJIS.play}</span>
+          <span className="text-2xl">🎮</span>
           <div>
-            <div className={styles.actionName}>놀아주기</div>
-            <div className={styles.actionCost}>5캐시</div>
+            <div className="text-sm font-bold text-gray-900">놀아주기</div>
+            <div className="text-xs text-gray-600">5캐시</div>
             {cooldowns.play && cooldowns.play > 0 && (
-              <div className={styles.cooldown}>{formatTime(cooldowns.play)}</div>
+              <div className="text-xs text-primary font-bold">
+                {formatTime(cooldowns.play)}
+              </div>
             )}
           </div>
         </button>
       </div>
 
       {/* Bottom Navigation */}
-      <div className={styles.navbar}>
-        <button className={`${styles.navButton} ${styles.active}`}>🏠 집</button>
+      <div className="fixed bottom-0 left-0 right-0 flex justify-around bg-white border-t border-gray-200 p-2 shadow-lg">
+        <button className="flex-1 border-none bg-none p-3 cursor-pointer text-gray-900 font-bold text-base transition-colors hover:text-primary">
+          🏠 집
+        </button>
         <button
-          className={styles.navButton}
+          className="flex-1 border-none bg-none p-3 cursor-pointer text-gray-600 font-normal text-base transition-colors hover:text-primary"
           onClick={() => setShowFriends(true)}
         >
           👥 친구
         </button>
-        <button className={styles.navButton} onClick={() => setShowShop(true)}>
+        <button
+          className="flex-1 border-none bg-none p-3 cursor-pointer text-gray-600 font-normal text-base transition-colors hover:text-primary"
+          onClick={() => setShowShop(true)}
+        >
           🛍️ 상점
         </button>
-        <button className={styles.navButton}>⚙️ 설정</button>
+        <button className="flex-1 border-none bg-none p-3 cursor-pointer text-gray-600 font-normal text-base transition-colors hover:text-primary">
+          ⚙️ 설정
+        </button>
       </div>
 
       {/* Shop Modal */}
