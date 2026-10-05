@@ -17,8 +17,8 @@
 ## 2. 화면 (남아야 할 값에 [저장] 표시. 원래 3장 이내이나 주최측에 확인해 4장으로 진행)
 ### 화면 1 – 내 집
 - 펫, 레벨, 애정점수, 해금된 것 표시
-- 밥주기·집청소·샤워 버튼
-- 옷·배경색 꾸미기
+- 밥주기·집청소·샤워·재우기·놀기 버튼
+- 옷·배경색·가구 꾸미기
 - [저장] 돌봄 행동(care_logs), 꾸미기 선택(style_logs)
 
 ### 화면 2 – 초대·클랜
@@ -32,7 +32,7 @@
 - [저장] 방문·선물 기록(visit_logs), 대전 결과(battle_logs)
 
 ### 화면 4 – 상점
-- 캐시 잔액 표시, 꾸미기 아이템(옷·배경) 구매
+- 캐시 잔액 표시, 꾸미기 아이템(옷·배경·가구) 구매
 - 산 아이템만 화면 1 꾸미기에서 고를 수 있다
 - [저장] 구매 기록(cash_logs)
 
@@ -69,7 +69,7 @@
 | id | 자동 | 항상 있음 |
 | created_at | 시각 | 항상 있음 |
 | player_id | 숫자 | 누가 했는지 (players.id) |
-| action_type | 글자 | feed / clean / shower |
+| action_type | 글자 | feed / clean / shower / sleep / play |
 
 ### style_logs 테이블
 꾸미기를 바꿀 때마다 한 줄 (가장 최근 행이 현재 상태)
@@ -80,6 +80,7 @@
 | player_id | 숫자 | 누구의 펫인지 (players.id) |
 | outfit | 글자 | 옷 종류 |
 | background_color | 글자 | 배경색 |
+| furniture | 글자 | 배치한 가구 id를 쉼표로 이은 값 (가구가 없으면 비움) |
 
 ### visit_logs 테이블
 친구 집 방문·선물 한 번당 한 줄
@@ -112,6 +113,7 @@
 | amount | 숫자 | 늘면 +, 줄면 − |
 | reason | 글자 | mission / purchase / feed / clean / shower / heal / gift / battle / buy_item |
 | item | 글자 | 산 아이템 이름 (아이템 구매가 아니면 비움) |
+| item_type | 글자 | 산 아이템의 종류: outfit / background / furniture (아이템 구매가 아니면 비움) |
 
 ### fake_door_logs 테이블
 충전 팝업 노출 또는 금액 클릭 한 번당 한 줄
@@ -132,7 +134,9 @@
 - 초대 단계 = invited_by_id를 따라간 횟수
 - 전투 능력치 = 레벨과 애정점수 해금에서 계산
 - 캐시 잔액 = 내 cash_logs의 amount 합계
-- 가진 아이템 = 내 cash_logs 중 item이 있는 행
+- 가진 아이템 = 내 cash_logs 중 item이 있는 행 (종류는 item_type)
+- 배고픔·피로도·청결도·행복도 같은 상태 수치 = care_logs의 행동 종류·횟수·created_at(마지막 행동 시각)으로 앱에서 계산 (열로 저장하지 않음)
+- 쿨다운 = care_logs의 마지막 created_at과 현재 시각을 비교해 앱에서 계산
 - 충전 팝업 클릭률 = tier_clicked 수 ÷ popup_shown 수
 
 ### 저장 순서 주의
