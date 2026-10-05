@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Pet } from '@/types/pet';
+import { addCashLog } from '@/lib/pet';
 
 interface FriendsProps {
   pet: Pet;
@@ -94,10 +95,22 @@ export default function Friends({ pet, onPetUpdate, onClose }: FriendsProps) {
     alert(`${friendId}의 펫을 방문했습니다! 🏠`);
   };
 
-  const handleGift = (friendId: string) => {
+  const handleGift = async (friendId: string) => {
     if (pet.cash < 10) {
       alert('캐시가 부족합니다!');
       return;
+    }
+
+    const playerId = typeof window !== 'undefined' ? localStorage.getItem('currentUserId') : null;
+    if (!playerId) {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    try {
+      await addCashLog(playerId, -10, 'gift');
+    } catch (error) {
+      console.error('Failed to record gift:', error);
     }
 
     const updatedPet = { ...pet, cash: pet.cash - 10 };

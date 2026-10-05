@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Pet } from '@/types/pet';
+import { addCareLog, addCashLog } from '@/lib/pet';
 import Shop from './Shop';
 import Friends from './Friends';
 
@@ -66,12 +67,38 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const performAction = (action: string, costCash: number = 0) => {
+  const performAction = async (action: string, costCash: number = 0) => {
     if (cooldowns[action] && cooldowns[action] > 0) return;
 
     if (pet.cash < costCash) {
       alert('캐시가 부족합니다!');
       return;
+    }
+
+    // Get playerId from localStorage
+    const playerId = typeof window !== 'undefined' ? localStorage.getItem('currentUserId') : null;
+    if (!playerId) {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    // Record action to Supabase
+    try {
+      // 1. Record care log
+      const actionTypeMap: Record<string, 'feed' | 'clean' | 'shower' | 'sleep' | 'play'> = {
+        feed: 'feed',
+        clean: 'clean',
+        sleep: 'sleep',
+        play: 'play',
+      };
+      await addCareLog(playerId, actionTypeMap[action]);
+
+      // 2. Record cash log if cost exists
+      if (costCash > 0) {
+        await addCashLog(playerId, -costCash, action as any);
+      }
+    } catch (error) {
+      console.error('Failed to record action:', error);
     }
 
     // Update pet state based on action

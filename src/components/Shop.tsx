@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Pet, ShopData } from '@/types/pet';
+import { addCashLog } from '@/lib/pet';
 
 interface ShopProps {
   pet: Pet;
@@ -43,7 +44,7 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
     setOwnedItems(owned);
   }, [pet]);
 
-  const handlePurchase = (itemId: string, price: number, type: TabType) => {
+  const handlePurchase = async (itemId: string, price: number, type: TabType) => {
     if (pet.cash < price) {
       alert('캐시가 부족합니다!');
       return;
@@ -52,6 +53,22 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
     if (ownedItems.has(itemId)) {
       alert('이미 가진 아이템입니다!');
       return;
+    }
+
+    const playerId = typeof window !== 'undefined' ? localStorage.getItem('currentUserId') : null;
+    if (!playerId) {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    // Find item name from shopData
+    const itemData = shopData?.[type].find((item) => item.id === itemId);
+    const itemName = itemData?.name || itemId;
+
+    try {
+      await addCashLog(playerId, -price, 'buy_item', itemName, type);
+    } catch (error) {
+      console.error('Failed to record purchase:', error);
     }
 
     // Deduct cash
