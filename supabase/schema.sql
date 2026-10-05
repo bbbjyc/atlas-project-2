@@ -107,3 +107,20 @@ create policy "cash_logs_insert" on public.cash_logs for insert to anon, authent
 
 create policy "fake_door_logs_select" on public.fake_door_logs for select to anon, authenticated using (true);
 create policy "fake_door_logs_insert" on public.fake_door_logs for insert to anon, authenticated with check (true);
+
+-- 변경 1 (plan.md 반영): 화면의 재우기·놀기를 위해 care_logs.action_type 에 sleep, play 추가
+-- 이미 위 테이블을 실행한 DB는 아래 "변경" 블록만 따로 실행한다 (여러 번 실행해도 안전).
+alter table public.care_logs drop constraint if exists care_logs_action_type_check;
+alter table public.care_logs
+  add constraint care_logs_action_type_check
+  check (action_type in ('feed', 'clean', 'shower', 'sleep', 'play'));
+
+-- 변경 2 (plan.md 반영): 산 아이템의 종류를 구분하기 위해 cash_logs.item_type 추가
+alter table public.cash_logs add column if not exists item_type text;
+alter table public.cash_logs drop constraint if exists cash_logs_item_type_check;
+alter table public.cash_logs
+  add constraint cash_logs_item_type_check
+  check (item_type in ('outfit', 'background', 'furniture'));
+
+-- 변경 3 (plan.md 반영): 배치한 가구를 저장하기 위해 style_logs.furniture 추가 (가구 id를 쉼표로 이은 값)
+alter table public.style_logs add column if not exists furniture text;
