@@ -33,6 +33,9 @@ const ACTION_EMOJIS: Record<string, string> = {
 
 export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const [pet, setPet] = useState(initialPet);
+  console.log('pet 객체 전체:', pet);
+  console.log('hunger:', pet?.hunger);
+  console.log('tiredness:', pet?.tiredness);
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
   const [showShop, setShowShop] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
