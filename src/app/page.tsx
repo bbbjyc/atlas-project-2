@@ -1,8 +1,17 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Pet } from '@/types/pet';
+import PetCreation from '@/components/PetCreation';
+import GameScreen from '@/components/GameScreen';
+import { loadPet } from '@/components/game/storage';
+
 export default function Home() {
-  return (
-    <main>
-      <h1>atlas-project-2</h1>
-      <p>뼈대입니다. 화면은 하재영님이 이 파일부터 채워 주세요.</p>
-    </main>
-  );
+  const [pet, setPet] = useState<Pet | null>(null);
+  const [ready, setReady] = useState(false);   // 브라우저에 저장된 펫을 읽기 전에는 아무것도 그리지 않는다
+
+  useEffect(() => { setPet(loadPet()); setReady(true); }, []);
+
+  if (!ready) return null;
+  return !pet ? <PetCreation onPetCreated={setPet} /> : <GameScreen pet={pet} />;
 }
