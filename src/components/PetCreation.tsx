@@ -43,8 +43,8 @@ export default function PetCreation({ onPetCreated }: PetCreationProps) {
       <form onSubmit={submit} aria-labelledby="createTitle"
         className="absolute top-[5%] left-[5%] z-31 flex h-[90%] w-[90%] animate-pop flex-col overflow-hidden rounded-[26px] bg-(--sheet) shadow-[0_24px_60px_rgba(0,0,0,.35)]">
         <header className="pt-[18px] pr-4 pb-3.5 pl-5">
-          <h1 id="createTitle" className="text-xl font-extrabold tracking-[-.02em]">내 캐릭터 만들기</h1>
-          <p className="mt-0.5 text-xs font-semibold text-(--ink-2)">모습은 나중에 캐릭터를 눌러 언제든 바꿀 수 있어요</p>
+          <h1 id="createTitle" className="text-xl font-extrabold tracking-[-.02em]">내 캐릭터 고르기</h1>
+          <p className="mt-0.5 text-xs font-semibold text-(--ink-2)">나중에 캐릭터를 눌러 바꿀 수 있어요. 상점에서 산 옷과 장비도 입힐 수 있어요</p>
         </header>
         <CustomEditor draft={cfg} onChange={setCfg} />
         <footer className="flex flex-col gap-2 border-t border-(--chip-bg) px-4 pt-3 pb-4">

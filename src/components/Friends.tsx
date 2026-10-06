@@ -5,7 +5,7 @@ import { Pet } from '@/types/pet';
 import Icon from './ui/Icon';
 import Sheet, { SheetHead, Wallet } from './ui/Sheet';
 import Character from './character/Character';
-import { CharConfig, DEFAULT_CFG } from './character/charConfig';
+import { CharConfig, Equip } from './character/charConfig';
 import { useGame } from './game/GameContext';
 
 interface FriendsProps {
@@ -23,12 +23,12 @@ const GIFTS = [
 
 // 예시 친구 (DB 연결 전 화면 확인용)
 // TODO: players(invited_by_id) 로 초대 트리를, visit_logs 로 애정을 읽어 온다 (src/lib/clan.ts · visit.ts, 조원영 담당)
-interface Friend { id: string; name: string; level: number; love: number; depth: number; cfg: CharConfig }
+interface Friend { id: string; name: string; level: number; love: number; depth: number; cfg: CharConfig; equip?: Equip }
 const DEMO: Friend[] = [
-  { id: 'f1', name: '원영', level: 3, love: 12, depth: 1, cfg: { ...DEFAULT_CFG, gender: 'girl', skin: 1, eyeShape: 'big', eyeColor: 'blue', mouth: 'smile' } },
-  { id: 'f2', name: '연준', level: 5, love: 30, depth: 1, cfg: { ...DEFAULT_CFG, skin: 2, eyeShape: 'sharp', eyeColor: 'black', nose: 'line', mouth: 'grin' } },
-  { id: 'f3', name: '민지', level: 2, love: 4, depth: 2, cfg: { ...DEFAULT_CFG, gender: 'girl', skin: 3, eyeShape: 'smile', mouth: 'cat' } },
-  { id: 'f4', name: '도윤', level: 1, love: 0, depth: 3, cfg: { ...DEFAULT_CFG, skin: 4, eyeShape: 'sleepy', eyeColor: 'green', mouth: 'o' } },
+  { id: 'f1', name: '원영', level: 3, love: 12, depth: 1, cfg: { species: 'sheep' }, equip: { head: '분홍 리본 머리띠' } },
+  { id: 'f2', name: '연준', level: 5, love: 30, depth: 1, cfg: { species: 'bear' }, equip: { head: '기사 투구' } },
+  { id: 'f3', name: '민지', level: 2, love: 4, depth: 2, cfg: { species: 'chick' }, equip: { face: '검은 동그란 안경' } },
+  { id: 'f4', name: '도윤', level: 1, love: 0, depth: 3, cfg: { species: 'rabbit' } },
 ];
 
 // 화면 2·3: 친구 집 방문·선물 / 초대 링크·초대 트리·클랜
@@ -73,7 +73,7 @@ export default function Friends({ pet, onPetUpdate, onClose }: FriendsProps) {
         </p>
         {tab === 'friends'
           ? DEMO.map((f, i) => <FriendCard key={f.id} f={f} i={i} war={game.war} onVisit={visit} onGift={gift} onBattle={() => game.toast('대전은 다음 단계에서 만들어요')} />)
-          : <ClanTab pet={pet} cfg={game.cfg} />}
+          : <ClanTab pet={pet} cfg={game.cfg} equip={game.equip} />}
       </div>
     </Sheet>
   );
@@ -87,7 +87,7 @@ function FriendCard({ f, i, war, onVisit, onGift, onBattle }: {
     <article style={{ animationDelay: `${i * 30}ms` }} className="animate-pop rounded-2xl bg-(--card) p-3 shadow-[0_2px_8px_rgba(60,40,80,.07)]">
       <div className="flex items-center gap-3">
         <span className="size-11 flex-none overflow-hidden rounded-full bg-linear-135 from-[#ffe1ec] to-[#e4dcff]">
-          <Character cfg={f.cfg} headOnly viewBox="40 26 120 120" className="size-full" />
+          <Character cfg={f.cfg} equip={f.equip} headOnly className="size-full" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="text-sm font-extrabold">{f.name} <span className="text-[11px] font-bold text-(--ink-2)">Lv.{f.level}</span></div>
@@ -116,7 +116,7 @@ function FriendCard({ f, i, war, onVisit, onGift, onBattle }: {
   );
 }
 
-function ClanTab({ pet, cfg }: { pet: Pet; cfg: CharConfig }) {
+function ClanTab({ pet, cfg, equip }: { pet: Pet; cfg: CharConfig; equip: Equip }) {
   const game = useGame();
   // TODO: 초대 코드는 players.invite_code, 클랜은 clans.name, 전적은 battle_logs 를 clan_id 로 센 승리 수 (plan.md)
   const link = typeof window === 'undefined' ? '' : `${window.location.origin}/?invite=${pet.userId.replace(/^user_/, '')}`;
@@ -153,20 +153,20 @@ function ClanTab({ pet, cfg }: { pet: Pet; cfg: CharConfig }) {
         <h3 className="flex items-center gap-1.5 text-sm font-extrabold"><Icon name="i-link" className="size-4 text-(--primary)" />초대 트리</h3>
         <p className="mt-0.5 text-[11px] font-semibold text-(--ink-2)">친구의 친구의 친구까지 이어져요</p>
         <ol className="mt-3 flex flex-col gap-2">
-          <TreeRow depth={0} name={`${pet.name} (나)`} cfg={cfg} />
-          {tree.flatMap(level => level.map(f => <TreeRow key={f.id} depth={f.depth} name={f.name} cfg={f.cfg} />))}
+          <TreeRow depth={0} name={`${pet.name} (나)`} cfg={cfg} equip={equip} />
+          {tree.flatMap(level => level.map(f => <TreeRow key={f.id} depth={f.depth} name={f.name} cfg={f.cfg} equip={f.equip} />))}
         </ol>
       </section>
     </>
   );
 }
 
-function TreeRow({ depth, name, cfg }: { depth: number; name: string; cfg: CharConfig }) {
+function TreeRow({ depth, name, cfg, equip }: { depth: number; name: string; cfg: CharConfig; equip?: Equip }) {
   return (
     <li className="flex items-center gap-2" style={{ paddingLeft: depth * 18 }}>
       {depth > 0 && <span className="h-3.5 w-2.5 flex-none rounded-bl-md border-b-2 border-l-2 border-(--track)" />}
       <span className="size-7 flex-none overflow-hidden rounded-full bg-linear-135 from-[#ffe1ec] to-[#e4dcff]">
-        <Character cfg={cfg} headOnly viewBox="40 26 120 120" className="size-full" />
+        <Character cfg={cfg} equip={equip} headOnly className="size-full" />
       </span>
       <span className="text-[13px] font-bold">{name}</span>
       {depth > 0 && <span className="ml-auto rounded-md bg-(--chip-bg) px-1.5 py-0.5 text-[10px] font-extrabold text-(--ink-2)">{depth}단계</span>}

@@ -6,6 +6,7 @@ import Icon from './ui/Icon';
 import Sheet, { SheetHead, Wallet } from './ui/Sheet';
 import { useGame } from './game/GameContext';
 import { consumable, FX_ICON, fxText, GRADE, Grade, Item, itemArt, STAT } from './shop/catalog';
+import { slotOf } from './character/charConfig';
 
 interface ShopProps {
   pet: Pet;
@@ -78,10 +79,11 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
       game.toast(`${it.name}! ${game.drink(it.effects).map(fxText).join(', ')}`);
     } else {
       game.own(it.name);
-      if (it.kind === 'gear') {
-        const better = (it.cat === 'weapon' ? game.equipped.weapon?.atk ?? -1 : game.equipped.armor?.def ?? -1) >= (it.cat === 'weapon' ? it.atk : it.def);
-        game.toast(better ? `${it.name} 구매 완료! (더 좋은 장비를 장착 중)` : `${it.name} 장착! 전투력 +${it.atk} · 방어력 +${it.def}`);
-      } else game.toast(`${it.name} 구매 완료! 애정 +${it.val}`);
+      // 입을 수 있는 것(옷·무기·갑옷)은 사자마자 입는다. 꾸미기 창에서 바꿀 수 있다
+      if (slotOf(it)) game.wear(it);
+      if (it.kind === 'gear') game.toast(`${it.name} 장착! 전투력 +${it.atk} · 방어력 +${it.def}`);
+      else if (slotOf(it)) game.toast(`${it.name} 입었어요! 애정 +${it.val}`);
+      else game.toast(`${it.name} 구매 완료! 애정 +${it.val}`);
     }
   };
 
@@ -127,8 +129,8 @@ function ItemCard({ it, i, statKey, onBuy }: { it: Item; i: number; statKey?: st
   const game = useGame();
   const art = itemArt(it);
   const owned = !consumable(it) && game.owned.includes(it.name);
-  const wearing = game.equipped.weapon === it || game.equipped.armor === it;
-  const label = wearing ? '장착 중' : owned ? '보유' : it.g === 'p' ? '결제' : '구매';
+  const wearing = game.isWorn(it.name);
+  const label = wearing ? (it.kind === 'gear' ? '장착 중' : '착용 중') : owned ? '보유' : it.g === 'p' ? '결제' : '구매';
   const [statIcon, statName] = (statKey && STAT[statKey]) || [];
   const fancy = it.g === 'l' || it.g === 'p';
 
