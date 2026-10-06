@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pet } from '@/types/pet';
 import { Fx, ITEM, Item, SHOP, WAR_SHOP } from '../shop/catalog';
+import { Equip, EQUIP_KEY, slotOf } from '../character/charConfig';
 import { savePet } from './storage';
 
 export const COST = 10;   // 돌봄 1번에 드는 캐시
@@ -66,7 +67,6 @@ function usePersisted<T>(key: string, init: T) {
 }
 
 const ownedIn = (owned: string[], cat: string) => owned.map(n => ITEM[n]).filter(it => it?.cat === cat);
-const bestBy = (list: Item[], k: 'atk' | 'def') => list.reduce<Item | null>((b, it) => (!b || it[k] > b[k] ? it : b), null);
 
 export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWarMode: boolean = false) {
   const [pet, setPet] = useState(initialPet);
@@ -126,6 +126,10 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
 
   const [{ list: owned }, setOwned] = usePersisted('atlas.owned', { list: [] as string[] });
   const [stats, setStats] = usePersisted('atlas.stats', EMPTY_STATS);
+  // 옷장: 슬롯마다 입은 아이템. 사면 그 슬롯에 바로 입고, 꾸미기 창에서 바꿀 수 있다
+  const [equip, setEquip] = usePersisted<Equip>(EQUIP_KEY, {});
+  const wear = useCallback((it: Item) => { const slot = slotOf(it); if (slot) setEquip(e => ({ ...e, [slot]: it.name })); }, [setEquip]);
+  const isWorn = (name: string) => Object.values(equip).includes(name);
   const bump = useCallback((k: keyof Stats, n = 1) => setStats(s => ({ ...s, [k]: s[k] + n })), [setStats]);
 
   // 경험치: 10 이면 레벨 1 (plan.md: 레벨 = care_logs 수 ÷ 10). 레벨이 올랐으면 새 레벨을 돌려준다
@@ -141,9 +145,8 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
   const outfitLove = Math.max(0, ...ownedIn(owned, 'clothes').map(it => it.val));       // 입은 옷 중 가장 높은 것 하나
   const decoLove = ownedIn(owned, 'deco').reduce((s, it) => s + it.val, 0);            // 가진 가구는 모두 더한다
   const love = baseLove + outfitLove + decoLove;
-  // 무기는 전투력, 갑옷은 방어력이 가장 높은 것을 자동 장착 (장착 화면은 나중에)
-  const equipped = { weapon: bestBy(ownedIn(owned, 'weapon'), 'atk'), armor: bestBy(ownedIn(owned, 'armor'), 'def') };
-  const gear = [equipped.weapon, equipped.armor];
+  // 전투력·방어력은 지금 입고 있는 전투 장비(무기·갑옷)만 더한다
+  const gear: Item[] = Object.values(equip).map(n => ITEM[n]).filter(it => it?.kind === 'gear');
 
   // ── 물약 효과: 같은 종류는 쌓이지 않고 더 강한(같으면 더 긴) 것 하나만 남는다. 재생은 1초 = 1턴 ──
   const maxHp = 300 + pet.level * 30;
@@ -274,7 +277,8 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
 
   return {
     pet, getPet, updatePet, addExp, addCash, owned, own, stats, bump,
-    love, power, def, hp, maxHp, buffs, equipped, fxUseful, drink, toast,
+    equip, setEquip, wear, isWorn,
+    love, power, def, hp, maxHp, buffs, fxUseful, drink, toast,
     shops: { pet: SHOP, war: WAR_SHOP },
     care, cooldowns, // 애완모드
   };

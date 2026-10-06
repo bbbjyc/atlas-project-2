@@ -100,3 +100,19 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 button { cursor: pointer; }
+
+/* ── 캐릭터 파츠 모션: 팔·몸만 따로 움직인다 (Character.tsx). 손에 든 것은 팔과 같이 움직인다 ── */
+.c-part { transform-box: view-box; }
+.c-rarm { transform-origin: 147px 160px; }
+.c-larm { transform-origin: 53px 160px; }
+.c-body { transform-origin: 100px 218px; }
+.c-head { transform-origin: 100px 140px; }
+.anim-attack .c-rarm { animation: c-swing .6s cubic-bezier(.3, .7, .4, 1) both; }
+.anim-attack .c-body { animation: c-lean .6s ease-in-out both; }
+.anim-defend .c-larm { animation: c-guard .9s ease-in-out both; }
+.anim-defend .c-body { animation: c-brace .9s ease-in-out both; }
+@keyframes c-swing { 0% { transform: rotate(0) } 25% { transform: rotate(-50deg) } 55% { transform: rotate(70deg) } 100% { transform: rotate(0) } }
+@keyframes c-lean { 0%, 100% { transform: rotate(0) } 25% { transform: rotate(-4deg) } 55% { transform: rotate(7deg) } }
+@keyframes c-guard { 0%, 100% { transform: rotate(0) } 25%, 75% { transform: rotate(-60deg) } }
+@keyframes c-brace { 0%, 100% { transform: rotate(0) } 25%, 75% { transform: rotate(-4deg) scale(.97) } }
+@media (prefers-reduced-motion: reduce) { .anim-attack .c-part, .anim-defend .c-part { animation: none; } }

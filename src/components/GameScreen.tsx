@@ -3,9 +3,9 @@
 import { useCallback, useRef, useState } from 'react';
 import { Pet } from '@/types/pet';
 import Icon from './ui/Icon';
-import Character from './character/Character';
+import Character, { CharAnim } from './character/Character';
 import CustomSheet from './character/CustomSheet';
-import { CharConfig, loadCfg, saveCfg } from './character/charConfig';
+import { CharConfig, Equip, loadCfg, saveCfg } from './character/charConfig';
 import RoomBackground from './game/RoomBackground';
 import { GameApi, GameProvider, ShortageReason, useToastQueue } from './game/GameContext';
 import { CareAction, COST, useGameState } from './game/useGameState';
@@ -37,7 +37,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const { msg, on, toast } = useToastQueue();
   const [war, setWar] = useState(false);
   const game = useGameState(initialPet, toast, war);
-  const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns } = game;
+  const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns, equip, setEquip } = game;
   const [cfg, setCfg] = useState<CharConfig>(loadCfg);
   const [sheet, setSheet] = useState<SheetName>(null);
   const [topup, setTopup] = useState<TopupCtx | null>(null);
@@ -47,6 +47,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const [hopping, setHopping] = useState(false);
   const [flash, setFlash] = useState(0);
   const [cashShake, setCashShake] = useState(0);
+  const [anim, setAnim] = useState<CharAnim>(null);   // 전쟁모드 버튼을 누르면 팔을 휘두르거나 방패를 든다
   const [floats, setFloats] = useState<{ id: number; text: string; color: string }[]>([]);
   const floatId = useRef(0);
   const doHop = () => { setHop(n => n + 1); setHopping(true); };
@@ -108,8 +109,8 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
 
   const closeSheet = useCallback(() => setSheet(null), []);
   const onPetUpdate = useCallback((p: Pet) => updatePet(() => p), [updatePet]);
-  const saveCustom = (next: CharConfig) => {
-    setCfg(next); saveCfg(next);
+  const saveCustom = (next: CharConfig, nextEquip: Equip) => {
+    setCfg(next); saveCfg(next); setEquip(nextEquip);
     doHop();
     toast('캐릭터를 저장했어요');
     bump('customSave');
@@ -128,7 +129,8 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           {/* 캐릭터 · 누르면 꾸미기 */}
           <button aria-label="캐릭터 꾸미기 열기" aria-haspopup="dialog" onClick={() => { doHop(); setSheet('custom'); }}
             className="absolute bottom-[29%] left-1/2 z-2 w-[168px] -translate-x-1/2">
-            <Character key={hop} cfg={cfg} war={war} onAnimationEnd={e => e.animationName === 'hop' && setHopping(false)}
+            <Character key={hop} cfg={cfg} equip={equip} war={war} anim={anim}
+              onAnimationEnd={e => { if (e.animationName === 'hop') setHopping(false); if (e.animationName.startsWith('c-')) setAnim(null); }}
               className={`block h-auto w-full origin-bottom ${hopping ? 'animate-hop' : 'animate-breathe'}`} />
             <span className="glass pointer-events-none absolute top-[30%] right-1 grid size-[30px] place-items-center rounded-full text-(--primary)">
               <Icon name="i-edit" className="size-[15px] stroke-[2.3]!" />
@@ -138,7 +140,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           {/* 왼쪽 위: 프로필 */}
           <header className="glass absolute top-(--safe-t) left-3 z-5 flex h-11 max-w-[calc(50%-76px)] items-center gap-2 rounded-[22px] py-1 pr-3 pl-1">
             <div className="relative size-9 flex-none rounded-full bg-linear-135 from-[#ffe1ec] to-[#e4dcff]">
-              <Character cfg={cfg} headOnly viewBox="40 26 120 120" className="size-full rounded-full" />
+              <Character cfg={cfg} equip={equip} headOnly className="size-full rounded-full" />
               <span className="absolute -right-[5px] -bottom-1 grid h-[18px] min-w-[18px] place-items-center rounded-[9px] border-2 border-white bg-(--primary) px-1 text-[10px] font-extrabold text-white">{pet.level}</span>
             </div>
             <div className="min-w-0 leading-tight">
@@ -205,8 +207,8 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           <div className="glass absolute bottom-(--safe-b) left-1/2 z-5 flex -translate-x-1/2 gap-1 rounded-3xl p-1.5">
             {war ? (
               <>
-                <DockButton icon="i-swords" label="대전 신청" color="bg-[rgba(255,93,108,.18)] text-[#ff8791]" onClick={soon('대전')} />
-                <DockButton icon="i-shield" label="클랜전" color="bg-[rgba(255,159,74,.18)] text-[#ffb36e]" onClick={soon('클랜전')} />
+                <DockButton icon="i-swords" label="대전 신청" color="bg-[rgba(255,93,108,.18)] text-[#ff8791]" onClick={() => { setAnim('attack'); soon('대전')(); }} />
+                <DockButton icon="i-shield" label="클랜전" color="bg-[rgba(255,159,74,.18)] text-[#ffb36e]" onClick={() => { setAnim('defend'); soon('클랜전')(); }} />
               </>
             ) : CARES.map(c => (
               <DockButton key={c.action} icon={c.icon} label={c.label} color={c.color} cost={COST} onClick={() => doCare(c.action as 'feed' | 'clean' | 'shower', c.label)} />
@@ -233,7 +235,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
 
         {/* 창 (충전 팝업이 위에 뜨면 막는다) */}
         <div className="contents" inert={topup !== null}>
-          {sheet === 'custom' && <CustomSheet cfg={cfg} war={war} onSave={saveCustom} onClose={closeSheet} />}
+          {sheet === 'custom' && <CustomSheet cfg={cfg} equip={equip} owned={game.owned} war={war} onSave={saveCustom} onClose={closeSheet} />}
           {sheet === 'shop' && <Shop pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} />}
           {sheet === 'missions' && <Missions ms={ms} onClose={closeSheet} />}
           {sheet === 'friends' && <Friends pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} />}
