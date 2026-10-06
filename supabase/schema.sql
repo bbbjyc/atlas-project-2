@@ -153,3 +153,84 @@ alter table public.fake_door_logs
 create unique index if not exists cash_logs_mission_once
   on public.cash_logs (player_id, item)
   where reason = 'mission';
+
+-- 변경 9 (plan.md 반영): 로그인 계정과 플레이어를 잇는다 (계정 하나에 플레이어 하나)
+-- auth.users 는 Supabase Auth 가 관리하는 계정 표이고, 계정이 지워지면 연결만 끊는다.
+alter table public.players
+  add column if not exists auth_user_id uuid references auth.users (id) on delete set null;
+create unique index if not exists players_auth_user_id_key
+  on public.players (auth_user_id)
+  where auth_user_id is not null;
+
+-- 변경 10 (plan.md 반영): 친구 요청·수락·거절·삭제를 한 줄씩 쌓는 friendships 테이블 (쌍마다 가장 최근 행이 현재 상태)
+create table if not exists public.friendships (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),
+  from_player_id bigint not null references public.players (id),
+  to_player_id bigint not null references public.players (id),
+  status text not null check (status in ('request', 'accept', 'decline', 'remove')),
+  check (from_player_id <> to_player_id)
+);
+create index if not exists friendships_from_idx on public.friendships (from_player_id);
+create index if not exists friendships_to_idx on public.friendships (to_player_id);
+
+alter table public.friendships enable row level security;
+drop policy if exists "friendships_select" on public.friendships;
+drop policy if exists "friendships_insert" on public.friendships;
+create policy "friendships_select" on public.friendships for select to anon, authenticated using (true);
+create policy "friendships_insert" on public.friendships for insert to anon, authenticated with check (true);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 2단계 (지금은 실행하지 않는다! 앱에서 로그인·가입이 잘 되는 것을 확인한 뒤에만 한 번에 실행)
+-- 하는 일: 읽기·추가는 로그인한 사람만, 추가는 "내 player_id"로만 허용한다.
+-- 이걸 실행하면 로그인하지 않은 상태(옛 브라우저 id 방식)로는 저장이 안 되니 순서를 꼭 지킨다.
+-- 아래 줄 맨 앞의 "-- " 를 지우고 실행한다.
+-- ─────────────────────────────────────────────────────────────────────────────
+-- create or replace function public.my_player_id() returns bigint
+--   language sql stable security definer set search_path = public
+--   as $$ select id from public.players where auth_user_id = auth.uid() limit 1 $$;
+--
+-- drop policy if exists "clans_select" on public.clans;
+-- drop policy if exists "clans_insert" on public.clans;
+-- create policy "clans_select" on public.clans for select to authenticated using (true);
+-- create policy "clans_insert" on public.clans for insert to authenticated with check (true);
+--
+-- drop policy if exists "players_select" on public.players;
+-- drop policy if exists "players_insert" on public.players;
+-- create policy "players_select" on public.players for select to authenticated using (true);
+-- create policy "players_insert" on public.players for insert to authenticated with check (auth_user_id = auth.uid());
+--
+-- drop policy if exists "care_logs_select" on public.care_logs;
+-- drop policy if exists "care_logs_insert" on public.care_logs;
+-- create policy "care_logs_select" on public.care_logs for select to authenticated using (true);
+-- create policy "care_logs_insert" on public.care_logs for insert to authenticated with check (player_id = public.my_player_id());
+--
+-- drop policy if exists "style_logs_select" on public.style_logs;
+-- drop policy if exists "style_logs_insert" on public.style_logs;
+-- create policy "style_logs_select" on public.style_logs for select to authenticated using (true);
+-- create policy "style_logs_insert" on public.style_logs for insert to authenticated with check (player_id = public.my_player_id());
+--
+-- drop policy if exists "visit_logs_select" on public.visit_logs;
+-- drop policy if exists "visit_logs_insert" on public.visit_logs;
+-- create policy "visit_logs_select" on public.visit_logs for select to authenticated using (true);
+-- create policy "visit_logs_insert" on public.visit_logs for insert to authenticated with check (visitor_id = public.my_player_id());
+--
+-- drop policy if exists "battle_logs_select" on public.battle_logs;
+-- drop policy if exists "battle_logs_insert" on public.battle_logs;
+-- create policy "battle_logs_select" on public.battle_logs for select to authenticated using (true);
+-- create policy "battle_logs_insert" on public.battle_logs for insert to authenticated with check (attacker_id = public.my_player_id());
+--
+-- drop policy if exists "cash_logs_select" on public.cash_logs;
+-- drop policy if exists "cash_logs_insert" on public.cash_logs;
+-- create policy "cash_logs_select" on public.cash_logs for select to authenticated using (true);
+-- create policy "cash_logs_insert" on public.cash_logs for insert to authenticated with check (player_id = public.my_player_id());
+--
+-- drop policy if exists "fake_door_logs_select" on public.fake_door_logs;
+-- drop policy if exists "fake_door_logs_insert" on public.fake_door_logs;
+-- create policy "fake_door_logs_select" on public.fake_door_logs for select to authenticated using (true);
+-- create policy "fake_door_logs_insert" on public.fake_door_logs for insert to authenticated with check (player_id = public.my_player_id());
+--
+-- drop policy if exists "friendships_select" on public.friendships;
+-- drop policy if exists "friendships_insert" on public.friendships;
+-- create policy "friendships_select" on public.friendships for select to authenticated using (true);
+-- create policy "friendships_insert" on public.friendships for insert to authenticated with check (from_player_id = public.my_player_id());

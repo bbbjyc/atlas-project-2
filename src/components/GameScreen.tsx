@@ -13,6 +13,7 @@ import { Reward, useMissions } from './missions/missions';
 import Shop from './Shop';
 import Missions from './Missions';
 import Friends from './Friends';
+import SettingsSheet from './auth/SettingsSheet';
 import TopupPopup, { logFakeDoor, TopupCtx } from './TopupPopup';
 import { DecorateSheet, PickedBar, PlaceGuide, PlacedItems } from './furniture/Furniture';
 import { Placed, loadPlaced, placeError, savePlaced } from './furniture/layout';
@@ -26,7 +27,7 @@ const CARES: { action: CareAction; label: string; icon: string; color: string }[
   { action: 'clean', label: '청소', icon: 'i-sparkle', color: 'bg-[#e6f6e9] text-[#2fa860]' },
   { action: 'shower', label: '샤워', icon: 'i-drop', color: 'bg-[#e3efff] text-[#3f7cf0]' },
 ];
-type SheetName = 'custom' | 'shop' | 'missions' | 'friends' | 'decor' | null;
+type SheetName = 'custom' | 'shop' | 'missions' | 'friends' | 'decor' | 'settings' | null;
 const BUFF: Record<string, [string, string]> = {
   atk: ['bg-[rgba(255,93,108,.18)] text-[#ff8791]', '전투력'], def: ['bg-[rgba(93,140,255,.2)] text-[#8fb2ff]', '방어력'], regen: ['bg-[rgba(46,196,166,.2)] text-[#5fd3b5]', '재생'],
 };
@@ -234,7 +235,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
 
           {/* 아래 */}
           <div className="absolute bottom-(--safe-b) left-3 z-5">
-            <RoundButton icon="i-settings" label="설정" onClick={soon('설정')} popup={false} />
+            <RoundButton icon="i-settings" label="설정" onClick={() => setSheet('settings')} />
           </div>
 
           <div className="glass absolute bottom-(--safe-b) left-1/2 z-5 flex -translate-x-1/2 gap-1 rounded-3xl p-1.5">
@@ -283,6 +284,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           {sheet === 'missions' && <Missions ms={ms} onClose={closeSheet} />}
           {sheet === 'friends' && <Friends pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} initialTab={friendsTab} />}
           {sheet === 'decor' && <DecorateSheet owned={game.owned} placed={placed} onPick={startPlace} onClose={closeSheet} />}
+          {sheet === 'settings' && <SettingsSheet onClose={closeSheet} />}
         </div>
         {topup && <TopupPopup ctx={topup} cash={pet.cash} onClose={closeTopup} />}
 
