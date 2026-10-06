@@ -1,16 +1,23 @@
-import { AnimationEvent, CSSProperties } from 'react';
+import { AnimationEvent, CSSProperties, ReactNode } from 'react';
 import { CharConfig, Equip, Slot, wornArt } from './charConfig';
 
-// 캐릭터 그림 (2등신 동물). 머리·몸·팔·다리를 따로 그려서 팔만 휘두르는 식으로 움직일 수 있다
-// 좌표는 200 x 240. 아이템(wear.svg)도 같은 좌표라 그대로 겹친다. 손에 드는 것은 손 가운데가 (0,0)
-const OUT = '#6b3f33';   // 외곽선: 캐릭터와 아이템이 같은 색
+// 캐릭터 그림 (2등신 동물). 머리에서 몸까지 선이 한 번에 이어지고, 귀·털도 그 선의 일부다
+// 팔은 따로 그려서 팔만 휘두를 수 있다. 좌표는 200 x 240. 아이템(wear.svg)도 같은 좌표라 그대로 겹친다
+// 손에 드는 것은 손 가운데가 (0,0): 왼손 (66,182), 오른손 (134,182)
+const OUT = '#6e4034';   // 외곽선: 캐릭터와 아이템이 같은 색
 const COLORS = {
-  rabbit: { skin: '#fffaf0', accent: '#f6dc9c', cheek: '#f7c1cf' },
-  sheep: { skin: '#fff6e6', accent: '#f7c5d2', cheek: '#f7c1cf' },
-  bear: { skin: '#c8ddf5', accent: '#fff6e6', cheek: '#b9d0f5' },
-  chick: { skin: '#fffaf0', accent: '#f6dc9c', cheek: '#f7c1cf' },
+  rabbit: { skin: '#fffcf5', accent: '#f6dc9c', cheek: '#f8c6d2' },
+  sheep: { skin: '#fff8ea', accent: '#f8c9d6', cheek: '#f8c6d2' },
+  bear: { skin: '#c9ddf5', accent: '#fff8ea', cheek: '#b4ccf0' },
+  chick: { skin: '#fffcf5', accent: '#f6dc9c', cheek: '#f8c6d2' },
 };
 export type CharAnim = 'attack' | 'defend' | null;
+
+// 머리 + 목 + 몸통을 한 선으로. 머리가 넓고 몸은 조금 좁다
+const BODY = 'M56 132 C36 126 30 100 32 80 C34 46 60 34 100 34 C140 34 166 46 168 80 C170 100 164 126 144 132 C152 140 156 160 154 190 C153 212 140 218 100 218 C60 218 47 212 46 190 C44 160 48 140 56 132 Z';
+// 팔: 어깨에서 내려와 안쪽으로 살짝 말린다 (굵은 선 두 겹으로 그린다)
+const ARM_L = 'M52 152 C44 166 46 182 60 186 C68 188 72 182 68 178';
+const ARM_R = 'M148 152 C156 166 154 182 140 186 C132 188 128 182 132 178';
 
 // 슬롯에 입은 아이템 하나. 손에 드는 것은 손 자리로 옮겨 그린다
 function Worn({ equip, slot, at }: { equip?: Equip; slot: Slot; at?: string }) {
@@ -26,75 +33,82 @@ export default function Character({ cfg, equip, war = false, headOnly = false, a
 }) {
   const sp = cfg.species;
   const c = COLORS[sp];
-  const legFill = sp === 'rabbit' || sp === 'chick' ? c.accent : c.skin;
+  const feetFill = sp === 'rabbit' || sp === 'chick' ? c.accent : c.skin;
 
-  const head = (
-    <g className="c-part c-head">
-      {/* 머리 뒤: 귀·털·새싹 */}
+  // 귀·털은 몸 선과 하나로 보이게: 선 있게 → 몸 → 선 없이 한 번 더 (몸 선이 귀 안을 가로지르지 않는다)
+  const ears = (stroke: boolean): ReactNode => {
+    const s = stroke ? undefined : 'none';
+    if (sp === 'rabbit') return <><rect x="52" y="2" width="36" height="76" rx="18" fill={c.skin} stroke={s} /><rect x="112" y="2" width="36" height="76" rx="18" fill={c.skin} stroke={s} /></>;
+    if (sp === 'bear') return <><circle cx="52" cy="46" r="20" fill={c.skin} stroke={s} /><circle cx="148" cy="46" r="20" fill={c.skin} stroke={s} /></>;
+    if (sp === 'sheep') return <>
+      {[[42, 78, 22], [58, 50, 22], [84, 34, 24], [116, 34, 24], [142, 50, 22], [158, 78, 22]].map(([x, y, r]) => <circle key={x} cx={x} cy={y} r={r} fill={c.skin} stroke={s} />)}
+    </>;
+    return null;
+  };
+
+  const figure = (
+    <>
+      {sp === 'sheep' && <><ellipse cx="34" cy="106" rx="14" ry="22" fill={c.accent} /><ellipse cx="166" cy="106" rx="14" ry="22" fill={c.accent} /></>}
+      {ears(true)}
+      <path d={BODY} fill={c.skin} />
+      {ears(false)}
+      {/* 몸 무늬 */}
       {sp === 'rabbit' && <>
-        <rect x="54" y="4" width="36" height="70" rx="18" fill={c.skin} /><rect x="110" y="4" width="36" height="70" rx="18" fill={c.skin} />
-        <rect x="63" y="12" width="18" height="50" rx="9" fill={c.accent} stroke="none" /><rect x="119" y="12" width="18" height="50" rx="9" fill={c.accent} stroke="none" />
+        <rect x="60" y="10" width="20" height="56" rx="10" fill={c.accent} stroke="none" /><rect x="120" y="10" width="20" height="56" rx="10" fill={c.accent} stroke="none" />
+        <path d="M44 88 C50 50 150 50 156 88 C130 74 70 74 44 88 Z" fill={c.accent} stroke="none" />
+        {!headOnly && <path d="M48 170 C70 160 130 160 152 170 L154 190 C153 212 140 218 100 218 C60 218 47 212 46 190 Z" fill={c.accent} stroke="none" />}
       </>}
       {sp === 'sheep' && <>
-        <ellipse cx="40" cy="104" rx="15" ry="22" fill={c.accent} /><ellipse cx="160" cy="104" rx="15" ry="22" fill={c.accent} />
-        <circle cx="50" cy="64" r="22" fill={c.skin} /><circle cx="150" cy="64" r="22" fill={c.skin} />
-        <circle cx="74" cy="44" r="23" fill={c.skin} /><circle cx="126" cy="44" r="23" fill={c.skin} /><circle cx="100" cy="36" r="25" fill={c.skin} />
+        <path d="M94 60 c-4 -9 9 -12 8 -3 c-1 7 -11 5 -8 -3" fill="none" strokeWidth="3.4" />
+        {!headOnly && <path d="M110 180 C140 176 152 196 150 212 C130 218 108 214 106 196 Z" fill={c.accent} stroke="none" />}
       </>}
-      {sp === 'bear' && <><circle cx="54" cy="52" r="19" fill={c.skin} /><circle cx="146" cy="52" r="19" fill={c.skin} /></>}
+      {sp === 'bear' && !headOnly && <ellipse cx="100" cy="178" rx="30" ry="30" fill={c.accent} stroke="none" />}
       {sp === 'chick' && <>
-        <path d="M100 46 V28" />
-        <ellipse cx="85" cy="24" rx="15" ry="8" transform="rotate(-35 85 24)" fill="#cfe3a1" /><ellipse cx="115" cy="24" rx="15" ry="8" transform="rotate(35 115 24)" fill="#cfe3a1" />
+        <path d="M100 36 V20" strokeWidth="4" />
+        <ellipse cx="85" cy="16" rx="15" ry="8" transform="rotate(-32 85 16)" fill="#cfe3a1" /><ellipse cx="115" cy="16" rx="15" ry="8" transform="rotate(32 115 16)" fill="#cfe3a1" />
       </>}
       {/* 얼굴 */}
-      <rect x="38" y="44" width="124" height="102" rx="48" fill={c.skin} />
-      {sp === 'rabbit' && <path d="M48 76 C56 44 144 44 152 76 C130 64 70 64 48 76 Z" fill={c.accent} stroke="none" />}
-      {sp === 'sheep' && <path d="M96 62 c-4 -8 8 -11 7 -3 c-1 6 -10 5 -7 -3" fill="none" strokeWidth="3.5" />}
-      <ellipse cx="68" cy="108" rx="11" ry="7.5" fill={c.cheek} stroke="none" /><ellipse cx="132" cy="108" rx="11" ry="7.5" fill={c.cheek} stroke="none" />
-      <g className="animate-blink" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}><path d="M82 91 V101 M118 91 V101" /></g>
+      <ellipse cx="62" cy="112" rx="13" ry="8" fill={c.cheek} stroke="none" /><ellipse cx="138" cy="112" rx="13" ry="8" fill={c.cheek} stroke="none" />
+      <g className="animate-blink" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}><path d="M83 92 V104 M117 92 V104" strokeWidth="4.5" /></g>
       {sp === 'chick'
-        ? <path d="M92 104 H108 L100 113 Z" fill="#f1c35f" strokeWidth="3.5" />
-        : <path d="M95 110 H105" />}
+        ? <path d="M93 108 H107 L100 117 Z" fill="#f1c35f" strokeWidth="3.2" />
+        : <path d="M95 114 H105" strokeWidth="4" />}
       {/* 전쟁모드 머리띠 (모자를 안 썼을 때만) */}
       {war && !equip?.head && <>
-        <path d="M40 74 C70 62 130 62 160 74 L158 86 C130 74 70 74 42 86 Z" fill="#ff5d6c" />
-        <path d="M158 78 L178 70 L174 84 Z M158 82 L176 94 L162 96 Z" fill="#ff5d6c" />
+        <path d="M34 74 C66 60 134 60 166 74 L164 86 C134 72 66 72 36 86 Z" fill="#ff5d6c" />
+        <path d="M164 78 L184 70 L180 84 Z M164 82 L182 94 L168 96 Z" fill="#ff5d6c" />
       </>}
-      <Worn equip={equip} slot="face" />
-      <Worn equip={equip} slot="head" />
-    </g>
+    </>
   );
 
   return (
-    <svg viewBox={viewBox ?? (headOnly ? '28 0 144 150' : '0 0 200 240')} className={`${className ?? ''} ${anim ? `anim-${anim}` : ''}`}
+    <svg viewBox={viewBox ?? (headOnly ? '24 0 152 148' : '0 0 200 240')} className={`${className ?? ''} ${anim ? `anim-${anim}` : ''}`}
       aria-hidden="true" onAnimationEnd={onAnimationEnd}
-      fill="none" stroke={OUT} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" overflow="visible">
-      {headOnly ? head : <>
-        <ellipse cx="100" cy="230" rx="52" ry="7" fill={OUT} opacity=".14" stroke="none" />
+      fill="none" stroke={OUT} strokeWidth="4.2" strokeLinejoin="round" strokeLinecap="round" overflow="visible">
+      {headOnly ? <>{figure}<Worn equip={equip} slot="face" /><Worn equip={equip} slot="head" /></> : <>
+        <ellipse cx="100" cy="232" rx="50" ry="6" fill={OUT} opacity=".14" stroke="none" />
         <Worn equip={equip} slot="back" />
-        {/* 다리 */}
-        <rect x="66" y="196" width="30" height="30" rx="13" fill={legFill} /><rect x="104" y="196" width="30" height="30" rx="13" fill={legFill} />
+        {/* 발 (몸 아래로 조금 보인다) */}
+        <rect x="68" y="206" width="30" height="26" rx="12" fill={feetFill} /><rect x="102" y="206" width="30" height="26" rx="12" fill={feetFill} />
         <Worn equip={equip} slot="feet" />
-        {/* 몸통 */}
         <g className="c-part c-body">
-          <rect x="52" y="130" width="96" height="84" rx="34" fill={c.skin} />
-          {sp === 'rabbit' && <path d="M60 170 C70 160 130 160 140 170 L146 212 C120 218 80 218 54 212 Z" fill={c.accent} stroke="none" />}
-          {sp === 'sheep' && <path d="M112 176 C140 170 150 190 146 210 C130 216 112 212 108 198 Z" fill={c.accent} stroke="none" />}
-          {sp === 'bear' && <ellipse cx="100" cy="182" rx="32" ry="26" fill={c.accent} stroke="none" />}
+          {figure}
           <Worn equip={equip} slot="bottom" />
           <Worn equip={equip} slot="top" />
           <Worn equip={equip} slot="neck" />
+          <Worn equip={equip} slot="face" />
+          <Worn equip={equip} slot="head" />
         </g>
-        {head}
-        {/* 팔 (몸 앞에서 안으로 살짝 말린 손) */}
+        {/* 팔 */}
         <g className="c-part c-larm">
-          <rect x="44" y="146" width="28" height="50" rx="14" fill={c.skin} /><path d="M56 190 c8 0 12 -6 10 -12" fill="none" strokeWidth="3.5" />
-          <Worn equip={equip} slot="hands" at="translate(58 186)" />
-          <Worn equip={equip} slot="leftHand" at="translate(58 186) rotate(10)" />
+          <path d={ARM_L} strokeWidth="17" /><path d={ARM_L} stroke={c.skin} strokeWidth="9.5" />
+          <Worn equip={equip} slot="hands" at="translate(66 182)" />
+          <Worn equip={equip} slot="leftHand" at="translate(66 182) rotate(10)" />
         </g>
         <g className="c-part c-rarm">
-          <rect x="128" y="146" width="28" height="50" rx="14" fill={c.skin} /><path d="M144 190 c-8 0 -12 -6 -10 -12" fill="none" strokeWidth="3.5" />
-          <Worn equip={equip} slot="hands" at="translate(142 186)" />
-          <Worn equip={equip} slot="rightHand" at="translate(142 186) rotate(-15)" />
+          <path d={ARM_R} strokeWidth="17" /><path d={ARM_R} stroke={c.skin} strokeWidth="9.5" />
+          <Worn equip={equip} slot="hands" at="translate(134 182)" />
+          <Worn equip={equip} slot="rightHand" at="translate(134 182) rotate(-15)" />
         </g>
       </>}
     </svg>

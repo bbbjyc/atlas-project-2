@@ -1,37 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg"><defs>
 <!-- 캐릭터가 입은 모습의 아이템 그림. 캐릭터와 같은 200 x 240 좌표. 주색은 CSS 변수 a, 보조색은 b -->
-<!-- 몸 기준: 머리 38~162 x 44~146 / 몸통 52~148 x 130~214 / 발 66~96, 104~134 x 196~226 / 눈 (82,96) (118,96) -->
+<!-- 몸 기준: 머리 32~168 x 34~132 / 몸통 46~154 x 132~218 / 발 68~98, 102~132 x 206~232 / 눈 (83,98) (117,98) -->
 
 <!-- 머리 -->
-<g id="w-crown"><path d="M62 50 L70 22 L86 42 L100 14 L114 42 L130 22 L138 50 Z" fill="var(--a,#ffd84d)"/><circle cx="100" cy="40" r="5" fill="var(--b,#ff7f9f)" stroke="none"/></g>
-<g id="w-helm"><path d="M42 78 C42 26 158 26 158 78 L158 84 L42 84 Z" fill="var(--a,#cfd6e3)"/><rect x="38" y="78" width="124" height="10" rx="5" fill="var(--a,#cfd6e3)"/><path d="M100 30 V14" stroke-width="6"/><path d="M90 18 C90 4 110 4 110 18 Z" fill="var(--b,#ff6f9f)"/></g>
-<g id="w-beanie"><path d="M46 80 C46 34 154 34 154 80 L154 86 L46 86 Z" fill="var(--a,#ffb3c7)"/><rect x="44" y="74" width="112" height="14" rx="7" fill="var(--b,#fff)"/><circle cx="100" cy="40" r="11" fill="var(--b,#fff)"/></g>
-<g id="w-cap"><path d="M50 78 C50 40 150 40 150 78 Z" fill="var(--a,#4d8dff)"/><path d="M50 78 H172 A6 6 0 0 1 172 90 H50 Z" fill="var(--a,#4d8dff)"/><circle cx="100" cy="48" r="4" fill="var(--b,#fff)" stroke="none"/></g>
-<g id="w-hat"><ellipse cx="100" cy="76" rx="72" ry="12" fill="var(--a,#d9a477)"/><path d="M62 76 C62 34 138 34 138 76 Z" fill="var(--a,#d9a477)"/><rect x="62" y="64" width="76" height="9" fill="var(--b,#8a5a3a)" stroke="none"/></g>
-<g id="w-ribbon"><path d="M146 48 L124 36 V60 Z M146 48 L168 36 V60 Z" fill="var(--a,#ff7fb5)"/><circle cx="146" cy="48" r="6" fill="var(--b,#fff)"/></g>
+<g id="w-crown"><path d="M60 44 L68 14 L85 36 L100 6 L115 36 L132 14 L140 44 Z" fill="var(--a,#ffd84d)"/><circle cx="100" cy="34" r="5" fill="var(--b,#ff7f9f)" stroke="none"/></g>
+<g id="w-helm"><path d="M36 78 C36 22 164 22 164 78 L164 84 L36 84 Z" fill="var(--a,#cfd6e3)"/><rect x="32" y="78" width="136" height="10" rx="5" fill="var(--a,#cfd6e3)"/><path d="M100 26 V10" stroke-width="6"/><path d="M90 14 C90 0 110 0 110 14 Z" fill="var(--b,#ff6f9f)"/></g>
+<g id="w-beanie"><path d="M38 80 C38 26 162 26 162 80 L162 86 L38 86 Z" fill="var(--a,#ffb3c7)"/><rect x="36" y="74" width="128" height="14" rx="7" fill="var(--b,#fff)"/><circle cx="100" cy="30" r="11" fill="var(--b,#fff)"/></g>
+<g id="w-cap"><path d="M40 78 C40 30 160 30 160 78 Z" fill="var(--a,#4d8dff)"/><path d="M40 78 H178 A6 6 0 0 1 178 90 H40 Z" fill="var(--a,#4d8dff)"/><circle cx="100" cy="40" r="4" fill="var(--b,#fff)" stroke="none"/></g>
+<g id="w-hat"><ellipse cx="100" cy="72" rx="80" ry="12" fill="var(--a,#d9a477)"/><path d="M60 72 C60 26 140 26 140 72 Z" fill="var(--a,#d9a477)"/><rect x="60" y="60" width="80" height="9" fill="var(--b,#8a5a3a)" stroke="none"/></g>
+<g id="w-ribbon"><path d="M150 44 L128 32 V56 Z M150 44 L172 32 V56 Z" fill="var(--a,#ff7fb5)"/><circle cx="150" cy="44" r="6" fill="var(--b,#fff)"/></g>
 
 <!-- 얼굴 · 목 -->
-<g id="w-glasses"><circle cx="82" cy="97" r="15" fill="var(--a,#cfe8ff)" fill-opacity=".45"/><circle cx="118" cy="97" r="15" fill="var(--a,#cfe8ff)" fill-opacity=".45"/><path d="M97 97 H103 M67 95 H54 M133 95 H146" stroke-width="4"/></g>
-<g id="w-scarf"><path d="M52 130 C70 152 130 152 148 130 L148 146 C130 166 70 166 52 146 Z" fill="var(--a,#ff6b6b)"/><path d="M116 152 L124 192 L142 186 L132 150 Z" fill="var(--a,#ff6b6b)"/><path d="M124 180 L140 176" stroke-width="3" stroke="var(--b,#fff)"/></g>
+<g id="w-glasses"><circle cx="83" cy="98" r="15" fill="var(--a,#cfe8ff)" fill-opacity=".45"/><circle cx="117" cy="98" r="15" fill="var(--a,#cfe8ff)" fill-opacity=".45"/><path d="M98 98 H102 M68 96 H50 M132 96 H150" stroke-width="4"/></g>
+<g id="w-scarf"><path d="M50 130 C70 154 130 154 150 130 L150 148 C130 168 70 168 50 148 Z" fill="var(--a,#ff6b6b)"/><path d="M116 152 L124 192 L142 186 L132 150 Z" fill="var(--a,#ff6b6b)"/><path d="M124 180 L140 176" stroke-width="3" stroke="var(--b,#fff)"/></g>
 
 <!-- 등 (몸 뒤에 그린다) -->
-<g id="w-wings"><path d="M54 150 C14 118 2 182 40 206 C52 186 50 168 54 150 Z" fill="var(--a,#fff)"/><path d="M146 150 C186 118 198 182 160 206 C148 186 150 168 146 150 Z" fill="var(--a,#fff)"/><path d="M28 172 C34 180 38 188 40 196 M172 172 C166 180 162 188 160 196" stroke-width="3"/></g>
-<g id="w-cape"><path d="M50 134 C28 166 26 196 38 216 L162 216 C174 196 172 166 150 134 Z" fill="var(--a,#9b7bff)"/></g>
+<g id="w-wings"><path d="M50 150 C8 118 -4 184 36 208 C48 188 46 168 50 150 Z" fill="var(--a,#fff)"/><path d="M150 150 C192 118 204 184 164 208 C152 188 154 168 150 150 Z" fill="var(--a,#fff)"/><path d="M24 174 C30 182 34 190 36 198 M176 174 C170 182 166 190 164 198" stroke-width="3"/></g>
+<g id="w-cape"><path d="M50 134 C24 166 22 198 36 218 L164 218 C178 198 176 166 150 134 Z" fill="var(--a,#9b7bff)"/></g>
 
 <!-- 상의 (몸통 위) -->
-<g id="w-tee"><path d="M50 138 C50 128 150 128 150 138 L150 192 C150 200 50 200 50 192 Z" fill="var(--a,#ffd3e0)"/><path d="M84 134 C90 148 110 148 116 134" fill="none"/></g>
-<g id="w-tank"><path d="M60 136 L60 192 C60 200 140 200 140 192 L140 136 L128 136 C122 152 78 152 72 136 Z" fill="var(--a,#fff3c4)"/></g>
-<g id="w-vest"><path d="M52 136 L52 194 C52 200 96 200 96 194 L96 152 C80 152 66 146 52 136 Z" fill="var(--a,#a8714a)"/><path d="M148 136 L148 194 C148 200 104 200 104 194 L104 152 C120 152 134 146 148 136 Z" fill="var(--a,#a8714a)"/></g>
-<g id="w-hood"><path d="M50 138 C50 128 150 128 150 138 L150 192 C150 200 50 200 50 192 Z" fill="var(--a,#9b7bff)"/><path d="M62 142 C62 120 138 120 138 142 C126 152 74 152 62 142 Z" fill="var(--a,#9b7bff)"/><path d="M92 148 V166 M108 148 V166" stroke-width="3"/><rect x="78" y="170" width="44" height="18" rx="6" fill="var(--a,#9b7bff)"/></g>
-<g id="w-jacket"><path d="M50 138 C50 128 150 128 150 138 L150 192 C150 200 50 200 50 192 Z" fill="var(--a,#4d8dff)"/><path d="M100 136 L86 160 L100 172 L114 160 Z" fill="var(--b,#fff)"/><path d="M100 172 V196" stroke-width="3"/><rect x="60" y="172" width="18" height="12" rx="4" fill="none" stroke-width="3"/><rect x="122" y="172" width="18" height="12" rx="4" fill="none" stroke-width="3"/></g>
-<g id="w-dress"><path d="M56 136 C56 128 144 128 144 136 L160 214 C160 222 40 222 40 214 Z" fill="var(--a,#ff7fb5)"/><path d="M84 134 C90 148 110 148 116 134" fill="none"/><path d="M60 196 C80 204 120 204 140 196" fill="none" stroke="var(--b,#fff)" stroke-width="3"/></g>
-<g id="w-armor"><path d="M50 138 C50 128 150 128 150 138 L150 192 C150 200 50 200 50 192 Z" fill="var(--a,#cfd6e3)"/><path d="M60 160 H140 M62 178 H138" stroke-width="3"/><ellipse cx="52" cy="144" rx="14" ry="10" fill="var(--b,#9aa7bb)"/><ellipse cx="148" cy="144" rx="14" ry="10" fill="var(--b,#9aa7bb)"/><circle cx="100" cy="150" r="5" fill="var(--b,#9aa7bb)" stroke="none"/></g>
+<g id="w-tee"><path d="M48 140 C48 130 152 130 152 140 L153 194 C153 202 47 202 47 194 Z" fill="var(--a,#ffd3e0)"/><path d="M84 136 C90 150 110 150 116 136" fill="none"/></g>
+<g id="w-tank"><path d="M58 138 L58 194 C58 202 142 202 142 194 L142 138 L130 138 C124 154 76 154 70 138 Z" fill="var(--a,#fff3c4)"/></g>
+<g id="w-vest"><path d="M48 138 L48 194 C48 202 96 202 96 194 L96 154 C80 154 64 148 48 138 Z" fill="var(--a,#a8714a)"/><path d="M152 138 L152 194 C152 202 104 202 104 194 L104 154 C120 154 136 148 152 138 Z" fill="var(--a,#a8714a)"/></g>
+<g id="w-hood"><path d="M48 140 C48 130 152 130 152 140 L153 194 C153 202 47 202 47 194 Z" fill="var(--a,#9b7bff)"/><path d="M60 144 C60 128 140 128 140 144 C128 152 72 152 60 144 Z" fill="var(--a,#9b7bff)"/><path d="M92 150 V168 M108 150 V168" stroke-width="3"/><rect x="78" y="170" width="44" height="18" rx="6" fill="var(--a,#9b7bff)"/></g>
+<g id="w-jacket"><path d="M48 140 C48 130 152 130 152 140 L153 194 C153 202 47 202 47 194 Z" fill="var(--a,#4d8dff)"/><path d="M100 136 L86 160 L100 172 L114 160 Z" fill="var(--b,#fff)"/><path d="M100 172 V196" stroke-width="3"/><rect x="60" y="172" width="18" height="12" rx="4" fill="none" stroke-width="3"/><rect x="122" y="172" width="18" height="12" rx="4" fill="none" stroke-width="3"/></g>
+<g id="w-dress"><path d="M52 138 C52 130 148 130 148 138 L162 216 C162 224 38 224 38 216 Z" fill="var(--a,#ff7fb5)"/><path d="M84 134 C90 148 110 148 116 134" fill="none"/><path d="M58 200 C80 208 120 208 142 200" fill="none" stroke="var(--b,#fff)" stroke-width="3"/></g>
+<g id="w-armor"><path d="M48 140 C48 130 152 130 152 140 L153 194 C153 202 47 202 47 194 Z" fill="var(--a,#cfd6e3)"/><path d="M60 160 H140 M62 178 H138" stroke-width="3"/><ellipse cx="50" cy="146" rx="14" ry="10" fill="var(--b,#9aa7bb)"/><ellipse cx="150" cy="146" rx="14" ry="10" fill="var(--b,#9aa7bb)"/><circle cx="100" cy="150" r="5" fill="var(--b,#9aa7bb)" stroke="none"/></g>
 
 <!-- 하의 · 발 -->
-<g id="w-pants"><path d="M52 180 C52 176 148 176 148 180 L148 206 C140 216 116 216 100 208 C84 216 60 216 52 206 Z" fill="var(--a,#4d8dff)"/><path d="M100 184 V206" stroke-width="3"/></g>
-<g id="w-sock"><rect x="66" y="204" width="30" height="24" rx="12" fill="var(--a,#fff)"/><rect x="104" y="204" width="30" height="24" rx="12" fill="var(--a,#fff)"/><path d="M68 212 H94 M106 212 H132" stroke="var(--b,#ff6b6b)" stroke-width="3"/></g>
-<g id="w-shoe"><rect x="62" y="208" width="36" height="20" rx="10" fill="var(--a,#ff6b6b)"/><rect x="102" y="208" width="36" height="20" rx="10" fill="var(--a,#ff6b6b)"/><path d="M72 216 H88 M112 216 H128" stroke="var(--b,#fff)" stroke-width="3"/></g>
-<g id="w-boot"><rect x="64" y="196" width="32" height="32" rx="12" fill="var(--a,#f2b705)"/><rect x="104" y="196" width="32" height="32" rx="12" fill="var(--a,#f2b705)"/><rect x="62" y="194" width="36" height="10" rx="5" fill="var(--b,#fff)"/><rect x="102" y="194" width="36" height="10" rx="5" fill="var(--b,#fff)"/></g>
+<g id="w-pants"><path d="M47 182 C47 178 153 178 153 182 L153 206 C146 218 118 220 100 212 C82 220 54 218 47 206 Z" fill="var(--a,#4d8dff)"/><path d="M100 186 V210" stroke-width="3"/></g>
+<g id="w-sock"><rect x="68" y="210" width="30" height="22" rx="11" fill="var(--a,#fff)"/><rect x="102" y="210" width="30" height="22" rx="11" fill="var(--a,#fff)"/><path d="M70 220 H96 M104 220 H130" stroke="var(--b,#ff6b6b)" stroke-width="3"/></g>
+<g id="w-shoe"><rect x="64" y="214" width="36" height="20" rx="10" fill="var(--a,#ff6b6b)"/><rect x="100" y="214" width="36" height="20" rx="10" fill="var(--a,#ff6b6b)"/><path d="M74 224 H90 M110 224 H126" stroke="var(--b,#fff)" stroke-width="3"/></g>
+<g id="w-boot"><rect x="66" y="206" width="32" height="28" rx="12" fill="var(--a,#f2b705)"/><rect x="102" y="206" width="32" height="28" rx="12" fill="var(--a,#f2b705)"/><rect x="64" y="212" width="36" height="9" rx="4.5" fill="var(--b,#fff)"/><rect x="100" y="212" width="36" height="9" rx="4.5" fill="var(--b,#fff)"/></g>
 
 <!-- 손에 드는 것 (손 가운데가 0,0. 위쪽이 -y) -->
 <g id="w-sword"><path d="M-6 -10 L-6 -62 L0 -76 L6 -62 L6 -10 Z" fill="var(--a,#e8ecf3)"/><path d="M0 -62 V-16" stroke-width="2.5" stroke="var(--b,#fff)"/><rect x="-18" y="-14" width="36" height="8" rx="4" fill="#c9a27a"/><rect x="-5" y="-6" width="10" height="18" rx="5" fill="#8a5a3a"/></g>

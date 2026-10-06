@@ -103,13 +103,12 @@ button { cursor: pointer; }
 
 /* ── 캐릭터 파츠 모션: 팔·몸만 따로 움직인다 (Character.tsx). 손에 든 것은 팔과 같이 움직인다 ── */
 .c-part { transform-box: view-box; }
-.c-rarm { transform-origin: 142px 150px; }
-.c-larm { transform-origin: 58px 150px; }
-.c-body { transform-origin: 100px 214px; }
+.c-rarm { transform-origin: 148px 152px; }
+.c-larm { transform-origin: 52px 152px; }
+.c-body { transform-origin: 100px 218px; }
 .c-head { transform-origin: 100px 140px; }
 .anim-attack .c-rarm { animation: c-swing .6s cubic-bezier(.3, .7, .4, 1) both; }
 .anim-attack .c-body { animation: c-lean .6s ease-in-out both; }
-.anim-attack .c-head { animation: c-lean .6s ease-in-out both; }
 .anim-defend .c-larm { animation: c-guard .9s ease-in-out both; }
 .anim-defend .c-body { animation: c-brace .9s ease-in-out both; }
 @keyframes c-swing { 0% { transform: rotate(0) } 25% { transform: rotate(-50deg) } 55% { transform: rotate(70deg) } 100% { transform: rotate(0) } }
