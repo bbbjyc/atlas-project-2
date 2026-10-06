@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pet } from '@/types/pet';
 import Icon from './ui/Icon';
 import Character, { CharAnim } from './character/Character';
@@ -14,6 +14,8 @@ import Shop from './Shop';
 import Missions from './Missions';
 import Friends from './Friends';
 import TopupPopup, { logFakeDoor, TopupCtx } from './TopupPopup';
+import { DecorateSheet, PickedBar, PlaceGuide, PlacedItems } from './furniture/Furniture';
+import { Placed, loadPlaced, placeError, savePlaced } from './furniture/layout';
 
 interface GameScreenProps {
   pet: Pet;
@@ -24,7 +26,7 @@ const CARES: { action: CareAction; label: string; icon: string; color: string }[
   { action: 'clean', label: '청소', icon: 'i-sparkle', color: 'bg-[#e6f6e9] text-[#2fa860]' },
   { action: 'shower', label: '샤워', icon: 'i-drop', color: 'bg-[#e3efff] text-[#3f7cf0]' },
 ];
-type SheetName = 'custom' | 'shop' | 'missions' | 'friends' | null;
+type SheetName = 'custom' | 'shop' | 'missions' | 'friends' | 'decor' | null;
 const BUFF: Record<string, [string, string]> = {
   atk: ['bg-[rgba(255,93,108,.18)] text-[#ff8791]', '전투력'], def: ['bg-[rgba(93,140,255,.2)] text-[#8fb2ff]', '방어력'], regen: ['bg-[rgba(46,196,166,.2)] text-[#5fd3b5]', '재생'],
 };
@@ -42,6 +44,12 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const [sheet, setSheet] = useState<SheetName>(null);
   const [friendsTab, setFriendsTab] = useState<'friends' | 'clan'>('friends');   // 친구 창을 어느 탭으로 열지
   const [topup, setTopup] = useState<TopupCtx | null>(null);
+  // 집 꾸미기: 놓은 가구, 놓는 중(이름과 옮길 자리), 고른 가구
+  const [placed, setPlaced] = useState<Placed[]>(loadPlaced);
+  const [moving, setMoving] = useState<{ name: string; index: number | null } | null>(null);
+  const [picked, setPicked] = useState<number | null>(null);
+  const roomRef = useRef<HTMLElement>(null);
+  useEffect(() => { savePlaced(placed); }, [placed]);
 
   // 애니메이션 다시 틀기용 번호 (바뀔 때마다 처음부터)
   const [hop, setHop] = useState(0);
@@ -118,13 +126,35 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
     bump('customSave');
   };
 
+  // 가구를 방에 놓는다 (놓는 중일 때만). 옮기는 중이면 그 자리를 바꾼다
+  const placeAt = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!moving || !roomRef.current) return;
+    const r = roomRef.current.getBoundingClientRect();
+    const x = Math.round((e.clientX - r.left) / r.width * 1000) / 10, y = Math.round((e.clientY - r.top) / r.height * 1000) / 10;
+    const err = placeError(placed, moving.name, x, y, moving.index ?? undefined);
+    if (err) { toast(err); return; }
+    const next = { name: moving.name, x, y };
+    setPlaced(list => moving.index == null ? [...list, next] : list.map((p, i) => (i === moving.index ? next : p)));
+    toast(`${moving.name}을(를) 놓았어요`);
+    setMoving(null); setPicked(null);
+  };
+  const startPlace = (name: string, index: number | null) => { setSheet(null); setPicked(null); setMoving({ name, index }); };
+  const removePicked = () => {
+    if (picked == null) return;
+    const name = placed[picked]?.name;
+    setPlaced(list => list.filter((_, i) => i !== picked));
+    setPicked(null);
+    toast(`${name} 치웠어요`);
+  };
+
   const api: GameApi = { ...game, war, cfg, openTopup, openSoon };
   const soon = (what: string) => () => toast(`${what}은 다음 단계에서 만들어요`);
 
   return (
     <GameProvider value={api}>
-      <main className={`room relative isolate h-dvh w-full max-w-[430px] overflow-hidden text-(--ink) ${war ? 'war' : ''}`}>
+      <main ref={roomRef} className={`room relative isolate h-dvh w-full max-w-[430px] overflow-hidden text-(--ink) ${war ? 'war' : ''}`}>
         <RoomBackground war={war} />
+        <PlacedItems placed={placed} picked={picked} onPick={i => { if (!moving) setPicked(i === picked ? null : i); }} />
 
         {/* 뒤쪽 HUD: 창이나 팝업이 열려 있으면 터치·키보드를 막는다 */}
         <div className="contents" inert={sheet !== null || topup !== null}>
@@ -199,6 +229,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           <nav className="absolute top-(--safe-t) right-3 z-5 flex flex-col gap-2.5">
             <RoundButton icon="i-bag" label="상점" onClick={() => setSheet('shop')} />
             <RoundButton icon="i-mission" label="미션" badge={ms.badge} onClick={() => setSheet('missions')} />
+            <RoundButton icon="i-home" label="집" onClick={() => setSheet('decor')} />
           </nav>
 
           {/* 아래 */}
@@ -227,6 +258,16 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           </div>
         </div>
 
+        {moving && (
+          <>
+            <div onClick={placeAt} className="absolute inset-0 z-11 cursor-crosshair" aria-label="가구를 놓을 곳" />
+            <PlaceGuide name={moving.name} onCancel={() => setMoving(null)} />
+          </>
+        )}
+        {picked != null && placed[picked] && !moving && (
+          <PickedBar name={placed[picked].name} onMove={() => startPlace(placed[picked].name, picked)} onRemove={removePicked} onClose={() => setPicked(null)} />
+        )}
+
         {/* 돌봄 결과 (+1 EXP, -10) */}
         {floats.map(f => (
           <div key={f.id} style={{ color: f.color }}
@@ -241,6 +282,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           {sheet === 'shop' && <Shop pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} />}
           {sheet === 'missions' && <Missions ms={ms} onClose={closeSheet} />}
           {sheet === 'friends' && <Friends pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} initialTab={friendsTab} />}
+          {sheet === 'decor' && <DecorateSheet owned={game.owned} placed={placed} onPick={startPlace} onClose={closeSheet} />}
         </div>
         {topup && <TopupPopup ctx={topup} cash={pet.cash} onClose={closeTopup} />}
 
