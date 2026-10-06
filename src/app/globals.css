@@ -15,6 +15,14 @@
   --animate-ping-once: ping-once .5s;
   --animate-float-up: float-up 1s ease-out forwards;
 
+  --animate-glow-l: pop .3s both, glow-l 2.4s ease-in-out .3s infinite;
+  --animate-glow-p: pop .3s both, glow-p 2s ease-in-out .3s infinite;
+  --animate-shine: shine 3.2s ease-in-out infinite;
+
+  /* 전설·전설(프리미엄) 카드: 은은하게 빛나고 그림 위로 빛줄기가 지나간다 */
+  @keyframes glow-l { 0%, 100% { box-shadow: 0 0 0 2px #ffc24a, 0 4px 12px rgba(255, 170, 40, .2) } 50% { box-shadow: 0 0 0 2px #ffd36a, 0 0 20px rgba(255, 190, 40, .6) } }
+  @keyframes glow-p { 0%, 100% { box-shadow: 0 0 0 2px #ff9fc4, 0 0 0 4px rgba(255, 194, 74, .5), 0 6px 16px rgba(255, 111, 159, .25) } 50% { box-shadow: 0 0 0 2px #ffc24a, 0 0 0 4px rgba(255, 111, 159, .45), 0 0 26px rgba(255, 111, 159, .6) } }
+  @keyframes shine { 0% { transform: translateX(-130%) } 55%, 100% { transform: translateX(130%) } }
   @keyframes breathe { 50% { transform: translateY(-2px) scaleY(1.012) } }
   @keyframes hop { 30% { transform: translateY(-18px) scaleY(1.03) } 65% { transform: translateY(0) scaleY(.95) } 100% { transform: none } }
   @keyframes blink { 0%, 93%, 100% { transform: scaleY(1) } 96% { transform: scaleY(.08) } }

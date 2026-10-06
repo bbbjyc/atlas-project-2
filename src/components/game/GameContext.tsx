@@ -1,13 +1,18 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Pet } from '@/types/pet';
+import type { GameState } from './useGameState';
+import type { CharConfig } from '../character/charConfig';
+
+// fake_door_logs.shortage_reason 에 남는 값 (plan.md)
+export type ShortageReason = 'feed' | 'clean' | 'shower' | 'heal' | 'gift' | 'battle' | 'buy_item';
 
 // 게임 화면 안의 컴포넌트(상점·미션·친구 등)가 같이 쓰는 값. 기존 props(pet, onPetUpdate, onClose)를 바꾸지 않으려고 context 로 넘긴다
-export interface GameApi {
-  pet: Pet;
+export interface GameApi extends GameState {
   war: boolean;
-  toast: (msg: string) => void;
+  cfg: CharConfig;   // 내 캐릭터 모습
+  openTopup: (need?: number, reason?: ShortageReason) => void;   // 충전 팝업. need: 하려던 행동의 비용 (직접 열면 0)
+  openSoon: (tier: string) => void;                              // 바로 "준비 중이에요" (프리미엄 결제)
 }
 
 const GameCtx = createContext<GameApi | null>(null);
