@@ -102,6 +102,16 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .chip{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center}
 .chip svg.i{width:14px;height:14px;stroke-width:2.3}
 .c-love{background:#ffe3ea;color:#ff5d86} .c-pow{background:#ece7ff;color:#6f5cf0}
+.c-def{background:#e3eeff;color:#3d6fe0} .c-hp{background:#ffe1e1;color:#e5484d}
+/* 전쟁모드: 체력 바, 물약 효과 */
+.stats li.hp{position:relative;padding-bottom:7px;white-space:nowrap}
+.stats li.hp small{font-size:10px;font-weight:700;color:var(--ink-2)}
+.stats li.hp .track{position:absolute;left:30px;right:0;bottom:0;height:4px}
+.stats li.hp .track i{background:linear-gradient(90deg,#ff5d6c,#ff9f4a)}
+.buffs{flex-wrap:wrap;gap:4px;margin-top:9px}
+.buffs:empty{display:none!important}
+.buff{padding:2px 6px;border-radius:7px;font-size:10px;font-weight:800;white-space:nowrap}
+.b-atk{background:rgba(255,93,108,.18);color:#ff8791} .b-def{background:rgba(93,140,255,.2);color:#8fb2ff} .b-regen{background:rgba(46,196,166,.2);color:#5fd3b5}
 .c-cash{background:#fff0d2;color:#e0950e} .c-link{background:#dbf4ee;color:#1ea88b}
 .war .chip{background:rgba(255,255,255,.08)}
 .shake{animation:shake .4s}
@@ -138,10 +148,10 @@ button:active .disc{transform:scale(.92)}
 .act em svg.i{width:11px;height:11px;stroke-width:2.4;color:#e0950e}
 .ico.feed{background:#ffe9d8;color:#f07a2a} .ico.clean{background:#e6f6e9;color:#2fa860} .ico.shower{background:#e3efff;color:#3f7cf0}
 .ico.duel{background:rgba(255,93,108,.18);color:#ff8791} .ico.clan{background:rgba(255,159,74,.18);color:#ffb36e}
-.war-only{display:none} .room.war .war-only{display:flex} .room.war .pet-only{display:none}
+.room:not(.war) .war-only{display:none} .room.war .war-only{display:flex} .room.war .pet-only{display:none}
 
 /* 피드백 */
-.toast{position:absolute;z-index:40;left:50%;top:36%;transform:translate(-50%,-8px);padding:10px 16px;border-radius:14px;background:rgba(30,22,45,.9);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.toast{position:absolute;z-index:40;left:50%;top:36%;transform:translate(-50%,-8px);padding:10px 16px;border-radius:14px;background:rgba(30,22,45,.9);color:#fff;font-size:13px;font-weight:600;width:max-content;max-width:calc(100% - 32px);text-align:center;text-wrap:balance;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.25)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .float{position:absolute;z-index:8;left:50%;bottom:calc(29% + 210px);font-size:15px;font-weight:800;white-space:nowrap;pointer-events:none;animation:floatUp 1s ease-out forwards;text-shadow:0 2px 0 rgba(255,255,255,.8)}
 .war .float{text-shadow:0 2px 4px rgba(0,0,0,.6)}
@@ -156,28 +166,78 @@ button:active .disc{transform:scale(.92)}
 .wallet svg.i{width:16px;height:16px;color:#e0950e}
 .close{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--chip-bg)}
 .close svg.i{width:18px;height:18px}
+/* 상점 머리의 충전 버튼 (제목과 지갑 사이 가운데) */
+.topup-btn{margin:0 auto;display:flex;align-items:center;gap:4px;height:34px;padding:0 13px 0 10px;border-radius:17px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-size:13px;font-weight:800;box-shadow:0 4px 10px rgba(255,111,159,.3);transition:transform .12s}
+.topup-btn svg.i{width:15px;height:15px;stroke-width:2.8}
+.topup-btn:active{transform:scale(.95)}
+.topup-btn + .wallet{margin-left:0}
 .tabs{position:relative;display:grid;grid-template-columns:repeat(3,1fr);margin:0 16px;padding:4px;border-radius:16px;background:var(--chip-bg)}
 .tab-thumb{position:absolute;top:4px;left:4px;width:calc((100% - 8px)/3);height:38px;border-radius:12px;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .3s cubic-bezier(.3,1.2,.5,1)}
 .tab{position:relative;height:38px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:13px;font-weight:700;color:var(--ink-2);transition:color .25s}
 .tab svg.i{width:16px;height:16px}
 .tab[aria-selected="true"]{color:var(--ink)}
 .grid{flex:1;overflow-y:auto;padding:16px 16px 24px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;align-content:start;grid-auto-rows:max-content}
-.grid[data-cat="clothes"]{--ph-bg:#efeaff;--ph-ink:#8b7cf6}
-.grid[data-cat="deco"]{--ph-bg:#ffeedf;--ph-ink:#ef8a4a}
-.grid[data-cat="food"]{--ph-bg:#e4f6e9;--ph-ink:#34a862}
+.grid[data-cat="clothes"]{--ph-bg:#efeaff}
+.grid[data-cat="deco"]{--ph-bg:#ffeedf}
+.grid[data-cat="food"]{--ph-bg:#e4f6e9}
 .war .grid{--ph-bg:rgba(255,255,255,.06)}
 .item{display:flex;flex-direction:column;border-radius:18px;background:var(--card);box-shadow:0 2px 10px rgba(60,40,80,.08);overflow:hidden;animation:pop .3s both}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
-.ph{aspect-ratio:1/.8;display:grid;place-items:center;background:var(--ph-bg)}
-.ph svg.i{width:38%;height:38%;stroke-width:1.4;color:var(--ph-ink)}
-.item-body{padding:10px 12px 12px}
-.item-name{font-size:13px;font-weight:700}
-.item-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.ph{position:relative;overflow:hidden;aspect-ratio:1/.8;display:grid;place-items:center;background:var(--ph-bg)}
+.art{width:60%;height:auto;fill:none;stroke:#7b4a3a;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round;overflow:visible}
+.item-body{flex:1;display:flex;flex-direction:column;padding:10px 12px 12px}
+.item-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px}
 .price{display:flex;align-items:center;gap:3px;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
 .price svg.i{width:14px;height:14px;color:#e0950e}
 .buy{height:30px;padding:0 12px;border-radius:10px;background:var(--primary);color:#fff;font-size:12px;font-weight:800;transition:transform .12s}
 .buy:active{transform:scale(.94)}
 .buy[disabled]{background:var(--chip-bg);color:var(--ink-2);cursor:default}
+.item-stat{display:flex;align-items:center;gap:3px;margin-top:3px;font-size:11px;font-weight:700;color:var(--ink-2)}
+.item-stat svg.i{flex:none;width:12px;height:12px}
+.item-stat.gear{flex-wrap:wrap;gap:2px 8px}
+.item-stat.gear span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.item-fx{display:flex;gap:4px;margin-top:6px;padding:5px 7px;border-radius:9px;background:linear-gradient(135deg,rgba(255,111,159,.12),rgba(124,108,246,.12));color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.35}
+.item-fx svg.i{flex:none;width:12px;height:12px;margin-top:1px}
+.grid[data-cat="weapon"]{--ph-bg:rgba(255,93,108,.13)}
+.grid[data-cat="armor"]{--ph-bg:rgba(93,140,255,.15)}
+.grid[data-cat="potion"]{--ph-bg:rgba(170,110,255,.16)}
+/* 등급 탭: 일반 / 희귀 / 전설(프리미엄 포함) */
+.gfilter{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 16px 0}
+.gchip{height:32px;border-radius:11px;background:var(--chip-bg);font-size:13px;font-weight:800;color:var(--ink-2);white-space:nowrap;transition:background .2s,color .2s,box-shadow .2s}
+.gchip small{margin-left:4px;font-size:10px;font-weight:700;opacity:.75}
+.gchip[aria-pressed="true"]{color:#fff}
+.gc-n[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.gc-r[aria-pressed="true"]{background:#3d82f0}
+.gc-l[aria-pressed="true"]{background:linear-gradient(135deg,#ffd23f,#ff9f2e);color:#ffe94d;text-shadow:var(--legend-outline);box-shadow:0 4px 12px rgba(255,160,40,.35)}
+/* 등급별 이름 색: 일반 검정(기본) / 희귀 파랑 / 전설 노랑 + 얇은 빨간 테두리 */
+.room{--legend-outline:-.6px -.6px 0 #d42a2a,.6px -.6px 0 #d42a2a,-.6px .6px 0 #d42a2a,.6px .6px 0 #d42a2a,0 -.75px 0 #d42a2a,0 .75px 0 #d42a2a,-.75px 0 0 #d42a2a,.75px 0 0 #d42a2a}
+.g-r .item-name{color:#2f74e8}
+.war .g-r .item-name{color:#7fb0ff}
+.g-l .item-name,.g-p .item-name{color:#ffd21f;font-weight:900;text-shadow:var(--legend-outline)}
+/* 등급 뱃지·카드 */
+.grade{position:absolute;z-index:1;top:8px;left:8px;padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.85);color:#8c81a5;font-size:10px;font-weight:800}
+.g-r{box-shadow:0 0 0 2px #8db8ff,0 4px 12px rgba(61,139,255,.15)}
+.g-r .grade{background:#e3eeff;color:#2f74e8}
+.g-l .ph{background:radial-gradient(circle at 50% 45%,#fff3c9,#ffe2a6)}
+.g-l .grade{background:linear-gradient(135deg,#ffd76a,#ff9f2e);color:#fff}
+.g-p .ph{background:radial-gradient(circle at 50% 45%,#fff6d6,#ffd9ec 60%,#e6dcff)}
+.g-p .grade{background:linear-gradient(135deg,#ffb52e,var(--accent) 55%,var(--primary));color:#fff}
+.g-p .buy:not([disabled]){background:linear-gradient(135deg,var(--accent),var(--primary))}
+.g-p .price{color:var(--accent)}
+/* 전설·전설(프리미엄): 카드가 은은하게 빛나고, 그림 위로 빛줄기가 지나간다 */
+.g-l{animation:pop .3s both,glowL 2.4s ease-in-out .3s infinite}
+.g-p{animation:pop .3s both,glowP 2s ease-in-out .3s infinite}
+@keyframes glowL{0%,100%{box-shadow:0 0 0 2px #ffc24a,0 4px 12px rgba(255,170,40,.2)}50%{box-shadow:0 0 0 2px #ffd36a,0 0 20px rgba(255,190,40,.6)}}
+@keyframes glowP{0%,100%{box-shadow:0 0 0 2px #ff9fc4,0 0 0 4px rgba(255,194,74,.5),0 6px 16px rgba(255,111,159,.25)}50%{box-shadow:0 0 0 2px #ffc24a,0 0 0 4px rgba(255,111,159,.45),0 0 26px rgba(255,111,159,.6)}}
+.g-l .ph::after,.g-p .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.7) 50%,transparent 65%);transform:translateX(-130%);animation:shine 3.2s ease-in-out infinite}
+.g-p .ph::after{animation-duration:2.4s}
+@keyframes shine{55%,100%{transform:translateX(130%)}}
+@media (prefers-reduced-motion:reduce){
+  .g-l{animation:pop .3s both;box-shadow:0 0 0 2px #ffc24a,0 0 16px rgba(255,190,40,.45)}
+  .g-p{animation:pop .3s both;box-shadow:0 0 0 2px #ffc24a,0 0 0 4px rgba(255,111,159,.45),0 0 20px rgba(255,111,159,.5)}
+  .g-l .ph::after,.g-p .ph::after{display:none}
+}
 /* ── 캐릭터 꾸미기 ── */
 .edit-hint{position:absolute;right:4px;top:30%;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--primary);pointer-events:none}
 .edit-hint svg.i{width:15px;height:15px;stroke-width:2.3}
@@ -245,6 +305,36 @@ button:active .disc{transform:scale(.92)}
 .claim[disabled]{background:var(--chip-bg);color:var(--ink-2);cursor:default}
 .locked-note{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:var(--chip-bg);font-size:12px;font-weight:700;color:var(--ink-2)}
 .locked-note svg.i{width:16px;height:16px;flex:none}
+/* ── 충전 팝업 (페이크 도어. 어떤 화면 위에도 뜬다) ── */
+.topup{position:absolute;inset:0;z-index:35;display:grid;place-items:center;padding:20px;background:rgba(14,9,24,.6);opacity:0;pointer-events:none;transition:opacity .25s}
+.topup.on{opacity:1;pointer-events:auto}
+.topup-card{width:100%;max-height:100%;display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:var(--sheet);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.35);transform:translateY(18px) scale(.96);transition:transform .32s cubic-bezier(.2,.9,.25,1.04)}
+.topup.on .topup-card{transform:none}
+.topup-body{overflow-y:auto;padding:2px 16px 18px;display:flex;flex-direction:column;gap:8px}
+.short-note{display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:10px 12px;border-radius:14px;background:#fff0d2;color:#b8740a;font-size:13px;font-weight:700}
+.short-note svg.i{width:16px;height:16px;flex:none}
+.short-note b{font-weight:900}
+.war .short-note{background:rgba(255,159,74,.15);color:#ffb36e}
+.topup-label{margin-top:8px;font-size:12px;font-weight:700;color:var(--ink-2)}
+.pack{position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:12px;border-radius:16px;background:var(--card);box-shadow:0 2px 8px rgba(60,40,80,.07);text-align:left;transition:transform .12s;animation:pop .25s both}
+.pack:active{transform:scale(.98)}
+.pack .coin{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#fff0d2;color:#e0950e}
+.war .pack .coin,.war .done-ico{background:rgba(255,183,77,.16);color:#ffb74d}
+.pack-amt{flex:1;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.pack-price{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.was{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-2)}
+.off{padding:1px 6px;border-radius:6px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;font-style:normal}
+.won{height:30px;padding:0 12px;border-radius:10px;display:flex;align-items:center;background:var(--primary);color:#fff;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.pack.best{margin-top:6px;padding:18px 14px 16px;box-shadow:0 0 0 2px var(--primary),0 8px 18px rgba(124,108,246,.22)}
+.pack.best::before{content:"추천";position:absolute;top:-10px;left:14px;padding:2px 9px;border-radius:8px;background:var(--primary);color:#fff;font-size:11px;font-weight:800}
+.pack.best .pack-amt{font-size:19px}
+.pack.best .coin{width:44px;height:44px}
+.topup-done{padding:30px 22px 22px;text-align:center}
+.done-ico{width:56px;height:56px;margin:0 auto 14px;border-radius:18px;display:grid;place-items:center;background:#fff0d2;color:#e0950e}
+.done-ico svg.i{width:28px;height:28px}
+.topup-done h3{font-size:18px;font-weight:800}
+.topup-done p{margin-top:6px;font-size:13px;color:var(--ink-2)}
+.topup-done button{width:100%;height:46px;margin-top:20px;border-radius:14px;font-size:15px;font-weight:800}
 .badge[hidden]{display:none}
 .badge.ping{animation:ping .5s}
 @keyframes ping{50%{transform:scale(1.4)}}
@@ -275,6 +365,8 @@ button:active .disc{transform:scale(.92)}
   <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5.5 11V8.5a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3V11"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/><path d="M6 18v2M18 18v2"/></symbol>
   <symbol id="i-food" viewBox="0 0 24 24"><path d="M12 7.5c-1.6-1-5.2-1.4-6.6 1.6-1.3 2.9-.4 7.2 2 9.9 1.5 1.7 3 1.5 4.6.8 1.6.7 3.1.9 4.6-.8 2.4-2.7 3.3-7 2-9.9-1.4-3-5-2.6-6.6-1.6z"/><path d="M12 7.5c0-2 1-3.6 3-4.5"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-potion" viewBox="0 0 24 24"><path d="M9 3h6M10 3v5.5L5.2 17a2.5 2.5 0 0 0 2.2 3.8h9.2a2.5 2.5 0 0 0 2.2-3.8L14 8.5V3"/><path d="M7.2 14h9.6"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
   <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="3"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="5" rx="1.5"/><path d="M5 13v7h14v-7M12 8v12M12 8c-1.5-3-5.5-4-5.5-1.5S9.5 8 12 8zm0 0c1.5-3 5.5-4 5.5-1.5S14.5 8 12 8z"/></symbol>
@@ -283,6 +375,131 @@ button:active .disc{transform:scale(.92)}
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.6-3 8.1-7 9.5-4-1.4-7-4.9-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
 </svg>
+
+<!-- 아이템 그림 (그림체: 굵은 갈색 선 + 파스텔 면). --a 주색, --b 보조색. 카드에서 <use href="#a-…"/>로 불러 쓴다 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- 옷 -->
+  <g id="a-tee"><path d="M23 11l-12 7 5 11 6-3v27h20V26l6 3 5-11-12-7c-2 5-5 7-9 7s-7-2-9-7z" fill="var(--a,#ffd3e0)"/><path d="M26 12c2 3 4 4 6 4s4-1 6-4"/></g>
+  <g id="a-tank"><path d="M25 9v7c0 3-5 5-5 10v28h24V26c0-5-5-7-5-10V9c-1 5-4 8-7 8s-6-3-7-8z" fill="var(--a,#fff3c4)"/></g>
+  <g id="a-hood"><use href="#a-tee"/><path d="M23 14c-3-10 21-10 18 0-4 3-14 3-18 0z" fill="var(--a,#d9c8ff)"/><path d="M26 38h12l-1 7H27z" fill="var(--b,#fffaf2)"/></g>
+  <g id="a-jacket"><use href="#a-tee"/><path d="M32 22v31"/><path d="M26 12l6 10 6-10" fill="var(--b,#fffaf2)"/><circle cx="35.5" cy="31" r="1.2" fill="#7b4a3a"/><circle cx="35.5" cy="40" r="1.2" fill="#7b4a3a"/></g>
+  <g id="a-vest"><path d="M21 11h7l4 9 4-9h7l-2 15 2 27H21l2-27z" fill="var(--a,#c9e8b0)"/><path d="M32 20v33"/></g>
+  <g id="a-pants"><path d="M18 11h28l3 42H38l-6-26-6 26H15z" fill="var(--a,#a8c8ff)"/><path d="M18 18h28"/></g>
+  <g id="a-dress"><path d="M25 10h14l2 14 10 29H13l10-29z" fill="var(--a,#ffc2d9)"/><path d="M23 24h18"/></g>
+  <g id="a-shoe"><path d="M10 24h17c2 9 9 11 17 12 7 1 10 4 10 9v3H10z" fill="var(--a,#ff9f9f)"/><path d="M10 44h44v6H10z" fill="#fffaf2"/><path d="M18 28h6M20 33h6"/></g>
+  <g id="a-sock"><path d="M22 8h16v26c0 5 4 7 8 9 7 3 6 14-4 14H26c-7 0-9-5-9-10V8z" fill="var(--a,#ffe08a)"/><path d="M22 8h16v8H22z" fill="#fffaf2"/></g>
+  <g id="a-boot"><use href="#a-sock"/><path d="M17 50h31c0 4-2 7-6 7H23c-4 0-6-3-6-7z" fill="#a8714a"/></g>
+  <g id="a-beanie"><path d="M13 42c0-16 8-26 19-26s19 10 19 26z" fill="var(--a,#ffb3b3)"/><path d="M11 40h42v9H11z" fill="var(--b,#fffaf2)"/><circle cx="32" cy="13" r="5.5" fill="var(--b,#fffaf2)"/></g>
+  <g id="a-cap"><path d="M40 42h17c0 4-3 7-9 7h-8z" fill="var(--a,#9fc8ff)"/><path d="M12 42c0-16 9-26 20-26s20 10 20 26z" fill="var(--a,#9fc8ff)"/><circle cx="32" cy="16" r="2.5" fill="var(--b,#fffaf2)"/></g>
+  <g id="a-hat"><path d="M20 40V20c0-6 24-6 24 0v20z" fill="var(--a,#d9a477)"/><path d="M6 42c0-6 52-6 52 0s-52 6-52 0z" fill="var(--a,#d9a477)"/><path d="M20 30h24v6H20z" fill="var(--b,#ff9f9f)"/></g>
+  <g id="a-ribbon"><path d="M32 32L12 20v24zM32 32l20-12v24z" fill="var(--a,#ff9fc0)"/><circle cx="32" cy="32" r="6" fill="var(--b,var(--a,#ff9fc0))"/></g>
+  <g id="a-scarf"><path d="M34 30l3 22h10l-4-24z" fill="var(--a,#ff8a8a)"/><path d="M12 20c0-6 40-6 40 0v7c0 6-40 6-40 0z" fill="var(--a,#ff8a8a)"/><path d="M39 52v4M43 52v4M47 52v4"/></g>
+  <g id="a-glasses"><circle cx="19" cy="34" r="10" fill="#eef7ff"/><circle cx="45" cy="34" r="10" fill="#eef7ff"/><circle cx="19" cy="34" r="7" stroke="var(--a,#a8714a)" stroke-width="1.8"/><circle cx="45" cy="34" r="7" stroke="var(--a,#a8714a)" stroke-width="1.8"/><path d="M29 33c2-3 4-3 6 0M9 31L5 25M55 31l4-6"/></g>
+  <g id="a-cape"><path d="M22 10h20l12 43c-9 4-35 4-44 0z" fill="var(--a,#c8b0ff)"/><path d="M21 10c2 6 20 6 22 0" fill="var(--b,#ffd84d)"/></g>
+  <g id="a-wings"><path d="M30 32C22 12 5 12 5 25c0 7 5 11 10 11-4 3-6 9-1 12 5 4 12-2 16-10z" fill="var(--a,#fffaf2)"/><path d="M34 32c8-20 25-20 25-7 0 7-5 11-10 11 4 3 6 9 1 12-5 4-12-2-16-10z" fill="var(--a,#fffaf2)"/><path d="M12 24c4-1 8 0 11 3M52 24c-4-1-8 0-11 3"/></g>
+  <g id="a-crown"><path d="M10 46L8 20l12 10 12-16 12 16 12-10-2 26z" fill="var(--a,#ffd84d)"/><path d="M10 46h44v7H10z" fill="var(--b,#ffb347)"/><circle cx="32" cy="36" r="3.5" fill="#ff8fb0"/><circle cx="20" cy="39" r="2.5" fill="#9fd0ff"/><circle cx="44" cy="39" r="2.5" fill="#9fd0ff"/></g>
+  <g id="a-helm"><path d="M32 11V5" stroke-width="3"/><circle cx="32" cy="5" r="3.5" fill="var(--b,#ff8a8a)"/><path d="M14 46V30c0-11 8-19 18-19s18 8 18 19v16z" fill="var(--a,#e9edf5)"/><path d="M21 31h22v8H21z" fill="#6b5a70"/></g>
+  <g id="a-armor"><path d="M18 13l7-4h14l7 4 8 7-4 10-4-2v26H18V28l-4 2-4-10z" fill="var(--a,#e9edf5)"/><path d="M25 9c2 5 12 5 14 0"/><path d="M24 30h16M24 38h16M24 46h16" stroke="var(--b,#7b4a3a)"/></g>
+  <g id="a-glove"><path d="M18 52V27c0-10 6-17 14-17s14 7 14 17v6c3-6 10-6 10 0 0 6-6 13-10 17v2z" fill="var(--a,#d9a477)"/><path d="M17 45h30v9H17z" fill="var(--b,#fffaf2)"/></g>
+  <g id="a-shield"><path d="M32 7l20 6v15c0 14-9 22-20 28-11-6-20-14-20-28V13z" fill="var(--a,#9fc8ff)"/><path d="M32 16l12 4v8c0 9-6 15-12 18-6-3-12-9-12-18v-8z" fill="var(--b,#fffaf2)"/></g>
+  <!-- 무기 -->
+  <g id="a-sword"><path d="M29 7c0-3 6-3 6 0l1 33h-8z" fill="#eef2fa"/><path d="M32 11v25" stroke="#fff" stroke-width="1.5"/><rect x="16" y="39" width="32" height="7" rx="3.5" fill="var(--a,#ffd84d)"/><path d="M29 46h6v9h-6z" fill="#c98a5a"/><circle cx="32" cy="57" r="3.5" fill="var(--a,#ffd84d)"/></g>
+  <g id="a-dagger"><path d="M29 16c0-3 6-3 6 0l1 24h-8z" fill="#eef2fa"/><rect x="20" y="39" width="24" height="6" rx="3" fill="var(--a,#9fc8ff)"/><path d="M29.5 45h5v9h-5z" fill="#c98a5a"/><circle cx="32" cy="56" r="3" fill="var(--a,#9fc8ff)"/></g>
+  <g id="a-axe"><path d="M29 8h6v50h-6z" fill="var(--a,#d9a477)"/><path d="M29 14h-6l-4 5 4 5h6z" fill="#eef2fa"/><path d="M28 12h8v14h-8z" fill="#c9cfdb"/><path d="M35 11c13-3 20 5 20 14s-7 16-20 13z" fill="#eef2fa"/></g>
+  <g id="a-spear"><path d="M30.5 20h3v38h-3z" fill="var(--a,#d9a477)"/><path d="M32 3l8 14-8 5-8-5z" fill="#eef2fa"/><circle cx="32" cy="23" r="3" fill="var(--b,#ff8a8a)"/></g>
+  <g id="a-trident"><path d="M30.5 24h3v34h-3z" fill="var(--a,#9fd0ff)"/><path d="M16 6l4-2 2 12c1 4 5 5 10 5s9-1 10-5l2-12 4 2-2 12c-1 7-6 10-14 10s-13-3-14-10z" fill="#eef2fa"/><path d="M30 4h4v20h-4z" fill="#eef2fa"/></g>
+  <g id="a-bow"><path d="M18 5c25 4 25 50 0 54l3-7c14-7 14-33 0-40z" fill="var(--a,#d9a477)"/><path d="M20 9v46" stroke-width="1.4"/><path d="M12 32h33"/><path d="M50 32l-7-5v10z" fill="#eef2fa"/></g>
+  <g id="a-hammer"><path d="M29.5 26h5v32h-5z" fill="#c98a5a"/><rect x="12" y="9" width="40" height="19" rx="7" fill="var(--a,#ff9f9f)"/><path d="M20 12v13M44 12v13"/></g>
+  <g id="a-club"><path d="M25 58l-3-28c-2-13 4-23 10-23s12 10 10 23l-3 28z" fill="var(--a,#d9a477)"/><path d="M27 22l3 2M36 30l2-3M29 38l3 1"/></g>
+  <g id="a-staff"><path d="M30.5 22h3v36h-3z" fill="#c98a5a"/><circle cx="32" cy="14" r="10" fill="var(--a,#c8b0ff)"/><path d="M27 10c1-2 3-3 5-3" stroke="#fff" stroke-width="2"/></g>
+  <g id="a-scythe"><path d="M37 5h4L28 59h-4z" fill="var(--a,#8a7ad0)"/><path d="M38 9C24 6 11 12 6 23c9-7 20-9 31-6z" fill="#eef2fa"/></g>
+  <g id="a-sling"><path d="M29 58V37L16 17l5-3 11 17 11-17 5 3-13 20v21z" fill="var(--a,#d9a477)"/><path d="M18 16c5 9 23 9 28 0" stroke-width="1.6"/></g>
+  <g id="a-boomer"><path d="M8 22l9-8 17 16 14-10 8 9-22 17z" fill="var(--a,#ffb36b)"/></g>
+  <g id="a-whip"><path d="M24 44c-12-6-9-26 8-28s22 10 15 18-19 3-15-6 13-5 11 2" stroke-width="3"/><path d="M14 54l9-9 4 4-9 9z" fill="var(--a,#a8714a)"/></g>
+  <g id="a-star"><path d="M32 5l6 21 21 6-21 6-6 21-6-21-21-6 21-6z" fill="#eef2fa"/><circle cx="32" cy="32" r="4.5" fill="var(--a,#8a8aa8)"/></g>
+  <!-- 물약 (--a 첫 효과 색, --b 둘째 효과 색) -->
+  <g id="a-flask"><path d="M27 9h10v11c9 3 14 10 14 18 0 11-9 18-19 18s-19-7-19-18c0-8 5-15 14-18z" fill="#fffaf2"/><path d="M14 38c6-3 12 2 18 0s12-3 18 0c0 9-8 15-18 15s-18-6-18-15z" fill="var(--a,#ff9fb0)"/><path d="M25 4h14v6H25z" fill="#d9a477"/><circle cx="26" cy="45" r="2.5" fill="var(--b,#fff)" stroke="none"/><circle cx="37" cy="42" r="1.8" fill="var(--b,#fff)" stroke="none"/><path d="M20 28c2-3 4-4 6-5" stroke="#fff" stroke-width="2"/></g>
+  <g id="a-vial"><path d="M25 6h14v6l-2 2v34c0 6-2 10-5 10s-5-4-5-10V14l-2-2z" fill="#fffaf2"/><path d="M27 32h10v16c0 5-2 8-5 8s-5-3-5-8z" fill="var(--a,#9fe0b0)"/><path d="M24 2h16v5H24z" fill="#d9a477"/><circle cx="31" cy="44" r="1.6" fill="var(--b,#fff)" stroke="none"/></g>
+  <g id="a-mug"><path d="M14 18h30v28c0 6-4 10-10 10H24c-6 0-10-4-10-10z" fill="var(--b,#fffaf2)"/><path d="M44 24c9 0 9 16 0 16"/><ellipse cx="29" cy="21" rx="13" ry="3.5" fill="var(--a,#ff9fb0)"/><path d="M22 12c-2-3 2-4 0-7M30 12c-2-3 2-4 0-7M38 12c-2-3 2-4 0-7"/></g>
+  <g id="a-jar"><rect x="14" y="22" width="36" height="32" rx="11" fill="var(--a,#9fe0b0)"/><rect x="12" y="13" width="40" height="10" rx="4" fill="var(--b,#fffaf2)"/><path d="M20 32c1-3 3-4 5-4" stroke="#fff" stroke-width="2"/></g>
+  <g id="a-elixir"><path d="M27 5h10v8l13 15-18 28-18-28 13-15z" fill="#fffaf2"/><path d="M17 33h30L32 56z" fill="var(--a,#ff9fb0)"/><path d="M25 2h14v6H25z" fill="var(--b,#ffd84d)"/></g>
+  <g id="a-hglass"><path d="M16 6h32v5c0 10-10 15-10 21s10 11 10 21v5H16v-5c0-10 10-15 10-21s-10-11-10-21z" fill="#eef7ff"/><path d="M22 52c0-6 8-10 10-14 2 4 10 8 10 14z" fill="var(--a,#ffd84d)"/><path d="M12 3h40v5H12zM12 56h40v5H12z" fill="#d9a477"/></g>
+  <g id="a-chalice"><path d="M15 9h34c0 15-7 23-17 23S15 24 15 9z" fill="#ffd84d"/><ellipse cx="32" cy="10" rx="16" ry="3.5" fill="var(--a,#ff9fb0)"/><path d="M29 32h6v14h-6z" fill="#ffd84d"/><path d="M19 54c0-7 26-7 26 0z" fill="#ffd84d"/><circle cx="32" cy="22" r="3" fill="#9fd0ff"/></g>
+  <!-- 음식 -->
+  <g id="a-apple"><path d="M32 19c0-6 2-9 5-12"/><path d="M35 13c4-6 12-6 15-2-4 4-11 5-15 2z" fill="#b5e08f"/><path d="M32 19c-9-7-23-2-23 14 0 14 10 24 19 24 2 0 3-1 4-1s2 1 4 1c9 0 19-10 19-24 0-16-14-21-23-14z" fill="var(--a,#ff8a8a)"/><path d="M18 30c1-4 4-6 7-6" stroke="#fff" stroke-width="2.4"/></g>
+  <g id="a-berry"><path d="M32 58C18 48 10 34 14 24c4-8 32-8 36 0 4 10-4 24-18 34z" fill="var(--a,#ff7f8f)"/><path d="M19 21c4 4 9 2 13-3 4 5 9 7 13 3-3-7-23-7-26 0z" fill="#b5e08f"/><path d="M24 32v1M32 38v1M40 32v1M28 46v1M36 46v1" stroke="#fff3a0" stroke-width="2.5"/></g>
+  <g id="a-carrot"><path d="M30 21c-5-7-3-14 1-15 3 4 3 10 1 15M34 21c2-7 8-10 13-8-2 5-7 8-13 8" fill="#b5e08f"/><path d="M19 22c5-5 21-5 26 0 0 14-7 28-13 35-6-7-13-21-13-35z" fill="var(--a,#ffa95e)"/><path d="M26 32h5M30 42h5"/></g>
+  <g id="a-banana"><path d="M10 18c4 22 26 32 46 21-2 8-14 16-28 13C14 49 6 34 10 18z" fill="var(--a,#ffe27a)"/><path d="M9 18l2-5"/></g>
+  <g id="a-milk"><path d="M18 22l6-10h16l6 10v34H18z" fill="#fffaf2"/><path d="M18 34h28v14H18z" fill="var(--a,#9fd0ff)"/><path d="M24 12l-6 10h28M40 12V7h-6v5"/></g>
+  <g id="a-cookie"><circle cx="32" cy="32" r="23" fill="var(--a,#e8b878)"/><path d="M24 24v1M38 22v1M42 36v1M28 40v1M20 34v1M34 32v1" stroke="#8a5a3c" stroke-width="4"/></g>
+  <g id="a-cup"><path d="M15 18h34l-5 38H20z" fill="#fffaf2"/><path d="M17 30h30l-1 10H18z" fill="var(--a,#ffc2d9)"/><path d="M13 13h38v6H13z" fill="var(--b,var(--a,#ffc2d9))"/></g>
+  <g id="a-pudding"><path d="M14 50h36l-5-26H19z" fill="var(--a,#ffe08a)"/><path d="M19 24c2-9 24-9 26 0z" fill="#b87a4a"/><path d="M10 50h44v6H10z" fill="#fffaf2"/></g>
+  <g id="a-fish"><path d="M8 32c6-12 22-16 34-10l11-8v36l-11-8C30 48 14 44 8 32z" fill="var(--a,#f0b46a)"/><circle cx="17" cy="29" r="1.8" fill="#7b4a3a"/><path d="M26 26c3 3 3 9 0 12M33 25c3 4 3 10 0 14"/></g>
+  <g id="a-onigiri"><path d="M32 9c6 0 23 30 23 39 0 6-7 8-23 8S9 54 9 48c0-9 17-39 23-39z" fill="#fffaf2"/><path d="M21 40h22v16H21z" fill="#4f5f4f"/><circle cx="32" cy="30" r="3" fill="var(--a,#ffc2b0)"/></g>
+  <g id="a-sushi"><rect x="12" y="30" width="40" height="20" rx="9" fill="#fffaf2"/><path d="M10 31c4-11 40-11 44 0-6 5-38 5-44 0z" fill="var(--a,#ff9d7a)"/><path d="M22 26l2 5M32 25v5M42 26l-2 5" stroke="#fff" stroke-width="1.8"/></g>
+  <g id="a-bowl"><path d="M24 21c-3-4 3-6 0-10M32 19c-3-4 3-6 0-10M40 21c-3-4 3-6 0-10"/><path d="M7 30h50c0 15-11 25-25 25S7 45 7 30z" fill="var(--b,#fffaf2)"/><path d="M7 30c2-7 48-7 50 0-4 5-46 5-50 0z" fill="var(--a,#ffb36b)"/></g>
+  <g id="a-melon"><path d="M7 20h50c0 19-12 32-25 32S7 39 7 20z" fill="#8fd18f"/><path d="M12 20h40c0 15-9 26-20 26S12 35 12 20z" fill="var(--a,#ff8a8a)"/><path d="M24 27v2M32 31v2M40 27v2" stroke="#5b4a5e" stroke-width="2.6"/></g>
+  <g id="a-donut"><path d="M32 9a23 23 0 1 0 .1 0zM32 25a7 7 0 1 1-.1 0z" fill="#e8b878" fill-rule="evenodd"/><path d="M32 14a18 18 0 1 0 .1 0zM32 25a7 7 0 1 1-.1 0z" fill="var(--a,#ff9fc0)" fill-rule="evenodd"/><path d="M22 22l2 2M40 20l-2 2M44 36l-2-1M24 42l2-1M34 44l1 2" stroke="#fff" stroke-width="2"/></g>
+  <g id="a-burger"><path d="M10 30c0-12 10-19 22-19s22 7 22 19z" fill="#f0b46a"/><path d="M8 33c5-4 9 3 13-1s9 3 13-1 9 3 13-1 8 2 9 3v3H8z" fill="#b5e08f"/><rect x="9" y="36" width="46" height="9" rx="4.5" fill="#a8604a"/><path d="M10 47h44c0 6-6 9-22 9s-22-3-22-9z" fill="#f0b46a"/><path d="M24 20v1M32 17v1M40 20v1" stroke="#fffaf2" stroke-width="2.4"/></g>
+  <g id="a-sandwich"><path d="M8 50L30 12h4l22 38z" fill="#fff3d6"/><path d="M13 42h38l4 8H9z" fill="var(--a,#ffb3b3)"/><path d="M17 35h30"/></g>
+  <g id="a-skewer"><path d="M32 4v56"/><circle cx="32" cy="15" r="8.5" fill="var(--a,#ff8a8a)"/><circle cx="32" cy="31" r="8.5" fill="var(--a,#ff8a8a)"/><circle cx="32" cy="47" r="8.5" fill="var(--a,#ff8a8a)"/><path d="M28 12c1-2 2-3 4-3M28 28c1-2 2-3 4-3" stroke="#fff" stroke-width="2"/></g>
+  <g id="a-cone"><path d="M20 30l12 28 12-28z" fill="#f0b46a"/><path d="M25 37l10 10M29 33l9 8"/><circle cx="32" cy="23" r="14" fill="var(--a,#fff3d6)"/><circle cx="34" cy="8" r="3.5" fill="#ff7f8f"/></g>
+  <g id="a-hotdog"><rect x="5" y="23" width="54" height="16" rx="8" fill="#e8806a"/><path d="M8 30c0 16 48 16 48 0z" fill="#f0b46a"/><path d="M11 28l6-3 6 3 6-3 6 3 6-3 6 3 6-3" stroke="var(--a,#ffd84d)" stroke-width="2.2"/></g>
+  <g id="a-roll"><circle cx="20" cy="34" r="13" fill="#4f5f4f"/><circle cx="20" cy="34" r="9.5" fill="#fffaf2"/><circle cx="20" cy="34" r="3.5" fill="var(--a,#ffc2b0)"/><circle cx="44" cy="34" r="13" fill="#4f5f4f"/><circle cx="44" cy="34" r="9.5" fill="#fffaf2"/><circle cx="44" cy="34" r="3.5" fill="var(--a,#ffc2b0)"/></g>
+  <g id="a-fries"><path d="M20 30V10h5v20M28 30V7h5v23M36 30V9h5v21M43 30V13h4v17" fill="#ffd76a"/><path d="M15 26h34l-4 30H19z" fill="var(--a,#ff7f7f)"/></g>
+  <g id="a-pancake"><path d="M8 46c0 6 48 6 48 0v-6c0-6-48-6-48 0z" fill="#f0b46a"/><path d="M8 38c0 6 48 6 48 0v-6c0-6-48-6-48 0z" fill="#f0b46a"/><path d="M8 30c0 6 48 6 48 0v-6c0-6-48-6-48 0z" fill="#f0b46a"/><path d="M10 24c0-6 44-6 44 0 0 4-6 2-8 6s-6 0-8 3-8 0-10-2-8 1-10-2-8 0-8-5z" fill="var(--a,#c97a3a)"/><rect x="27" y="14" width="10" height="7" rx="2" fill="#fff3a0"/></g>
+  <g id="a-waffle"><rect x="11" y="11" width="42" height="42" rx="9" fill="var(--a,#f0c070)"/><path d="M11 25h42M11 39h42M25 11v42M39 11v42"/></g>
+  <g id="a-cake"><path d="M8 52V31l40-17 8 8v30z" fill="#fff3d6"/><path d="M8 31l40-17 8 8-48 9z" fill="var(--a,#ffb3c7)"/><path d="M8 42l48-8M48 14v38"/><circle cx="42" cy="13" r="4" fill="#ff7f8f"/></g>
+  <g id="a-plate"><ellipse cx="32" cy="42" rx="27" ry="12" fill="#fffaf2"/><ellipse cx="32" cy="42" rx="19" ry="7"/><path d="M15 40c0-14 34-14 34 0-8 5-26 5-34 0z" fill="var(--a,#ffd76a)"/><path d="M24 33c3-2 5 1 8-1s5 1 8-1" stroke="var(--b,#ff7f7f)" stroke-width="2.4"/></g>
+  <g id="a-egg"><ellipse cx="32" cy="42" rx="27" ry="12" fill="#fffaf2"/><path d="M16 38c-4-8 6-14 14-12 6-6 18-2 18 6 6 4 0 12-8 10-6 6-20 4-24-4z" fill="#fff"/><circle cx="32" cy="34" r="7" fill="var(--a,#ffc94d)"/></g>
+  <g id="a-pizza"><circle cx="32" cy="32" r="25" fill="#f0b46a"/><circle cx="32" cy="32" r="20" fill="var(--a,#ffd76a)"/><path d="M32 12v40M12 32h40" stroke-width="1.5"/><circle cx="24" cy="25" r="4" fill="#ff7f7f"/><circle cx="41" cy="26" r="4" fill="#ff7f7f"/><circle cx="29" cy="41" r="4" fill="#ff7f7f"/></g>
+  <g id="a-tower"><rect x="10" y="40" width="44" height="15" rx="5" fill="var(--a,#ffc2d9)"/><rect x="16" y="27" width="32" height="13" rx="5" fill="var(--b,#fff3d6)"/><rect x="22" y="15" width="20" height="12" rx="5" fill="var(--a,#ffc2d9)"/><circle cx="32" cy="10" r="4.5" fill="#ff7f8f"/></g>
+  <!-- 집 꾸미기 -->
+  <g id="a-box"><rect x="10" y="24" width="44" height="30" rx="5" fill="var(--a,#ffd6a8)"/><path d="M7 17h50v9H7z" fill="var(--b,var(--a,#ffd6a8))"/><path d="M26 36h12"/></g>
+  <g id="a-chest"><path d="M10 30c0-15 44-15 44 0z" fill="var(--a,#d9a477)"/><rect x="10" y="30" width="44" height="24" rx="3" fill="var(--a,#d9a477)"/><path d="M10 38h44" stroke="var(--b,#ffd84d)" stroke-width="3"/><rect x="28" y="27" width="8" height="11" rx="2" fill="var(--b,#ffd84d)"/></g>
+  <g id="a-basket"><path d="M18 26c0-10 28-10 28 0" fill="#fffaf2"/><path d="M10 26h44l-5 28H15z" fill="var(--a,#d9a477)"/><path d="M14 35h36M15 44h34M24 26l-2 28M32 26v28M40 26l2 28" stroke-width="1.4"/></g>
+  <g id="a-cushion"><rect x="9" y="17" width="46" height="32" rx="15" fill="var(--a,#ffd3e0)"/><path d="M22 33h1M41 33h1M32 29v6" stroke-width="3"/></g>
+  <g id="a-pot"><path d="M32 36c-11-4-15-14-11-23 9 2 13 13 11 23zM32 36c8-7 17-7 19 0-6 5-13 5-19 0z" fill="#b5e08f"/><path d="M17 36h30l-4 20H21z" fill="var(--a,#ffb38a)"/><path d="M15 34h34v6H15z" fill="var(--a,#ffb38a)"/></g>
+  <g id="a-cactus"><path d="M26 38V14c0-8 12-8 12 0v24z" fill="#8fd18f"/><path d="M26 30h-6c-3 0-4-2-4-5v-5c0-3 4-3 4 0v5h6M38 26h6c3 0 4-2 4-5v-4c0-3-4-3-4 0v4h-6" fill="#8fd18f"/><path d="M17 38h30l-4 18H21z" fill="var(--a,#ffb38a)"/></g>
+  <g id="a-vase"><path d="M27 30l-3-10M37 30l3-10M32 30v-8"/><circle cx="23" cy="16" r="6" fill="#ffb3c7"/><circle cx="41" cy="16" r="6" fill="#ffe27a"/><circle cx="32" cy="20" r="5" fill="#ffd0a8"/><path d="M24 30c-6 6-8 12-6 18 2 6 8 8 14 8s12-2 14-8c2-6 0-12-6-18z" fill="var(--a,#9fc8ff)"/></g>
+  <g id="a-arch"><path d="M10 58V30a22 22 0 0 1 44 0v28h-8V30a14 14 0 0 0-28 0v28z" fill="var(--a,#b5e08f)"/><circle cx="15" cy="24" r="4" fill="#ffb3c7"/><circle cx="32" cy="9" r="4" fill="#ffe27a"/><circle cx="49" cy="24" r="4" fill="#ffb3c7"/><circle cx="22" cy="13" r="3" fill="#c8b0ff"/><circle cx="42" cy="13" r="3" fill="#c8b0ff"/></g>
+  <g id="a-frame"><rect x="11" y="9" width="42" height="46" rx="5" fill="var(--a,#d9a477)"/><rect x="17" y="15" width="30" height="34" rx="2" fill="#dff0ff"/><path d="M17 44l9-11 7 7 5-5 9 9v5H17z" fill="#b5e08f"/><circle cx="40" cy="23" r="3.5" fill="#ffd84d"/></g>
+  <g id="a-calendar"><rect x="11" y="13" width="42" height="42" rx="6" fill="#fffaf2"/><path d="M11 19c0-3 3-6 6-6h30c3 0 6 3 6 6v6H11z" fill="var(--a,#ff9f9f)"/><path d="M22 8v9M42 8v9"/><path d="M19 34h4M30 34h4M41 34h4M19 44h4M30 44h4" stroke-width="3"/></g>
+  <g id="a-mirror"><path d="M24 56h16"/><rect x="13" y="6" width="38" height="50" rx="19" fill="var(--a,#d9a477)"/><rect x="18" y="11" width="28" height="40" rx="14" fill="#e6f4ff"/><path d="M24 22c2-4 5-6 8-6M24 30l8-8" stroke="#fff" stroke-width="2.4"/></g>
+  <g id="a-clock"><circle cx="32" cy="32" r="23" fill="var(--a,#ffd3e0)"/><circle cx="32" cy="32" r="17" fill="#fffaf2"/><path d="M32 21v11l8 5"/></g>
+  <g id="a-chair"><path d="M18 41v16M46 41v16" stroke-width="4"/><rect x="18" y="7" width="28" height="27" rx="7" fill="var(--a,#d9a477)"/><rect x="13" y="32" width="38" height="9" rx="4.5" fill="var(--a,#d9a477)"/></g>
+  <g id="a-stool"><path d="M20 27l-4 28M44 27l4 28M32 29v26" stroke-width="3.5"/><path d="M19 44h26"/><ellipse cx="32" cy="22" rx="18" ry="7" fill="var(--a,#d9a477)"/></g>
+  <g id="a-sofa"><path d="M12 50v6M52 50v6" stroke-width="3.5"/><rect x="12" y="13" width="40" height="24" rx="10" fill="var(--a,#ffc2d9)"/><rect x="6" y="29" width="13" height="21" rx="6" fill="var(--a,#ffc2d9)"/><rect x="45" y="29" width="13" height="21" rx="6" fill="var(--a,#ffc2d9)"/><rect x="16" y="35" width="32" height="15" rx="5" fill="var(--b,#fffaf2)"/></g>
+  <g id="a-lamp"><path d="M32 28v24" stroke-width="3"/><path d="M20 9h24l7 19H13z" fill="var(--a,#fff3c4)"/><path d="M20 56c0-5 24-5 24 0z" fill="#d9a477"/></g>
+  <g id="a-moon"><circle cx="32" cy="28" r="18" fill="var(--a,#fff3c4)"/><path d="M36 17a12 12 0 1 0 6 18 10 10 0 0 1-6-18z" fill="#ffd84d"/><rect x="22" y="46" width="20" height="9" rx="4" fill="#d9a477"/></g>
+  <g id="a-shelf"><rect x="11" y="7" width="42" height="50" rx="4" fill="var(--a,#d9a477)"/><path d="M11 24h42M11 41h42"/><g stroke-width="1.6"><rect x="16" y="12" width="5" height="12" fill="#9fc8ff"/><rect x="22" y="13" width="5" height="11" fill="#ffb3b3"/><rect x="38" y="30" width="5" height="11" fill="#b5e08f"/><rect x="44" y="28" width="5" height="13" fill="#ffe27a"/><rect x="18" y="46" width="12" height="11" fill="#ffd3e0"/></g></g>
+  <g id="a-drawer"><path d="M14 52v5M50 52v5" stroke-width="3"/><rect x="9" y="12" width="46" height="40" rx="5" fill="var(--a,#d9a477)"/><path d="M9 25h46M9 38h46"/><path d="M29 19h6M29 32h6M29 45h6" stroke-width="3"/></g>
+  <g id="a-fridge"><rect x="15" y="5" width="34" height="54" rx="7" fill="var(--a,#9fe0cf)"/><path d="M15 25h34M21 12v8M21 31v12"/><circle cx="38" cy="16" r="3" fill="#ffb3c7"/></g>
+  <g id="a-bed"><path d="M10 50v6M56 50v6" stroke-width="3.5"/><rect x="6" y="24" width="10" height="30" rx="3" fill="#d9a477"/><rect x="8" y="34" width="50" height="16" rx="5" fill="#fffaf2"/><rect x="11" y="27" width="14" height="9" rx="4.5" fill="#fffaf2"/><path d="M26 33h32v17H26z" fill="var(--a,#9fc8ff)"/></g>
+  <g id="a-hammock"><path d="M6 14c8 26 44 26 52 0" stroke-width="2"/><path d="M12 24c8 18 32 18 40 0z" fill="var(--a,#ffe08a)"/><path d="M6 10v48M58 10v48" stroke-width="3.5"/></g>
+  <g id="a-table"><path d="M32 33v20" stroke-width="5"/><ellipse cx="32" cy="24" rx="26" ry="9" fill="var(--a,#d9a477)"/><path d="M20 56c0-5 24-5 24 0z" fill="var(--a,#d9a477)"/></g>
+  <g id="a-rug"><ellipse cx="32" cy="36" rx="28" ry="15" fill="var(--a,#ffc2d9)"/><ellipse cx="32" cy="36" rx="20" ry="9" stroke-dasharray="1 5"/></g>
+  <g id="a-curtain"><path d="M29 10h6v46h-6z" fill="#dff0ff"/><path d="M9 10h20c-4 16-6 30-2 46H9z" fill="var(--a,#ffb3c7)"/><path d="M55 10H35c4 16 6 30 2 46h18z" fill="var(--a,#ffb3c7)"/><path d="M6 8h52" stroke-width="3.5"/></g>
+  <g id="a-aquarium"><rect x="8" y="14" width="48" height="38" rx="7" fill="#dff0ff"/><path d="M8 26c8-3 16 3 24 0s16-3 24 0v19c0 4-3 7-7 7H15c-4 0-7-3-7-7z" fill="#9fd0ff"/><path d="M24 36c4-5 12-5 16 0-4 5-12 5-16 0zM40 36l6-4v8z" fill="var(--a,#ffb36b)"/></g>
+  <g id="a-piano"><path d="M12 46v10M52 46v10" stroke-width="3.5"/><rect x="7" y="12" width="50" height="34" rx="6" fill="var(--a,#ffc2d9)"/><rect x="11" y="28" width="42" height="12" fill="#fffaf2"/><path d="M17 28v6M23 28v6M29 28v6M35 28v6M41 28v6M47 28v6" stroke-width="3"/></g>
+  <g id="a-house"><path d="M13 30L32 13l19 17v26H13z" fill="var(--a,#fff3d6)"/><path d="M7 32L32 8l25 24-4 4-21-20-21 20z" fill="var(--b,#ff9f9f)"/><path d="M27 56V43c0-5 10-5 10 0v13z" fill="#d9a477"/><circle cx="32" cy="29" r="4" fill="#dff0ff"/></g>
+  <g id="a-castle"><path d="M13 23V8l8 4-8 4" fill="var(--b,#ff9fc0)"/><path d="M9 57V23h9v6h6v-6h16v6h6v-6h9v34z" fill="var(--a,#fffaf2)"/><path d="M26 57V46c0-8 12-8 12 0v11z" fill="#d9a477"/><path d="M15 35v5M49 35v5" stroke-width="3"/></g>
+  <g id="a-treehouse"><path d="M29 57h6V36h-6z" fill="#c98a5a"/><circle cx="32" cy="24" r="19" fill="#b5e08f"/><rect x="22" y="31" width="20" height="12" rx="2" fill="#ffd6a8"/><path d="M19 32l13-9 13 9z" fill="var(--a,#ff9f9f)"/></g>
+  <g id="a-slide"><path d="M10 58V16M18 58V16M10 24h8M10 33h8M10 42h8M10 51h8"/><path d="M18 14c10 0 15 8 18 20s10 18 21 18v6c-12 0-18-7-22-18S28 20 18 20z" fill="var(--a,#ffb3c7)"/></g>
+  <g id="a-fire"><path d="M5 10h54v6H5z" fill="#d9a477"/><rect x="8" y="16" width="48" height="40" rx="3" fill="var(--a,#e8a08a)"/><path d="M18 56V38c0-10 28-10 28 0v18z" fill="#5b4a5e"/><path d="M32 54c-7 0-9-6-6-11 1 3 3 4 4 3-1-5 2-9 5-11 0 5 5 7 5 12 0 4-3 7-8 7z" fill="#ffb347"/></g>
+  <g id="a-scope"><path d="M31 34l-10 22M31 34l10 22M31 34v22" stroke-width="2.6"/><path d="M12 34l30-19 5 9-30 19z" fill="var(--a,#9fb0ff)"/><circle cx="31" cy="33" r="3.5" fill="#fffaf2"/></g>
+  <g id="a-arcade"><path d="M16 6h32v50H16z" fill="var(--a,#c8b0ff)"/><rect x="21" y="12" width="22" height="16" rx="3" fill="#6b5a70"/><path d="M14 34h36v6H14z" fill="var(--a,#c8b0ff)"/><circle cx="26" cy="37" r="2.5" fill="#ff8a8a"/><circle cx="38" cy="37" r="2.5" fill="#9fd0ff"/><path d="M26 17l3 3-3 3M32 23h5" stroke="#9fe0b0" stroke-width="2"/></g>
+  <g id="a-rocket"><path d="M22 34l-9 12 9-2zM42 34l9 12-9-2z" fill="var(--b,#ff9f9f)"/><path d="M26 42c0 8 3 13 6 16 3-3 6-8 6-16z" fill="#ffb347"/><path d="M32 4c11 8 14 22 10 38H22C18 26 21 12 32 4z" fill="var(--a,#fffaf2)"/><circle cx="32" cy="24" r="6" fill="#9fd0ff"/></g>
+  <g id="a-swing"><path d="M8 8h48" stroke-width="3.5"/><path d="M18 8v34M46 8v34"/><rect x="12" y="40" width="40" height="8" rx="4" fill="var(--a,#d9a477)"/></g>
+  <g id="a-fountain"><path d="M32 22c-8-10-18-8-20 6M32 22c8-10 18-8 20 6" stroke="#9fd0ff" stroke-width="2.4"/><path d="M8 44h48c0 8-10 12-24 12S8 52 8 44z" fill="#e9edf5"/><path d="M10 44c2-4 42-4 44 0-4 3-40 3-44 0z" fill="#9fd0ff"/><path d="M30 42V24h4v18z" fill="#e9edf5"/><circle cx="32" cy="18" r="4" fill="#9fd0ff"/></g>
+  <g id="a-gramo"><path d="M32 38V28" stroke-width="3"/><path d="M30 28L14 8c10-4 28-4 36 6z" fill="#ffd84d"/><rect x="12" y="38" width="40" height="18" rx="4" fill="var(--a,#d9a477)"/></g>
+  <g id="a-cattower"><path d="M22 20v34M42 40v14" stroke-width="5"/><rect x="12" y="8" width="22" height="12" rx="5" fill="var(--a,#ffd3e0)"/><rect x="30" y="30" width="24" height="10" rx="5" fill="var(--a,#ffd3e0)"/><rect x="8" y="52" width="48" height="6" rx="3" fill="#d9a477"/></g>
+  <!-- 등급 장식: 얼굴(전설 이상), 희귀·전설·프리미엄 반짝이 -->
+  <g id="o-face"><path d="M-6-3v4M6-3v4" stroke-width="2.6"/><path d="M-1.6 3.4h3.2" stroke-width="2"/><ellipse cx="-11" cy="3" rx="3.4" ry="2.2" fill="#ffb8c6" stroke="none"/><ellipse cx="11" cy="3" rx="3.4" ry="2.2" fill="#ffb8c6" stroke="none"/></g>
+  <g id="o-r"><path d="M54 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#bfe0ff" stroke-width="1.6"/></g>
+  <g id="o-l"><path d="M54 2l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#ffe27a" stroke-width="1.6"/><path d="M7 46l1.6 3.8 3.8 1.6-3.8 1.6L7 57l-1.6-3.8L1.6 51.4l3.8-1.6z" fill="#ffe27a" stroke-width="1.4"/></g>
+  <g id="o-p"><path d="M42 14l1-10 5 4 4-6 4 6 5-4 1 10z" fill="#ffd84d" stroke-width="1.6"/><path d="M7 40l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#ffb3e6" stroke-width="1.6"/><path d="M57 46l1.6 3.8 3.8 1.6-3.8 1.6-1.6 3.8-1.6-3.8-3.8-1.6 3.8-1.6z" fill="#bfe0ff" stroke-width="1.4"/></g>
+</defs></svg>
 
 <main class="room" id="room">
   <div class="wall"></div>
@@ -345,11 +562,14 @@ button:active .disc{transform:scale(.92)}
     <div class="xp-top"><span>경험치</span><b id="xpTxt">4 / 10</b></div>
     <div class="track"><i id="xpBar"></i></div>
     <ul>
-      <li><span class="chip c-love"><svg class="i"><use href="#i-heart"/></svg></span>애정<b id="love">12</b></li>
+      <li class="pet-only"><span class="chip c-love"><svg class="i"><use href="#i-heart"/></svg></span>애정<b id="love">12</b></li>
       <li><span class="chip c-pow"><svg class="i"><use href="#i-sword"/></svg></span>전투력<b id="power">42</b></li>
+      <li class="war-only"><span class="chip c-def"><svg class="i"><use href="#i-shield"/></svg></span>방어력<b id="def">15</b></li>
+      <li class="war-only hp"><span class="chip c-hp"><svg class="i"><use href="#i-heart"/></svg></span>체력<b id="hpTxt">180<small>/390</small></b><span class="track"><i id="hpBar"></i></span></li>
       <li id="cashRow"><span class="chip c-cash"><svg class="i"><use href="#i-coin"/></svg></span>캐시<b id="cash">120</b></li>
       <li><span class="chip c-link"><svg class="i"><use href="#i-link"/></svg></span>초대<b id="depth">2단계</b></li>
     </ul>
+    <div class="buffs war-only" id="buffs"></div>
   </section>
 
   <!-- 가운데 위: 모드 전환 -->
@@ -385,6 +605,7 @@ button:active .disc{transform:scale(.92)}
   <section class="sheet" id="shop" role="dialog" aria-modal="true" aria-labelledby="shopTitle" aria-hidden="true">
     <header class="sheet-head">
       <h2 id="shopTitle">상점</h2>
+      <button class="topup-btn" id="topupBtn"><svg class="i"><use href="#i-plus"/></svg>충전</button>
       <div class="wallet" id="wallet"><svg class="i"><use href="#i-coin"/></svg><span id="walletAmt">120</span></div>
       <button class="close" data-close aria-label="닫기"><svg class="i"><use href="#i-close"/></svg></button>
     </header>
@@ -394,6 +615,7 @@ button:active .disc{transform:scale(.92)}
       <button class="tab" role="tab" data-cat="deco" aria-selected="false"><svg class="i"><use href="#i-sofa"/></svg>집 꾸미기</button>
       <button class="tab" role="tab" data-cat="food" aria-selected="false"><svg class="i"><use href="#i-food"/></svg>음식</button>
     </div>
+    <div class="gfilter" id="gfilter"></div>
     <div class="grid" id="shopGrid" data-cat="clothes"></div>
   </section>
 
@@ -428,13 +650,18 @@ button:active .disc{transform:scale(.92)}
     <div class="mlist" id="mlist"></div>
   </section>
 
+  <!-- 충전 팝업 (페이크 도어) -->
+  <div class="topup" id="topup" role="dialog" aria-modal="true" aria-labelledby="topupTitle" aria-hidden="true" inert>
+    <div class="topup-card" id="topupCard"></div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </main>
 
 <script>
 // 더미 데이터. 나중에 getMyLevel / getCashBalance / addCareLog 호출로 교체
 const COST = 10;
-const state = { cares: 34, love: 12, cash: 120, depth: 2, war: false };
+const state = { cares: 34, love: 12, cash: 120, depth: 2, war: false, hp: 180 };
 const $ = id => document.getElementById(id);
 const room = $('room');
 
@@ -443,8 +670,18 @@ function render() {
   $('lv').textContent = $('lvBadge').textContent = lv;
   $('xpTxt').textContent = `${xp} / 10`;
   $('xpBar').style.width = xp * 10 + '%';
-  $('love').textContent = state.love;
-  $('power').textContent = lv * 10 + state.love;
+  // 애정 = 기본 + 입은 옷 중 최고 + 가진 가구 (애완 아이템은 여기까지만)
+  $('love').textContent = state.love + outfitLove() + decoLove();
+  // 전투력·방어력 = 레벨·기본 애정 + 전투 장비, 그다음 물약 % 적용
+  const { weapon, armor } = equipped();
+  const atk = lv * 10 + state.love + (weapon?.[3] || 0) + (armor?.[3] || 0);
+  const def = lv * 5 + (weapon?.[4] || 0) + (armor?.[4] || 0);
+  $('power').textContent = Math.round(atk * (1 + buffPct('atk') / 100));
+  $('def').textContent = Math.round(def * (1 + buffPct('def') / 100));
+  $('hpTxt').innerHTML = `${state.hp}<small>/${maxHp()}</small>`;
+  $('hpBar').style.width = state.hp / maxHp() * 100 + '%';
+  $('buffs').innerHTML = buffs.map(b => `<span class="buff b-${b.k}">${
+    { atk: `전투력 +${b.a}%`, def: `방어력 +${b.a}%`, regen: `재생 +${b.a}` }[b.k]} · ${b.t}${b.k === 'regen' ? '턴' : '판'}</span>`).join('');
   $('cash').textContent = state.cash.toLocaleString();
   $('depth').textContent = `${state.depth}단계`;
 }
@@ -482,7 +719,7 @@ document.querySelectorAll('[data-msg]').forEach(b => b.onclick = () => toast(b.d
 document.querySelectorAll('[data-care]').forEach(b => b.onclick = () => {
   if (state.cash < COST) {
     retrigger($('cashRow'), 'shake');
-    toast('캐시가 부족해요 · 충전 팝업은 다음 단계');
+    openTopup(COST, b.dataset.care);
     return;
   }
   const before = Math.floor(state.cares / 10);
@@ -507,34 +744,330 @@ $('mode').onclick = () => {
 };
 
 // ── 상점 (더미 아이템, 이미지는 나중에 교체) ──
-const SHOP = {
-  clothes: { icon: 'i-shirt', items: [['기본 티셔츠', 30], ['줄무늬 후드', 80], ['멜빵 바지', 60], ['털모자', 40], ['운동화', 50], ['반짝 왕관', 200]] },
-  deco:    { icon: 'i-sofa',  items: [['원목 의자', 60], ['푹신 소파', 150], ['동그란 러그', 70], ['스탠드 조명', 90], ['초록 화분', 40], ['벽 액자', 50]] },
-  food:    { icon: 'i-food',  items: [['사과', 10], ['쿠키', 15], ['우유', 12], ['샌드위치', 25], ['조각 케이크', 40], ['스테이크', 60]] },
+// 애완모드 상점: 애정·경험치만 올린다 (전투력·방어력에는 관여하지 않는다)
+// 등급: n 일반(65%) / r 희귀(25%) / l 전설(10%) / p 전설(프리미엄)(전설 중 1/4, 전체 2.5%. 캐시 대신 원으로 직접 결제)
+// 카테고리마다 80개: 일반 52(26종 × 색·맛 2개) · 희귀 20 · 전설 6 · 전설(프리미엄) 2
+// [이름, 등급, 가격(프리미엄은 원, 나머지는 캐시), 스탯 수치, 색 이름(일반만)]
+const GRADE = { n: '일반', r: '희귀', l: '전설', p: '전설(프리미엄)' };
+const STAT = { love: ['i-heart', '애정'], exp: ['i-star', '경험치'] };
+const TINT = {
+  빨간: '#ff6b6b', 파란: '#4d8dff', 노란: '#f2b705', 초록: '#2fb36d', 보라: '#9b7bff', 분홍: '#ff7fb5', 하얀: '#b9b2c8',
+  검은: '#4a4458', 하늘색: '#45b8f0', 주황: '#ff8c3a', 갈색: '#a8714a', 민트: '#2ec4a6', 회색: '#8f96a3', 원목: '#c8935f',
 };
-const owned = new Set();   // 옷·꾸미기는 한 번만 구매, 음식은 계속 구매 가능
-let shopCat = 'clothes';
+// 일반 아이템: 이름 앞의 색(음식은 맛)만 다른 2개로 펼친다
+const N = (base, price, val, vars) => vars.split(' ').map(v => [`${v} ${base}`, 'n', price, val, v]);
+const SHOP = {
+  // 옷: 입고 있는 것 중 가장 높은 애정 하나만 더해진다
+  clothes: { label: '옷', icon: 'i-shirt', kind: 'pet', stat: 'love', items: [
+    ...N('슬리퍼', 20, 1, '분홍 하늘색'), ...N('양말 세트', 20, 1, '하얀 검은'), ...N('민소매 나시', 25, 1, '하얀 노란'),
+    ...N('기본 티셔츠', 30, 1, '하얀 파란'), ...N('반바지', 30, 1, '파란 주황'), ...N('앞치마', 35, 1, '분홍 초록'),
+    ...N('줄무늬 티셔츠', 40, 1, '빨간 파란'), ...N('털모자', 40, 1, '빨간 초록'), ...N('야구 모자', 45, 2, '검은 파란'),
+    ...N('리본 머리띠', 45, 2, '분홍 보라'), ...N('비니', 50, 2, '노란 회색'), ...N('운동화', 50, 2, '하얀 빨간'),
+    ...N('목도리', 55, 2, '빨간 민트'), ...N('청바지', 60, 2, '하늘색 검은'), ...N('멜빵 바지', 60, 2, '갈색 파란'),
+    ...N('파자마', 65, 2, '하늘색 분홍'), ...N('체크 셔츠', 70, 2, '빨간 초록'), ...N('장화', 70, 3, '노란 초록'),
+    ...N('멜빵 치마', 75, 3, '분홍 갈색'), ...N('후드티', 80, 3, '보라 회색'), ...N('우비', 80, 3, '노란 하늘색'),
+    ...N('체육복', 85, 3, '파란 초록'), ...N('니트 조끼', 90, 3, '갈색 민트'), ...N('카디건', 100, 4, '하얀 보라'),
+    ...N('동그란 안경', 110, 4, '검은 갈색'), ...N('데님 재킷', 120, 5, '파란 검은'),
+    ['고양이 귀 후드', 'r', 220, 9], ['가죽 재킷', 'r', 250, 10], ['셰프 복장', 'r', 260, 10], ['공룡 잠옷', 'r', 280, 11], ['산타 옷', 'r', 300, 12],
+    ['해적 모자', 'r', 300, 12], ['탐험가 조끼', 'r', 320, 13], ['경찰 제복', 'r', 330, 13], ['기사 투구', 'r', 350, 14], ['소방관 옷', 'r', 360, 14],
+    ['한복 저고리', 'r', 380, 15], ['마법사 망토', 'r', 400, 16], ['마술사 연미복', 'r', 420, 17], ['닌자 복장', 'r', 450, 18], ['요정 날개', 'r', 500, 20],
+    ['아이돌 무대의상', 'r', 520, 21], ['은빛 갑옷', 'r', 550, 22], ['사무라이 갑옷', 'r', 580, 23], ['우주복', 'r', 600, 24], ['카우보이 세트', 'r', 640, 25],
+    ['반짝 왕관', 'l', 1500, 40], ['천사 날개', 'l', 1800, 45], ['불사조 망토', 'l', 2200, 50], ['얼음 여왕 드레스', 'l', 2500, 52],
+    ['용비늘 갑옷', 'l', 2800, 55], ['황금 기사 갑옷', 'l', 3000, 58],
+    ['은하수 날개', 'p', 7900, 75], ['별빛 황제 예복', 'p', 9900, 80],
+  ] },
+  // 집 꾸미기: 가진 가구의 애정이 모두 더해진다
+  deco: { label: '집 꾸미기', icon: 'i-sofa', kind: 'pet', stat: 'love', items: [
+    ...N('탁상 달력', 20, 1, '하얀 분홍'), ...N('빨래 바구니', 25, 1, '갈색 하얀'), ...N('쿠션', 30, 1, '노란 보라'),
+    ...N('포스터', 30, 1, '파란 주황'), ...N('우산꽂이', 30, 1, '빨간 민트'), ...N('선인장 화분', 35, 1, '주황 하얀'),
+    ...N('수납 상자', 35, 1, '하늘색 분홍'), ...N('화분', 40, 1, '초록 하얀'), ...N('스툴', 40, 1, '원목 노란'),
+    ...N('벽시계', 45, 1, '하얀 검은'), ...N('벽 액자', 50, 2, '하얀 원목'), ...N('꽃병', 50, 2, '파란 분홍'),
+    ...N('거울', 55, 2, '원목 하얀'), ...N('벽 선반', 55, 2, '원목 하얀'), ...N('의자', 60, 2, '원목 하얀'),
+    ...N('펫 방석', 60, 2, '보라 민트'), ...N('커튼', 65, 2, '분홍 하늘색'), ...N('동그란 러그', 70, 2, '분홍 초록'),
+    ...N('장난감 상자', 70, 2, '빨간 파란'), ...N('이불', 75, 3, '노란 하늘색'), ...N('원형 테이블', 80, 3, '원목 하얀'),
+    ...N('무드등', 85, 3, '주황 보라'), ...N('스탠드 조명', 90, 3, '하얀 검은'), ...N('작은 책장', 100, 3, '원목 하얀'),
+    ...N('낮은 서랍장', 120, 4, '원목 민트'), ...N('미니 냉장고', 140, 5, '민트 빨간'),
+    ['오르골', 'r', 220, 8], ['푹신 소파', 'r', 250, 9], ['빈백 소파', 'r', 260, 9], ['해먹', 'r', 280, 10], ['흔들의자', 'r', 300, 10],
+    ['빈티지 축음기', 'r', 320, 11], ['대형 책장', 'r', 340, 11], ['캣타워', 'r', 350, 12], ['원목 그네', 'r', 360, 12], ['꽃 아치', 'r', 380, 13],
+    ['어항', 'r', 400, 14], ['2층 침대', 'r', 420, 14], ['천체 망원경', 'r', 440, 15], ['미니 정원', 'r', 450, 15], ['레트로 오락기', 'r', 480, 16],
+    ['별빛 천장', 'r', 500, 16], ['실내 분수', 'r', 520, 17], ['다락 침대', 'r', 550, 17], ['벽난로', 'r', 600, 18], ['피아노', 'r', 650, 20],
+    ['마법 거울', 'l', 1500, 32], ['공주 침대', 'l', 1800, 35], ['무지개 미끄럼틀', 'l', 2000, 40], ['비밀 다락방', 'l', 2400, 45],
+    ['용의 보물상자', 'l', 2800, 48], ['우주선 조종석', 'l', 3000, 50],
+    ['숲속 트리하우스', 'p', 9900, 75], ['구름 위의 성', 'p', 12900, 80],
+  ] },
+  // 음식: 여러 번 살 수 있고, 사면 바로 먹어서 경험치가 오른다
+  food: { label: '음식', icon: 'i-food', kind: 'food', stat: 'exp', items: [
+    ...N('당근', 8, 1, '주황 보라'), ...N('사과', 10, 1, '빨간 초록'), ...N('바나나', 10, 1, '노란 초코'),
+    ...N('우유', 12, 1, '딸기 초코'), ...N('쿠키', 15, 1, '초코칩 버터'), ...N('요거트', 15, 1, '블루베리 딸기'),
+    ...N('붕어빵', 15, 1, '팥 슈크림'), ...N('딸기', 18, 1, '초코 생크림'), ...N('주먹밥', 20, 1, '참치 불고기'),
+    ...N('컵라면', 20, 1, '매운 순한'), ...N('수박 조각', 20, 1, '빨간 노란'), ...N('도넛', 22, 1, '초코 딸기'),
+    ...N('계란말이', 25, 2, '치즈 야채'), ...N('샌드위치', 25, 2, '햄 에그'), ...N('떡꼬치', 25, 2, '매운 간장'),
+    ...N('아이스크림', 25, 2, '바닐라 민트초코'), ...N('푸딩', 28, 2, '커스터드 초코'), ...N('핫도그', 30, 2, '치즈 감자'),
+    ...N('김밥', 30, 2, '참치 치즈'), ...N('감자튀김', 30, 2, '양념 치즈'), ...N('팬케이크', 35, 2, '메이플 블루베리'),
+    ...N('와플', 35, 2, '꿀 딸기'), ...N('조각 케이크', 40, 3, '딸기 초코'), ...N('오므라이스', 45, 3, '케첩 크림'),
+    ...N('카레라이스', 45, 3, '순한 매운'), ...N('스테이크', 60, 4, '안심 등심'),
+    ['수제 버거', 'r', 90, 5], ['탕후루', 'r', 95, 5], ['딸기 파르페', 'r', 100, 5], ['티라미수', 'r', 105, 5], ['해물 파스타', 'r', 110, 6],
+    ['크림 리조또', 'r', 115, 6], ['마카롱 탑', 'r', 120, 6], ['딤섬 세트', 'r', 120, 6], ['마라탕', 'r', 125, 6], ['전복죽', 'r', 130, 7],
+    ['피자 한 판', 'r', 140, 7], ['초밥 세트', 'r', 150, 7], ['황금 붕어빵', 'r', 160, 8], ['치즈 퐁듀', 'r', 170, 8], ['무지개 케이크', 'r', 180, 8],
+    ['삼계탕', 'r', 190, 8], ['갈비찜', 'r', 200, 9], ['장어덮밥', 'r', 210, 9], ['랍스터 구이', 'r', 220, 9], ['양갈비', 'r', 240, 10],
+    ['마법 수프', 'l', 450, 15], ['천년 인삼', 'l', 500, 16], ['용과 만찬', 'l', 600, 18], ['별사탕 산', 'l', 700, 20],
+    ['황금 사과', 'l', 800, 22], ['불사조 알 프라이', 'l', 900, 24],
+    ['황금 디저트 타워', 'p', 1900, 30], ['별빛 코스 요리', 'p', 2900, 40],
+  ] },
+};
+// ── 전쟁모드 상점: 전투용 아이템만 전투력·방어력에 관여한다 ──
+// 등급 비율은 애완모드와 같다. 카테고리마다 80개: 일반 52 · 희귀 20 · 전설 6 · 전설(프리미엄) 2
+// 무기·갑옷: [이름, 등급, 가격, 전투력, 방어력, 색 이름(일반만), 고유 효과(프리미엄만)]
+const G = (base, price, atk, def, vars) => vars.split(' ').map(v => [`${v} ${base}`, 'n', price, atk, def, v]);
+// 물약: [이름, 등급, 가격, 효과 목록, 고유 효과(프리미엄만)]
+// 효과: ['heal', 즉시 회복량(999=완전 회복)] / ['regen', 턴마다 회복량, 턴] / ['atk'(전투력) | 'def'(방어력), 증가 %, 전투 판 수]
+// 일반 물약은 작은·큰 2가지. 큰 것은 양이 2배(즉시 회복량 2배, 지속 효과는 시간 2배)이고 가격은 1.8배
+// 같은 종류 효과끼리는 등급이 높을수록 수치가 크다 (회복량·턴당 재생량·증가 % 모두 일반 < 희귀 ≤ 전설)
+const P = (base, price, fx) => [
+  [`작은 ${base}`, 'n', price, fx],
+  [`큰 ${base}`, 'n', Math.round(price * 1.8 / 5) * 5, fx.map(([k, a, t]) => k === 'heal' ? [k, a * 2] : [k, a, t * 2])],
+];
+const WAR_SHOP = {
+  weapon: { label: '무기', icon: 'i-sword', kind: 'gear', items: [
+    ...G('나무 막대', 15, 2, 0, '갈색 초록'), ...G('새총', 20, 3, 0, '빨간 파란'), ...G('목검', 25, 3, 1, '갈색 검은'),
+    ...G('뿅망치', 25, 4, 0, '빨간 노란'), ...G('돌도끼', 30, 4, 1, '회색 갈색'), ...G('단검', 35, 5, 0, '하얀 검은'),
+    ...G('죽창', 35, 4, 2, '초록 노란'), ...G('몽둥이', 40, 6, 0, '갈색 회색'), ...G('부메랑', 40, 5, 1, '주황 하늘색'),
+    ...G('철검', 50, 7, 1, '하얀 검은'), ...G('손도끼', 55, 8, 0, '빨간 회색'), ...G('창', 60, 8, 1, '파란 노란'),
+    ...G('활', 60, 7, 2, '원목 초록'), ...G('석궁', 65, 9, 0, '검은 갈색'), ...G('곤봉', 70, 9, 1, '보라 갈색'),
+    ...G('쌍단검', 75, 10, 0, '민트 빨간'), ...G('철퇴', 80, 10, 1, '회색 검은'), ...G('장검', 85, 10, 2, '하얀 파란'),
+    ...G('도끼창', 90, 11, 1, '빨간 검은'), ...G('마법 막대', 95, 12, 0, '보라 분홍'), ...G('대검', 100, 12, 1, '하얀 검은'),
+    ...G('채찍', 105, 13, 0, '갈색 검은'), ...G('삼지창', 110, 12, 2, '파란 민트'), ...G('큰 낫', 120, 14, 0, '검은 보라'),
+    ...G('방패검', 130, 12, 4, '파란 빨간'), ...G('전투 망치', 150, 14, 2, '회색 주황'),
+    ['불꽃 검', 'r', 220, 18, 2], ['얼음 창', 'r', 240, 19, 3], ['번개 활', 'r', 260, 21, 0], ['독 단검', 'r', 280, 22, 0], ['바람 부메랑', 'r', 300, 22, 2],
+    ['기사의 장검', 'r', 320, 24, 4], ['마법사 지팡이', 'r', 340, 25, 1], ['해적 커틀러스', 'r', 350, 25, 2], ['닌자 표창', 'r', 360, 27, 0], ['사무라이 카타나', 'r', 380, 28, 1],
+    ['바이킹 도끼', 'r', 400, 29, 3], ['엘프 장궁', 'r', 420, 30, 0], ['드워프 망치', 'r', 440, 30, 5], ['수정 단검', 'r', 460, 32, 1], ['그림자 낫', 'r', 480, 33, 0],
+    ['성기사 철퇴', 'r', 500, 33, 6], ['폭풍 삼지창', 'r', 540, 35, 3], ['용사의 검', 'r', 580, 37, 4], ['미스릴 쌍검', 'r', 610, 39, 2], ['거인의 도끼', 'r', 650, 40, 5],
+    ['엑스칼리버', 'l', 1500, 55, 10], ['묠니르', 'l', 1800, 60, 8], ['드래곤 슬레이어', 'l', 2100, 66, 6],
+    ['별을 가르는 활', 'l', 2400, 70, 4], ['심연의 마검', 'l', 2700, 75, 5], ['태양신의 창', 'l', 3000, 80, 12],
+    ['흡혈귀의 낫', 'p', 9900, 85, 5, null, '흡혈: 준 피해의 20%만큼 내 체력을 회복해요'],
+    ['천둥 신의 창', 'p', 12900, 90, 8, null, '연쇄 번개: 공격할 때 30% 확률로 상대 클랜원 2명에게도 절반의 피해를 줘요'],
+  ] },
+  armor: { label: '갑옷', icon: 'i-shield', kind: 'gear', items: [
+    ...G('천 두건', 15, 0, 2, '하얀 파란'), ...G('가죽 장갑', 20, 1, 2, '갈색 검은'), ...G('나무 방패', 25, 0, 3, '원목 초록'),
+    ...G('가죽 모자', 30, 1, 3, '갈색 초록'), ...G('천 갑옷', 30, 0, 4, '하얀 하늘색'), ...G('가죽 장화', 35, 1, 4, '갈색 검은'),
+    ...G('냄비 투구', 35, 0, 5, '회색 빨간'), ...G('솜 조끼', 40, 1, 5, '노란 분홍'), ...G('가죽 갑옷', 45, 0, 6, '갈색 빨간'),
+    ...G('가죽 방패', 50, 1, 6, '갈색 파란'), ...G('철 투구', 55, 0, 7, '회색 검은'), ...G('사슬 장갑', 60, 1, 7, '회색 하얀'),
+    ...G('철 장화', 60, 2, 6, '회색 검은'), ...G('둥근 방패', 65, 0, 8, '빨간 파란'), ...G('사슬 갑옷', 70, 1, 8, '회색 하얀'),
+    ...G('비늘 조끼', 75, 0, 9, '초록 파란'), ...G('철 어깨받이', 80, 1, 9, '회색 주황'), ...G('가시 장갑', 85, 3, 8, '검은 빨간'),
+    ...G('철 방패', 90, 0, 10, '회색 파란'), ...G('판금 투구', 95, 1, 10, '하얀 검은'), ...G('경갑', 100, 0, 11, '민트 보라'),
+    ...G('강철 장화', 105, 1, 11, '회색 검은'), ...G('탑 방패', 115, 0, 12, '파란 빨간'), ...G('판금 조끼', 120, 1, 12, '하얀 검은'),
+    ...G('방탄 망토', 130, 0, 13, '검은 보라'), ...G('판금 갑옷', 150, 2, 14, '하얀 주황'),
+    ['불꽃 방패', 'r', 220, 2, 18], ['얼음 갑옷', 'r', 240, 0, 20], ['바람 망토', 'r', 260, 3, 19], ['거북 등껍질', 'r', 280, 0, 22], ['기사단 갑옷', 'r', 300, 2, 23],
+    ['성기사 방패', 'r', 320, 0, 25], ['닌자 경갑', 'r', 340, 5, 22], ['엘프 사슬갑옷', 'r', 360, 2, 26], ['드워프 판금', 'r', 380, 1, 28], ['수정 방패', 'r', 400, 0, 29],
+    ['그림자 망토', 'r', 420, 6, 27], ['미스릴 사슬갑옷', 'r', 440, 2, 31], ['거북왕 방패', 'r', 460, 0, 33], ['바이킹 투구', 'r', 480, 3, 32], ['사막 전사 갑옷', 'r', 500, 2, 34],
+    ['근위대 갑옷', 'r', 520, 2, 35], ['강철 거인 갑주', 'r', 540, 1, 36], ['은빛 방패', 'r', 560, 0, 37], ['폭풍 갑옷', 'r', 600, 4, 38], ['용사의 갑옷', 'r', 650, 5, 40],
+    ['아이기스 방패', 'l', 1500, 0, 55], ['드래곤 하트 갑옷', 'l', 1800, 5, 60], ['천상의 갑주', 'l', 2100, 6, 64],
+    ['불멸의 투구', 'l', 2400, 4, 68], ['심연의 갑옷', 'l', 2700, 8, 72], ['태양신의 갑옷', 'l', 3000, 10, 78],
+    ['가시 용왕의 갑옷', 'p', 9900, 5, 85, null, '가시 반사: 공격받으면 받은 피해의 30%를 공격한 상대에게 돌려줘요'],
+    ['수호 여신의 갑주', 'p', 12900, 0, 90, null, '수호의 빛: 같은 클랜원 모두의 방어력이 10% 올라요'],
+  ] },
+  potion: { label: '물약', icon: 'i-potion', kind: 'potion', items: [
+    ...P('꿀물', 6, [['heal', 10]]), ...P('약초 즙', 9, [['heal', 16]]), ...P('빨간 물약', 12, [['heal', 22]]),
+    ...P('진한 빨간 물약', 18, [['heal', 36]]), ...P('치유의 샘물', 28, [['heal', 60]]),
+    ...P('따뜻한 차', 8, [['regen', 3, 5]]), ...P('재생 연고', 12, [['regen', 5, 5]]), ...P('초록 물약', 16, [['regen', 7, 5]]),
+    ...P('진한 초록 물약', 24, [['regen', 10, 5]]), ...P('숲의 이슬', 28, [['regen', 8, 8]]),
+    ...P('매운 고추즙', 10, [['atk', 5, 1]]), ...P('힘의 물약', 15, [['atk', 8, 1]]), ...P('분노의 물약', 20, [['atk', 10, 1]]),
+    ...P('진한 힘의 물약', 40, [['atk', 12, 2]]), ...P('전사의 술', 50, [['atk', 15, 2]]),
+    ...P('단단 우유', 10, [['def', 5, 1]]), ...P('방어의 물약', 15, [['def', 8, 1]]), ...P('철벽 물약', 20, [['def', 10, 1]]),
+    ...P('진한 방어의 물약', 40, [['def', 12, 2]]), ...P('바위 껍질 물약', 50, [['def', 15, 2]]),
+    ...P('응원 주스', 20, [['atk', 5, 1], ['def', 5, 1]]), ...P('에너지 드링크', 20, [['heal', 22], ['atk', 5, 1]]),
+    ...P('보양 수프', 28, [['heal', 36], ['regen', 5, 5]]), ...P('기합 물약', 28, [['atk', 8, 1], ['def', 8, 1]]),
+    ...P('만능 물약', 35, [['heal', 36], ['atk', 5, 1], ['def', 5, 1]]), ...P('회복 젤리', 50, [['heal', 60], ['regen', 8, 8]]),
+    ['대형 치유 물약', 'r', 120, [['heal', 150]]], ['엘프의 물약', 'r', 160, [['heal', 200]]], ['성수', 'r', 200, [['heal', 250]]],
+    ['생명의 이슬', 'r', 140, [['regen', 15, 12]]], ['트롤의 피', 'r', 180, [['regen', 20, 12]]], ['재생의 비약', 'r', 220, [['regen', 25, 12]]],
+    ['광폭화 물약', 'r', 150, [['atk', 25, 4]]], ['용기의 비약', 'r', 200, [['atk', 30, 4]]], ['거인의 힘', 'r', 260, [['atk', 35, 4]]],
+    ['강철 피부 물약', 'r', 150, [['def', 25, 4]]], ['거북의 비약', 'r', 200, [['def', 30, 4]]], ['금강 물약', 'r', 260, [['def', 35, 4]]],
+    ['마나 폭발 물약', 'r', 180, [['atk', 40, 2]]], ['철의 의지', 'r', 180, [['def', 40, 2]]],
+    ['전투 함성 물약', 'r', 270, [['atk', 25, 4], ['def', 25, 4]]], ['기사의 물약', 'r', 360, [['atk', 30, 4], ['def', 30, 4]]],
+    ['수호 비약', 'r', 260, [['def', 25, 4], ['regen', 15, 12]]], ['회복의 성배', 'r', 240, [['heal', 150], ['regen', 15, 12]]],
+    ['영웅의 비약', 'r', 250, [['heal', 150], ['atk', 25, 4]]], ['결속의 물약', 'r', 380, [['heal', 150], ['atk', 25, 4], ['def', 25, 4]]],
+    ['시간의 모래', 'l', 500, [['regen', 40, 15]]], ['세계수의 수액', 'l', 600, [['heal', 300], ['regen', 30, 12]]],
+    ['용의 피', 'l', 700, [['atk', 50, 6]]], ['아이기스 엘릭서', 'l', 700, [['def', 50, 6]]],
+    ['신들의 넥타르', 'l', 800, [['heal', 999]]], ['전설의 엘릭서', 'l', 900, [['heal', 300], ['atk', 40, 6], ['def', 40, 6]]],
+    ['광전사의 피', 'p', 1900, [['atk', 50, 6]], '광폭화: 체력이 30% 이하일 때 전투력이 2배가 돼요'],
+    ['불사조의 눈물', 'p', 2900, [['heal', 999]], '부활: 다음 전투에서 쓰러지면 체력 50%로 한 번 되살아나요'],
+  ] },
+};
+const ITEM = Object.fromEntries([SHOP, WAR_SHOP].flatMap(set =>
+  Object.entries(set).flatMap(([cat, c]) => c.items.map(it => [it[0], { cat, kind: c.kind, it }]))));
+const owned = new Set();   // 옷·꾸미기·무기·갑옷은 한 번만 구매, 음식·물약은 계속 구매 가능
+const consumable = kind => kind === 'food' || kind === 'potion';
+let shopCat = 'clothes', shopGrade = 'n';
+const curShop = () => state.war ? WAR_SHOP : SHOP;
+
+// 애완 아이템 스탯 (애정만. 전투력·방어력에는 관여하지 않는다)
+const ownedOf = cat => (SHOP[cat] || WAR_SHOP[cat]).items.filter(it => owned.has(it[0]));
+const outfitLove = () => Math.max(0, ...ownedOf('clothes').map(it => it[3]));
+const decoLove = () => ownedOf('deco').reduce((s, it) => s + it[3], 0);
+
+// 전투 장비: 무기는 전투력이 가장 높은 것, 갑옷은 방어력이 가장 높은 것을 자동으로 장착 (장착 화면은 나중에)
+const bestBy = (list, i) => list.reduce((b, it) => (!b || it[i] > b[i] ? it : b), null);
+const equipped = () => ({ weapon: bestBy(ownedOf('weapon'), 3), armor: bestBy(ownedOf('armor'), 4) });
+
+// 물약 효과: 전투력·방어력 증가는 전투 판 수, 재생은 턴(목업에서는 1초 = 1턴)
+// 같은 종류 효과는 겹쳐 쌓이지 않고, 더 강한(같으면 더 긴) 것 하나만 남는다
+const buffs = [];
+const maxHp = () => 300 + Math.floor(state.cares / 10) * 30;   // 레벨이 오르면 최대 체력도 오른다
+const curBuff = k => buffs.find(b => b.k === k);
+const buffPct = k => curBuff(k)?.a || 0;
+const fxText = ([k, a, t]) => ({
+  heal: a >= 999 ? '체력 완전 회복' : `체력 즉시 +${a}`,
+  regen: `체력 매 턴 +${a} · ${t}턴`,
+  atk: `전투력 +${a}% · ${t}판`,
+  def: `방어력 +${a}% · ${t}판`,
+})[k];
+const FX_ICON = { heal: 'i-plus', regen: 'i-drop', atk: 'i-sword', def: 'i-shield' };
+
+// ── 아이템 그림: 이름의 단어로 그림(a-…)을 고르고, 색은 --a/--b로 입힌다. 등급이 높을수록 장식(o-…)을 더 얹는다 ──
+// 'pattern:그림' 순서대로 먼저 맞는 것을 쓴다. 마지막 '.'은 기본 그림
+const ART_RULES = Object.fromEntries(Object.entries({
+  clothes: '왕관:crown|날개:wings|망토:cape|갑옷|갑주:armor|투구:helm|털모자|비니:beanie|야구 모자:cap|모자|카우보이:hat|머리띠:ribbon|목도리:scarf|안경:glasses|양말:sock|장화:boot|슬리퍼|운동화:shoe|바지:pants|치마|드레스|앞치마:dress|나시:tank|조끼:vest|후드:hood|티셔츠|체육복:tee|.:jacket',
+  deco: '선인장:cactus|화분|정원:pot|꽃병:vase|아치:arch|액자|포스터:frame|달력:calendar|거울:mirror|시계:clock|스툴:stool|의자:chair|그네:swing|소파:sofa|쿠션|방석:cushion|무드등|천장:moon|조명:lamp|책장|선반:shelf|캣타워:cattower|서랍장:drawer|냉장고:fridge|해먹:hammock|침대|이불:bed|테이블:table|러그:rug|커튼:curtain|어항:aquarium|피아노:piano|트리하우스:treehouse|성$:castle|다락방:house|미끄럼틀:slide|벽난로:fire|망원경:scope|오락기:arcade|우주선:rocket|분수:fountain|축음기|오르골:gramo|보물상자:chest|바구니|우산꽂이:basket|.:box',
+  food: '사과:apple|파르페|요거트:cup|푸딩:pudding|타워|탑|별사탕 산:tower|팬케이크:pancake|케이크|티라미수:cake|딸기$:berry|당근|인삼:carrot|바나나:banana|우유:milk|쿠키:cookie|붕어빵:fish|주먹밥:onigiri|초밥:sushi|수박:melon|도넛:donut|버거:burger|샌드위치:sandwich|꼬치|탕후루:skewer|아이스크림:cone|핫도그:hotdog|김밥:roll|감자튀김:fries|와플:waffle|피자:pizza|계란|알 프라이:egg|라면|탕|죽|수프|리조또|퐁듀|덮밥|딤섬:bowl|.:plate',
+  weapon: '표창:star|단검:dagger|낫:scythe|삼지창:trident|창:spear|도끼:axe|활|궁:bow|망치|철퇴|묠니르:hammer|곤봉|몽둥이:club|지팡이|막대:staff|새총:sling|부메랑:boomer|채찍:whip|.:sword',
+  armor: '두건|모자:beanie|투구:helm|장갑:glove|장화:boot|방패|등껍질:shield|망토:cape|.:armor',
+  potion: '차$|우유|주스|드링크|수프|술:mug|연고|젤리:jar|모래:hglass|성배|넥타르:chalice|엘릭서|비약|눈물|피$:elixir|이슬|수액|샘물|성수|즙:vial|.:flask',
+}).map(([cat, s]) => [cat, s.split('|').reduce((rules, part) => {
+  // '갑옷|갑주:armor'처럼 ':'가 없는 조각은 다음 조각의 패턴에 붙인다
+  const i = part.lastIndexOf(':');
+  rules.pending.push(i < 0 ? part : part.slice(0, i));
+  if (i >= 0) { rules.list.push([new RegExp(rules.pending.join('|')), part.slice(i + 1)]); rules.pending = []; }
+  return rules;
+}, { list: [], pending: [] }).list]));
+
+// 이름에 든 단어 → 주색 (앞에 있는 것이 우선. 일반 아이템은 색·맛 이름을 쓴다)
+const ART_COLOR = {
+  민트초코: '#9fe0cf', 생크림: '#fffaf2', 슈크림: '#fff0b0', 블루베리: '#a8b0f0', 커스터드: '#ffe8a0', 초코칩: '#e8b878',
+  용사: '#e9edf5', 용과: '#ff9fc4', 성기사: '#fff3c4', 무지개: '#ffc2d9', 불사조: '#ffa86b', 얼음: '#cdeeff', 불꽃: '#ffa86b',
+  번개: '#ffe27a', 천둥: '#ffe27a', 황금: '#ffd84d', 태양: '#ffd84d', 불멸: '#ffd84d', 은하: '#a8b8ff', 별: '#c8c0ff',
+  심연: '#a898e0', 그림자: '#a898e0', 흡혈귀: '#e08aa8', 수정: '#e0d4ff', 미스릴: '#cfe8ff', 은빛: '#e9edf5', 강철: '#e9edf5',
+  판금: '#e9edf5', 사슬: '#e9edf5', 기사: '#e9edf5', 아이기스: '#fff3c4', 천상: '#fff3c4', 천사: '#fffaf2', 수호: '#fff3c4',
+  드래곤: '#a8e09a', 용: '#a8e09a', 가시: '#a8e09a', 독: '#b5e08f', 엘프: '#b5e08f', 숲: '#b5e08f', 바람: '#c8f0e6',
+  폭풍: '#b8d0ff', 우주: '#c8d0ff', 공주: '#ffc2d9', 요정: '#d9f0ff', 아이돌: '#ffc2e6', 마법: '#d4c4ff', 마술사: '#9a9ab8',
+  닌자: '#9a9ab8', 해적: '#9a8aa8', 사무라이: '#ffa8a8', 바이킹: '#d9a477', 드워프: '#d9a477', 거인: '#d4c0a8', 거북: '#a8e09a',
+  가죽: '#c99a6e', 탐험가: '#d9b88a', 카우보이: '#d9a477', 산타: '#ff9f9f', 공룡: '#a8e09a', 고양이: '#ffd6a8', 셰프: '#fffaf2',
+  경찰: '#a8c0f0', 소방관: '#ffa86b', 한복: '#ffb3c7', 구름: '#fffaf2', 오르골: '#ffc2d9', 레트로: '#9fe0cf',
+  딸기: '#ffb3c7', 초코: '#b07a5a', 바닐라: '#fff3d6', 버터: '#ffe08a', 참치: '#ffc2b0', 불고기: '#c98a6a', 마라: '#ff8a6b',
+  매운: '#ff8a6b', 순한: '#ffd9a8', 치즈: '#ffe27a', 야채: '#b5e08f', 햄: '#ffb3b3', 에그: '#fff08a', 간장: '#c98a5a',
+  감자: '#ffe0a0', 양념: '#ff9f7a', 메이플: '#e0a060', 꿀: '#ffd060', 케첩: '#ff8a8a', 크림: '#fff3d6', 안심: '#d08a7a',
+  등심: '#c07a6a', 갈비: '#c98a6a', 팥: '#c07a7a', 카레: '#ffc04d', 스테이크: '#c98a6a', 파스타: '#ffe08a', 랍스터: '#ff9f8a',
+  장어: '#c98a5a', 인삼: '#f0d8a8',
+};
+const FX_COLOR = { heal: '#ff9fb0', regen: '#9fe0b0', atk: '#ffb36b', def: '#9fc8ff' };
+// 얼굴을 그릴 자리 [x, y, 크기]. 가는 그림(검·창·활 등)은 얼굴 대신 반짝이만
+const FACE = {
+  crown: [32, 39, .8], cape: [32, 32, 1], dress: [32, 38, .9], armor: [32, 22, .7], jacket: [32, 40, .8], tee: [32, 38, .9],
+  mirror: [32, 33, .8], chest: [32, 46, .7], treehouse: [32, 17, .8], castle: [32, 37, .7], house: [32, 46, .5],
+  bowl: [32, 42, .9], carrot: [32, 34, .8], plate: [32, 36, .8], tower: [32, 48, .7], apple: [32, 38, 1], egg: [32, 34, .5],
+  hammer: [32, 18, .8], shield: [32, 30, .8], helm: [32, 22, .8], elixir: [32, 41, .6], chalice: [32, 20, .7], flask: [32, 44, .8],
+  hglass: [32, 47, .5], vial: [32, 44, .4], cushion: [32, 33, 1], sofa: [32, 24, .8], bed: [42, 41, .6], rocket: [32, 34, .5],
+};
+
+function itemArt(cat, kind, it) {
+  const [name, g] = it;
+  const arch = ART_RULES[cat].find(([re]) => re.test(name))[1];
+  let a, b;
+  if (kind === 'potion') { a = FX_COLOR[it[3][0][0]]; b = FX_COLOR[it[3][1]?.[0]]; }
+  else {
+    const word = g === 'n' ? it[kind === 'gear' ? 5 : 4] : Object.keys(ART_COLOR).find(k => name.includes(k));
+    a = ART_COLOR[word] || (TINT[word] && `color-mix(in srgb,${TINT[word]} 72%,#fff)`);
+  }
+  if (g === 'l') b ||= '#ffd84d';
+  if (g === 'p') b ||= '#ffb3e6';
+  const style = [a && `--a:${a}`, b && `--b:${b}`].filter(Boolean).join(';');
+  const f = g === 'l' || g === 'p' ? FACE[arch] : null;
+  return `<svg class="art" viewBox="0 0 64 64"${style ? ` style="${style}"` : ''}><use href="#a-${arch}"/>${
+    f ? `<use href="#o-face" transform="translate(${f[0]} ${f[1]}) scale(${f[2]})"/>` : ''}${g === 'n' ? '' : `<use href="#o-${g}"/>`}</svg>`;
+}
+
+// 지금 마시면 달라지는 게 있는 효과인지 (체력이 가득이면 회복은 헛일, 더 약한 효과는 덮어쓰지 못한다)
+const fxUseful = ([k, a, t]) => {
+  if (k === 'heal') return state.hp < maxHp();
+  const cur = curBuff(k);
+  return !cur || a > cur.a || (a === cur.a && t > cur.t);
+};
+
+let regenTimer = null;   // 재생 효과가 걸려 있는 동안에만 돈다
+function drinkPotion(name, effects) {
+  const used = effects.filter(fxUseful);
+  for (const [k, a, t] of used) {
+    if (k === 'heal') { state.hp = Math.min(maxHp(), state.hp + a); continue; }
+    const cur = curBuff(k);
+    if (cur) Object.assign(cur, { a, t }); else buffs.push({ k, a, t });
+    if (k === 'regen' && !regenTimer) regenTimer = setInterval(tickRegen, 1000);
+  }
+  toast(`${name}! ${used.map(fxText).join(', ')}`);   // 상점 창에 가려지는 float 대신 toast
+}
+function tickRegen() {
+  const b = curBuff('regen');
+  if (b) { state.hp = Math.min(maxHp(), state.hp + b.a); if (--b.t <= 0) buffs.splice(buffs.indexOf(b), 1); }
+  if (!curBuff('regen')) { clearInterval(regenTimer); regenTimer = null; }
+  render();
+}
+
+function statHTML(kind, it, statIcon, statName) {
+  const line = (icon, text) => `<div class="item-stat"><svg class="i"><use href="#${icon}"/></svg>${text}</div>`;
+  if (kind === 'gear') {
+    const [, , , atk, def] = it;
+    return `<div class="item-stat gear">${atk ? `<span><svg class="i"><use href="#i-sword"/></svg>전투력 +${atk}</span>` : ''}${
+      def ? `<span><svg class="i"><use href="#i-shield"/></svg>방어력 +${def}</span>` : ''}</div>`;
+  }
+  if (kind === 'potion') return it[3].map(f => line(FX_ICON[f[0]], fxText(f))).join('');
+  return line(statIcon, `${statName} +${it[3]}`);
+}
 
 function renderShop() {
-  const { icon, items } = SHOP[shopCat];
+  const set = curShop(), keys = Object.keys(set);
+  if (!set[shopCat]) shopCat = keys[0];
+  const { stat, kind, items } = set[shopCat];
+  const [statIcon, statName] = STAT[stat] || [];
   const grid = $('shopGrid');
   grid.dataset.cat = shopCat;
-  grid.innerHTML = items.map(([name, price], i) => {
-    const has = shopCat !== 'food' && owned.has(name);
-    return `<article class="item" style="animation-delay:${i * 35}ms">
-      <div class="ph"><svg class="i"><use href="#${icon}"/></svg></div>
+  // 모드에 따라 탭 이름이 바뀐다 (애완: 옷·집 꾸미기·음식 / 전쟁: 무기·갑옷·물약)
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.dataset.cat = keys[i];
+    t.innerHTML = `<svg class="i"><use href="#${set[keys[i]].icon}"/></svg>${set[keys[i]].label}`;
+    t.setAttribute('aria-selected', keys[i] === shopCat);
+  });
+  $('tabThumb').style.transform = `translateX(${keys.indexOf(shopCat) * 100}%)`;
+  // 등급별로 나눠 보기. 전설 탭에는 전설(프리미엄)이 맨 앞에 같이 나온다
+  const match = (sel, g) => g === sel || (sel === 'l' && g === 'p');
+  $('gfilter').innerHTML = [['n', '일반'], ['r', '희귀'], ['l', '전설']].map(([sel, label]) =>
+    `<button class="gchip gc-${sel}" data-g="${sel}" aria-pressed="${sel === shopGrade}">${label}<small>${items.filter(it => match(sel, it[1])).length}</small></button>`).join('');
+  const shown = items.filter(it => match(shopGrade, it[1])).sort((a, b) => (b[1] === 'p') - (a[1] === 'p'));
+  grid.innerHTML = shown.map((it, i) => {
+    const [name, g, price] = it;
+    const fx = kind === 'gear' ? it[6] : kind === 'potion' ? it[4] : null;
+    return `<article class="item g-${g}" style="animation-delay:${Math.min(i, 12) * 30}ms">
+      <div class="ph"><span class="grade">${GRADE[g]}</span>${itemArt(shopCat, kind, it)}</div>
       <div class="item-body">
         <div class="item-name">${name}</div>
+        ${statHTML(kind, it, statIcon, statName)}
+        ${fx ? `<div class="item-fx"><svg class="i"><use href="#i-star"/></svg><span>${fx}</span></div>` : ''}
         <div class="item-row">
-          <span class="price"><svg class="i"><use href="#i-coin"/></svg>${price}</span>
-          <button class="buy" data-name="${name}" data-price="${price}" ${has ? 'disabled' : ''}>${has ? '보유' : '구매'}</button>
+          <span class="price">${g === 'p' ? won(price) : `<svg class="i"><use href="#i-coin"/></svg>${price.toLocaleString()}`}</span>
+          <button class="buy" data-name="${name}"></button>
         </div>
       </div>
     </article>`;
   }).join('');
-  const idx = Object.keys(SHOP).indexOf(shopCat);
-  $('tabThumb').style.transform = `translateX(${idx * 100}%)`;
-  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.cat === shopCat));
+  syncShop();
+}
+
+// 구매 버튼 글자(구매·결제·보유·장착 중)와 지갑만 맞춘다. 구매 뒤에는 이것만 불러서 카드를 다시 그리지 않는다
+function syncShop() {
+  const eq = equipped();
+  $('shopGrid').querySelectorAll('.buy').forEach(b => {
+    const { kind, it } = ITEM[b.dataset.name];
+    b.disabled = !consumable(kind) && owned.has(it[0]);
+    b.textContent = eq.weapon === it || eq.armor === it ? '장착 중' : b.disabled ? '보유' : it[1] === 'p' ? '결제' : '구매';
+    b.setAttribute('aria-label', `${it[0]} ${b.textContent}`);
+  });
   $('walletAmt').textContent = state.cash.toLocaleString();
 }
 
@@ -543,21 +1076,47 @@ document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   shopCat = t.dataset.cat; renderShop(); $('shopGrid').scrollTop = 0;
 });
 
+$('gfilter').onclick = e => {
+  const c = e.target.closest('.gchip');
+  if (!c || c.dataset.g === shopGrade) return;
+  shopGrade = c.dataset.g; renderShop(); $('shopGrid').scrollTop = 0;
+};
+
 $('shopGrid').onclick = e => {
   const b = e.target.closest('.buy');
   if (!b || b.disabled) return;
-  const price = +b.dataset.price;
+  const { cat, kind, it } = ITEM[b.dataset.name];
+  const [name, g, price] = it;
+  // 프리미엄은 캐시로 못 사고 직접 결제 → 지금은 페이크 도어
+  if (g === 'p') { openSoon(`premium:${name}`); return; }
+  // 지금 마셔도 달라지는 게 없는 물약은 캐시를 쓰기 전에 막는다
+  if (kind === 'potion' && !it[3].some(fxUseful)) {
+    toast(it[3][0][0] === 'heal' ? '체력이 이미 가득 차 있어요' : '이미 같거나 더 강한 효과가 걸려 있어요');
+    return;
+  }
   if (state.cash < price) {
     retrigger($('wallet'), 'shake');
-    toast('캐시가 부족해요 · 충전 팝업은 다음 단계');
+    openTopup(price, 'buy_item');
     return;
   }
   state.cash -= price;
-  if (shopCat !== 'food') owned.add(b.dataset.name);
   stats.buy++;
-  if (shopCat === 'clothes') stats.buyClothes++;
-  render(); renderShop();
-  toast(`${b.dataset.name} 구매 완료!`);
+  if (cat === 'clothes') stats.buyClothes++;
+  // 상점 창이 방을 가리고 있어서 결과는 float가 아니라 toast로 알린다
+  if (cat === 'food') {
+    const before = Math.floor(state.cares / 10);
+    state.cares += it[3];
+    toast(`${name} 냠냠! 경험치 +${it[3]}`);
+    if (Math.floor(state.cares / 10) > before) toast(`레벨 업! Lv.${Math.floor(state.cares / 10)}`);
+  } else if (kind === 'potion') {
+    drinkPotion(name, it[3]);
+  } else {
+    owned.add(name);
+    const eq = equipped();
+    if (kind === 'gear') toast(eq[cat] === it ? `${name} 장착! 전투력 +${it[3]} · 방어력 +${it[4]}` : `${name} 구매 완료! (더 좋은 장비를 장착 중)`);
+    else toast(`${name} 구매 완료! 애정 +${it[3]}`);
+  }
+  render(); syncShop();
   checkMissions();
 };
 
@@ -729,6 +1288,103 @@ function closeSheet() {
   openSheetEl = null;
 }
 
+// ── 충전 팝업 (페이크 도어: 실제 결제는 아직 없음) ──
+// [캐시, 원]. 기본 1캐시 = 1원, 큰 상품일수록 할인을 더 해 준다
+const TOPUP = [[100, 100], [200, 190], [500, 450], [1000, 880], [2000, 1700], [4000, 3200], [10000, 7500]];
+const fakeDoorLogs = [];   // 나중에 fakeDoor.ts(fake_door_logs 저장) 호출로 교체
+function logFakeDoor(event_type, tier, shortage_reason) {
+  const row = { event_type, tier, shortage_reason };
+  fakeDoorLogs.push(row);
+  console.log('fake_door_logs', row);
+}
+const won = n => `${n.toLocaleString()}원`;
+let topupCtx = null, topupInerted = [], topupOpener = null;
+
+function packHTML([amt, price], i, best) {
+  const off = Math.round((1 - price / amt) * 100);
+  return `<button class="pack${best ? ' best' : ''}" data-amt="${amt}" style="animation-delay:${i * 30}ms">
+    <span class="coin"><svg class="i"><use href="#i-coin"/></svg></span>
+    <span class="pack-amt">${amt.toLocaleString()} 캐시</span>
+    <span class="pack-price">${off ? `<span class="was"><em class="off">-${off}%</em><s>${won(amt)}</s></span>` : ''}<span class="won">${won(price)}</span></span>
+  </button>`;
+}
+
+function renderTopup() {
+  const short = topupCtx.need - state.cash;
+  let body;
+  if (short > 0) {
+    // 부족한 만큼을 딱 채우는 가장 작은 상품을 추천, 그보다 큰 상품은 아래에
+    let b = TOPUP.findIndex(([amt]) => amt >= short);
+    if (b < 0) b = TOPUP.length - 1;
+    const more = TOPUP.slice(b + 1);
+    body = `<p class="short-note"><svg class="i"><use href="#i-coin"/></svg><span>캐시가 <b>${short.toLocaleString()}</b> 부족해요</span></p>
+      ${packHTML(TOPUP[b], 0, true)}
+      ${more.length ? `<p class="topup-label">더 많이 충전하고 더 할인받기</p>${more.map((p, i) => packHTML(p, i + 1)).join('')}` : ''}`;
+  } else {
+    body = TOPUP.map((p, i) => packHTML(p, i)).join('');
+  }
+  $('topupCard').innerHTML = `<header class="sheet-head">
+      <h2 id="topupTitle">캐시 충전</h2>
+      <div class="wallet"><svg class="i"><use href="#i-coin"/></svg><span>${state.cash.toLocaleString()}</span></div>
+      <button class="close" data-topup-close aria-label="닫기"><svg class="i"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="topup-body">${body}</div>`;
+}
+
+// 뒤쪽(열려 있는 상점 포함)은 막고, 닫을 때 막았던 것만 다시 푼다. 키보드 포커스는 팝업 안으로 옮겼다가 닫을 때 돌려준다
+function showTopupLayer() {
+  topupOpener = document.activeElement;
+  topupInerted = [...room.children].filter(el => !['topup', 'toast'].includes(el.id) && !el.inert);
+  topupInerted.forEach(el => el.inert = true);
+  $('topup').classList.add('on');
+  $('topup').setAttribute('aria-hidden', 'false');
+  $('topup').inert = false;
+  $('topupCard').querySelector('button').focus({ preventScroll: true });
+}
+// need: 하려던 행동의 비용(직접 열면 0), reason: shortage_reason (feed / clean / shower / buy_item ...)
+// shortage_reason은 schema.sql에서 NOT NULL이라, 상점에서 직접 연 경우도 buy_item으로 남긴다
+function openTopup(need = 0, reason = 'buy_item') {
+  topupCtx = { need, reason };
+  renderTopup();
+  showTopupLayer();
+  logFakeDoor('popup_shown', null, reason);
+}
+function closeTopup() {
+  if (!topupCtx) return;
+  $('topup').classList.remove('on');
+  $('topup').setAttribute('aria-hidden', 'true');
+  $('topup').inert = true;   // 닫힌 팝업 속 버튼에 Tab으로 들어가지 않게
+  topupInerted.forEach(el => el.inert = false);
+  topupInerted = [];
+  topupCtx = null;
+  if (topupOpener?.isConnected) topupOpener.focus({ preventScroll: true });
+}
+
+const SOON_HTML = `<div class="topup-done">
+    <div class="done-ico"><svg class="i"><use href="#i-coin"/></svg></div>
+    <h3 id="topupTitle">준비 중이에요</h3>
+    <p>출시되면 알려드릴게요</p>
+    <button class="btn-primary" data-topup-close>알겠어요</button>
+  </div>`;
+
+$('topup').onclick = e => {
+  if (e.target.id === 'topup' || e.target.closest('[data-topup-close]')) return closeTopup();
+  const p = e.target.closest('.pack');
+  if (!p) return;
+  logFakeDoor('tier_clicked', p.dataset.amt, topupCtx.reason);
+  $('topupCard').innerHTML = SOON_HTML;
+  $('topupCard').querySelector('button').focus({ preventScroll: true });
+};
+
+// 프리미엄 아이템 결제 버튼: 충전 목록 없이 바로 "준비 중". tier에 premium:아이템이름을 남긴다
+function openSoon(tier) {
+  topupCtx = { need: 0, reason: 'buy_item' };
+  $('topupCard').innerHTML = SOON_HTML;
+  showTopupLayer();
+  logFakeDoor('tier_clicked', tier, topupCtx.reason);
+}
+$('topupBtn').onclick = () => openTopup();
+
 // ── 미션 (더미 진행도. 나중에 care_logs·cash_logs 등을 세서 계산) ──
 const stats = {
   feed: 0, clean: 0, shower: 0, shopOpen: 0, customSave: 0, modeSwitch: 0, buy: 0, buyClothes: 0,
@@ -746,7 +1402,7 @@ const MISSION_TIERS = [
     M('t-clean',  'i-sparkle', '첫 청소',       '아래 청소 버튼을 눌러요',              1, () => stats.clean,      { cash: 15 }),
     M('t-shower', 'i-drop',    '첫 샤워',       '아래 샤워 버튼을 눌러요',              1, () => stats.shower,     { cash: 15 }),
     M('t-shop',   'i-bag',     '상점 구경',     '오른쪽 위 상점을 열어 봐요',            1, () => stats.shopOpen,   { cash: 10 }),
-    M('t-buy',    'i-coin',    '첫 쇼핑',       '상점에서 아무 물건이나 사요',           1, () => stats.buy,        { cash: 20, item: '벽 액자' }),
+    M('t-buy',    'i-coin',    '첫 쇼핑',       '상점에서 아무 물건이나 사요',           1, () => stats.buy,        { cash: 20, item: '하얀 벽 액자' }),
     M('t-custom', 'i-edit',    '나만의 캐릭터', '캐릭터를 눌러 꾸미고 저장해요',         1, () => stats.customSave, { cash: 20 }),
     M('t-mode',   'i-swords',  '전쟁모드 구경', '위쪽 가운데 스위치를 눌러요',           1, () => stats.modeSwitch, { cash: 10 }),
   ]},
@@ -754,12 +1410,12 @@ const MISSION_TIERS = [
     M('b-care',   'i-heart',   '돌봄 10번',     '밥주기·청소·샤워 아무거나',             10, careTotal,              { cash: 60 }),
     M('b-feed',   'i-bowl',    '밥주기 5번',    '배고프지 않게 챙겨 줘요',               5,  () => stats.feed,       { cash: 30 }),
     M('b-lv',     'i-star',    '레벨 2 달성',   '돌봄 20번이면 레벨 2예요',              2,  level,                  { cash: 80 }),
-    M('b-clothes','i-shirt',   '새 옷 사기',    '상점에서 옷을 1벌 사요',                1,  () => stats.buyClothes, { item: '털모자' }),
+    M('b-clothes','i-shirt',   '새 옷 사기',    '상점에서 옷을 1벌 사요',                1,  () => stats.buyClothes, { item: '빨간 털모자' }),
     M('b-invite', 'i-invite',  '첫 친구 초대',  '초대 링크로 친구 1명을 데려와요',        1,  () => stats.invites,    { cash: 100, item: '초록 화분' }, true),
   ]},
   { lv: 3, name: '숙련', title: '숙련 집사', desc: '친구들과 우정을 쌓아요', bonus: 200, missions: [
     M('s-care',   'i-heart',   '돌봄 30번',     '밥주기·청소·샤워 아무거나',             30, careTotal,              { cash: 150 }),
-    M('s-lv',     'i-star',    '레벨 4 달성',   '돌봄 40번이면 레벨 4예요',              4,  level,                  { cash: 150, item: '스탠드 조명' }),
+    M('s-lv',     'i-star',    '레벨 4 달성',   '돌봄 40번이면 레벨 4예요',              4,  level,                  { cash: 150, item: '하얀 스탠드 조명' }),
     M('s-visit',  'i-home',    '친구 집 방문 3번','친구 집에 놀러 가요',                 3,  () => stats.visits,     { cash: 80 }, true),
     M('s-gift',   'i-gift',    '선물 5번',      '친구 펫에게 밥·청소를 대신 해 줘요',     5,  () => stats.gifts,      { cash: 120, item: '원목 의자' }, true),
     M('s-invite', 'i-invite',  '친구 3명 초대', '내 초대 링크로 3명을 데려와요',          3,  () => stats.invites,    { cash: 250 }, true),
@@ -891,12 +1547,13 @@ $('missionBtn').onclick = openMissions;
 $('pet').onclick = () => { hop(); openCustom(); };
 $('scrim').onclick = closeSheet;
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = closeSheet);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') topupCtx ? closeTopup() : closeSheet(); });
 drawCharacter();
 // 개발용: home.html#shop / #custom 으로 바로 열기
 if (location.hash === '#shop') openShop();
 if (location.hash === '#custom') openCustom();
 if (location.hash === '#missions') openMissions();
+if (location.hash === '#topup') openTopup();
 
 render();
 updateMissionBadge();
