@@ -8,6 +8,8 @@ import RoomBackground from './game/RoomBackground';
 
 interface PetCreationProps {
   onPetCreated: (pet: Pet) => void;
+  busy?: boolean;           // 가입 처리 중이면 시작하기를 잠근다 (AuthGate)
+  error?: string | null;    // 가입이 실패했을 때 보여 줄 문장 (AuthGate)
 }
 
 // TODO: src/lib/pet.ts 가 main 에 들어오면 createPet(name, userId) 로 바꾼다 (기본값은 그 함수와 같게 맞춰 둠)
@@ -25,14 +27,14 @@ function makePet(name: string, userId: string): Pet {
 }
 
 // 첫 화면: 캐릭터 모습을 고르고 이름을 지으면 내 집으로
-export default function PetCreation({ onPetCreated }: PetCreationProps) {
+export default function PetCreation({ onPetCreated, busy = false, error = null }: PetCreationProps) {
   const [cfg, setCfg] = useState<CharConfig>(DEFAULT_CFG);
   const [name, setName] = useState('');
   const trimmed = name.trim();
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (!trimmed) return;
+    if (!trimmed || busy) return;
     saveCfg(cfg);
     onPetCreated(makePet(trimmed, `user_${Date.now()}`));
   };
@@ -51,12 +53,13 @@ export default function PetCreation({ onPetCreated }: PetCreationProps) {
           <label className="flex items-center gap-2">
             <span className="sr-only">이름</span>
             <input value={name} onChange={e => setName(e.target.value)} maxLength={12} placeholder="이름을 지어 주세요" autoComplete="off"
-              className="h-[46px] min-w-0 flex-1 rounded-[14px] bg-(--chip-bg) px-4 text-[15px] font-bold outline-none placeholder:font-semibold placeholder:text-(--ink-2) focus:ring-2 focus:ring-(--primary)" />
+              className="h-[46px] min-w-0 flex-1 rounded-[14px] bg-(--chip-bg) px-4 text-base font-bold outline-none placeholder:font-semibold placeholder:text-(--ink-2) focus:ring-2 focus:ring-(--primary)" />
             <span className="w-9 text-right text-[11px] font-bold text-(--ink-2) tabular-nums">{name.length}/12</span>
           </label>
-          <button disabled={!trimmed}
+          {error && <p role="alert" className="px-1 text-xs font-bold text-[#d03a40]">{error}</p>}
+          <button disabled={!trimmed || busy}
             className="h-[46px] rounded-[14px] bg-(--primary) text-[15px] font-extrabold text-white shadow-[0_6px_14px_rgba(124,108,246,.3)] transition-transform active:scale-97 disabled:bg-(--chip-bg) disabled:text-(--ink-2) disabled:shadow-none">
-            시작하기
+            {busy ? '가입하는 중…' : '시작하기'}
           </button>
         </footer>
       </form>
