@@ -75,9 +75,9 @@ export default function TopupPopup({ ctx, cash, onClose }: { ctx: TopupCtx; cash
             <div className="mx-auto mb-3.5 grid size-14 place-items-center rounded-[18px] bg-[#fff0d2] text-[#e0950e] war:bg-[rgba(255,183,77,.16)] war:text-[#ffb74d]">
               <Icon name="i-coin" className="size-7" />
             </div>
-            <h3 id="topupTitle" className="text-lg font-extrabold">준비 중이에요</h3>
-            <p className="mt-1.5 text-[13px] text-(--ink-2)">출시되면 알려드릴게요</p>
-            <button onClick={close} className="mt-5 h-[46px] w-full rounded-[14px] bg-(--primary) text-[15px] font-extrabold text-white shadow-[0_6px_14px_rgba(124,108,246,.3)]">알겠어요</button>
+            <h3 id="topupTitle" className="text-lg font-extrabold">충전 완료!</h3>
+            <p className="mt-1.5 text-[13px] text-(--ink-2)">게임을 계속 즐겨보세요</p>
+            <button onClick={close} className="mt-5 h-[46px] w-full rounded-[14px] bg-(--primary) text-[15px] font-extrabold text-white shadow-[0_6px_14px_rgba(124,108,246,.3)]">닫기</button>
           </div>
         ) : (
           <>
