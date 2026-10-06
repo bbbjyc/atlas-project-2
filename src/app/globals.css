@@ -103,8 +103,8 @@ button { cursor: pointer; }
 
 /* ── 캐릭터 파츠 모션: 팔·몸만 따로 움직인다 (Character.tsx). 손에 든 것은 팔과 같이 움직인다 ── */
 .c-part { transform-box: view-box; }
-.c-rarm { transform-origin: 148px 152px; }
-.c-larm { transform-origin: 52px 152px; }
+.c-rarm { transform-origin: 147px 160px; }
+.c-larm { transform-origin: 53px 160px; }
 .c-body { transform-origin: 100px 218px; }
 .c-head { transform-origin: 100px 140px; }
 .anim-attack .c-rarm { animation: c-swing .6s cubic-bezier(.3, .7, .4, 1) both; }
