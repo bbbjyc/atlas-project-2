@@ -55,6 +55,7 @@ const AUTO_CHANGE_RATE = {
 export const EMPTY_STATS = {
   feed: 0, clean: 0, shower: 0, sleep: 0, play: 0, shopOpen: 0, customSave: 0, modeSwitch: 0, buy: 0, buyClothes: 0,
   invites: 0, visits: 0, gifts: 0, battleWins: 0, clanWins: 0, chainDepth: 0,
+  potions: 0, gearBuy: 0,   // 전쟁 미션: 물약을 마신 횟수, 무기·갑옷을 산 횟수
 };
 export type Stats = typeof EMPTY_STATS;
 

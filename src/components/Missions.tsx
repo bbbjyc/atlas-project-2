@@ -4,19 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from './ui/Icon';
 import Sheet, { SheetHead, Wallet } from './ui/Sheet';
 import { useGame } from './game/GameContext';
-import { Mission, MISSION_TIERS, MissionState, Reward } from './missions/missions';
+import { Mission, MissionState, Reward } from './missions/missions';
 
 // 미션 창: 단계(Lv.1 입문 ~ Lv.4 마스터) 탭, 단계 진행도와 보너스, 미션 목록
 export default function Missions({ ms, onClose }: { ms: MissionState; onClose: () => void }) {
   const { pet, war } = useGame();
   // 아직 끝나지 않은 가장 낮은 단계부터 보여 준다
-  const [tierLv, setTierLv] = useState(() => (MISSION_TIERS.find(t => ms.unlocked(t.lv) && !ms.bonusClaimed(t.lv)) ?? MISSION_TIERS[MISSION_TIERS.length - 1]).lv);
+  const [tierLv, setTierLv] = useState(() => (ms.tiers.find(t => ms.unlocked(t.lv) && !ms.bonusClaimed(t.lv)) ?? ms.tiers[ms.tiers.length - 1]).lv);
   const listRef = useRef<HTMLDivElement>(null);
   const { markSeen } = ms;
   useEffect(() => { markSeen(); }, [markSeen]);
   useEffect(() => { listRef.current?.scrollTo(0, 0); }, [tierLv]);
 
-  const t = MISSION_TIERS[tierLv - 1], open = ms.unlocked(t.lv);
+  const t = ms.tiers[tierLv - 1], open = ms.unlocked(t.lv);
   const real = t.missions.filter(m => !m.soon), doneN = real.filter(m => ms.claimed(m.id)).length;
   const canBonus = doneN === real.length && !ms.bonusClaimed(t.lv);
   const order = (m: Mission) => (m.soon ? 3 : ms.claimed(m.id) ? 2 : ms.isDone(m) ? 0 : 1);   // 받을 수 있는 것 → 진행 중 → 완료 순
@@ -24,7 +24,7 @@ export default function Missions({ ms, onClose }: { ms: MissionState; onClose: (
 
   const bonus = () => {
     ms.claimBonus(t);
-    if (t.lv < MISSION_TIERS.length) setTierLv(t.lv + 1);
+    if (t.lv < ms.tiers.length) setTierLv(t.lv + 1);
   };
 
   return (
@@ -32,7 +32,7 @@ export default function Missions({ ms, onClose }: { ms: MissionState; onClose: (
       <SheetHead id="missionTitle" title="미션"><Wallet cash={pet.cash} className="ml-auto" /></SheetHead>
 
       <div role="tablist" className="mx-4 grid grid-cols-4 gap-0.5 rounded-[14px] bg-(--chip-bg) p-1">
-        {MISSION_TIERS.map(x => {
+        {ms.tiers.map(x => {
           const unlocked = ms.unlocked(x.lv);
           return (
             <button key={x.lv} role="tab" aria-selected={x.lv === tierLv} onClick={() => setTierLv(x.lv)}
@@ -90,7 +90,7 @@ export default function Missions({ ms, onClose }: { ms: MissionState; onClose: (
           {doneN} / {real.length}
         </div>
         <div className="mt-2.5 flex items-center gap-[5px] text-xs font-semibold">
-          <Icon name="i-star" className="size-[15px]" />모두 완료 보너스 <b>+{t.bonus}</b>{t.lv < MISSION_TIERS.length ? ' · 다음 단계 열림' : ''}
+          <Icon name="i-star" className="size-[15px]" />모두 완료 보너스 <b>+{t.bonus}</b>{t.lv < ms.tiers.length ? ' · 다음 단계 열림' : ''}
           <button disabled={!canBonus} onClick={bonus}
             className="ml-auto h-[30px] rounded-[10px] bg-white px-3 text-xs font-extrabold text-[#6c5cf0] war:text-[#c8364a] disabled:cursor-default disabled:bg-white/22 disabled:text-white">
             {ms.bonusClaimed(t.lv) ? '받음' : '받기'}
