@@ -51,16 +51,16 @@ export const MISSION_TIERS: Tier[] = [
   ] },
 ];
 
-// 받은 보상·알린 미션을 기억하고, 새로 끝난 미션을 toast 로 알린다
-export function useMissions(stats: Stats, lv: number, toast: (m: string) => void, grant: (r: Reward) => void) {
+// 받은 보상·알린 미션을 기억하고, 새로 끝난 미션을 toast 로 알린다 (애완모드에서만 진행 가능)
+export function useMissions(stats: Stats, lv: number, toast: (m: string) => void, grant: (r: Reward) => void, isWarMode: boolean = false) {
   const [saved, setSaved] = useState<{ claimed: string[]; bonus: number[]; seen: boolean }>(() => {
     const init = { claimed: [] as string[], bonus: [] as number[], seen: false };
     try { return { ...init, ...JSON.parse(localStorage.getItem('atlas.missions') || '{}') }; } catch { return init; }
   });
   useEffect(() => { try { localStorage.setItem('atlas.missions', JSON.stringify(saved)); } catch { /* 무시 */ } }, [saved]);
 
-  const progress = (m: Mission) => Math.min(m.goal, m.get(stats, lv));
-  const isDone = (m: Mission) => progress(m) >= m.goal;
+  const progress = (m: Mission) => isWarMode ? 0 : Math.min(m.goal, m.get(stats, lv)); // 전쟁모드에선 진행도 0
+  const isDone = (m: Mission) => !isWarMode && progress(m) >= m.goal; // 전쟁모드에선 항상 미완료
   const claimed = (id: string) => saved.claimed.includes(id);
   const bonusClaimed = (t: number) => saved.bonus.includes(t);
   const unlocked = (t: number) => t === 1 || bonusClaimed(t - 1);

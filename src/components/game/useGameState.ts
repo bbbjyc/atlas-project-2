@@ -68,15 +68,17 @@ function usePersisted<T>(key: string, init: T) {
 const ownedIn = (owned: string[], cat: string) => owned.map(n => ITEM[n]).filter(it => it?.cat === cat);
 const bestBy = (list: Item[], k: 'atk' | 'def') => list.reduce<Item | null>((b, it) => (!b || it[k] > b[k] ? it : b), null);
 
-export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
+export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWarMode: boolean = false) {
   const [pet, setPet] = useState(initialPet);
   const petRef = useRef(pet);   // 빠르게 여러 번 눌러도 마지막 값에서 계산하도록
   const updatePet = useCallback((fn: (p: Pet) => Pet) => { petRef.current = fn(petRef.current); setPet(petRef.current); }, []);
   const getPet = useCallback(() => petRef.current, []);
   useEffect(() => { savePet(pet); }, [pet]);
 
-  // ── 애완모드 자동 변화 (1시간마다) ──
+  // ── 애완모드 자동 변화 (1시간마다, 애완모드에서만) ──
   useEffect(() => {
+    if (isWarMode) return; // 전쟁모드에선 실행하지 않음
+
     const interval = setInterval(() => {
       updatePet(p => {
         if (!p.isAwake) return p; // 자는 중이면 변화 없음
@@ -95,10 +97,12 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
       });
     }, 10000); // 10초마다 체크 (개발 편의상)
     return () => clearInterval(interval);
-  }, [updatePet]);
+  }, [updatePet, isWarMode]);
 
-  // ── 캐시 자동 회복 (1시간마다 +20) ──
+  // ── 캐시 자동 회복 (1시간마다 +20, 애완모드에서만) ──
   useEffect(() => {
+    if (isWarMode) return; // 전쟁모드에선 실행하지 않음
+
     const interval = setInterval(() => {
       updatePet(p => {
         if (!p.isAwake) return p; // 자는 중이면 회복 없음
@@ -118,7 +122,7 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
       });
     }, 10000);
     return () => clearInterval(interval);
-  }, [updatePet]);
+  }, [updatePet, isWarMode]);
 
   const [{ list: owned }, setOwned] = usePersisted('atlas.owned', { list: [] as string[] });
   const [stats, setStats] = usePersisted('atlas.stats', EMPTY_STATS);
@@ -188,6 +192,8 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
 
   const care = useCallback((action: 'feed' | 'clean' | 'shower' | 'sleep' | 'wake' | 'play') => {
+    if (isWarMode) { toast('전쟁모드에서는 사용할 수 없습니다'); return; }
+
     const p = getPet();
     const now = Math.floor(Date.now() / 1000);
 
@@ -249,7 +255,7 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
     }
 
     bump(action);
-  }, [getPet, updatePet, addExp, toast, bump, cooldowns]);
+  }, [getPet, updatePet, addExp, toast, bump, cooldowns, isWarMode]);
 
   // 쿨타임 감소
   useEffect(() => {

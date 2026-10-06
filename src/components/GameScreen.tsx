@@ -35,9 +35,9 @@ const chipIcon = 'size-3.5 stroke-[2.3]!';
 
 export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const { msg, on, toast } = useToastQueue();
-  const game = useGameState(initialPet, toast);
-  const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns } = game;
   const [war, setWar] = useState(false);
+  const game = useGameState(initialPet, toast, war);
+  const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns } = game;
   const [cfg, setCfg] = useState<CharConfig>(loadCfg);
   const [sheet, setSheet] = useState<SheetName>(null);
   const [topup, setTopup] = useState<TopupCtx | null>(null);
@@ -57,7 +57,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
     if (r.item) own(r.item);
     toast(`보상: ${[r.cash && `${r.cash} 캐시`, r.item].filter(Boolean).join(' + ')}`);
   }, [addCash, own, toast]);
-  const ms = useMissions(game.stats, pet.level, toast, grant);
+  const ms = useMissions(game.stats, pet.level, toast, grant, war);
 
   const float = useCallback((text: string, color: string, delay = 0) => {
     window.setTimeout(() => {

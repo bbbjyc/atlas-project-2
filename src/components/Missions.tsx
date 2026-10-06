@@ -8,7 +8,7 @@ import { Mission, MISSION_TIERS, MissionState, Reward } from './missions/mission
 
 // 미션 창: 단계(Lv.1 입문 ~ Lv.4 마스터) 탭, 단계 진행도와 보너스, 미션 목록
 export default function Missions({ ms, onClose }: { ms: MissionState; onClose: () => void }) {
-  const { pet } = useGame();
+  const { pet, war } = useGame();
   // 아직 끝나지 않은 가장 낮은 단계부터 보여 준다
   const [tierLv, setTierLv] = useState(() => (MISSION_TIERS.find(t => ms.unlocked(t.lv) && !ms.bonusClaimed(t.lv)) ?? MISSION_TIERS[MISSION_TIERS.length - 1]).lv);
   const listRef = useRef<HTMLDivElement>(null);
@@ -49,8 +49,8 @@ export default function Missions({ ms, onClose }: { ms: MissionState; onClose: (
         <h3 className="text-base font-extrabold">Lv.{t.lv} {t.title}</h3>
         <p className="mt-0.5 text-xs opacity-85">{t.desc}</p>
 
-        {/* 애완모드 스탯 바 */}
-        {!pet.isAwake === false && (
+        {/* 애완모드 스탯 바 (애완모드에서만) */}
+        {!war && (
           <div className="mt-2 space-y-1.5 text-[10px]">
             <div className="flex items-center gap-2">
               <span className="min-w-8">배고픔</span>
