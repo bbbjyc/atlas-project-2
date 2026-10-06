@@ -40,6 +40,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns, equip, setEquip } = game;
   const [cfg, setCfg] = useState<CharConfig>(loadCfg);
   const [sheet, setSheet] = useState<SheetName>(null);
+  const [friendsTab, setFriendsTab] = useState<'friends' | 'clan'>('friends');   // 친구 창을 어느 탭으로 열지
   const [topup, setTopup] = useState<TopupCtx | null>(null);
 
   // 애니메이션 다시 틀기용 번호 (바뀔 때마다 처음부터)
@@ -108,6 +109,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   };
 
   const closeSheet = useCallback(() => setSheet(null), []);
+  const openFriends = (tab: 'friends' | 'clan') => { setFriendsTab(tab); setSheet('friends'); };
   const onPetUpdate = useCallback((p: Pet) => updatePet(() => p), [updatePet]);
   const saveCustom = (next: CharConfig, nextEquip: Equip) => {
     setCfg(next); saveCfg(next); setEquip(nextEquip);
@@ -207,8 +209,8 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           <div className="glass absolute bottom-(--safe-b) left-1/2 z-5 flex -translate-x-1/2 gap-1 rounded-3xl p-1.5">
             {war ? (
               <>
-                <DockButton icon="i-swords" label="대전 신청" color="bg-[rgba(255,93,108,.18)] text-[#ff8791]" onClick={() => { setAnim('attack'); soon('대전')(); }} />
-                <DockButton icon="i-shield" label="클랜전" color="bg-[rgba(255,159,74,.18)] text-[#ffb36e]" onClick={() => { setAnim('defend'); soon('클랜전')(); }} />
+                <DockButton icon="i-swords" label="대전 신청" color="bg-[rgba(255,93,108,.18)] text-[#ff8791]" onClick={() => { setAnim('attack'); openFriends('friends'); }} />
+                <DockButton icon="i-shield" label="클랜전" color="bg-[rgba(255,159,74,.18)] text-[#ffb36e]" onClick={() => { setAnim('defend'); openFriends('clan'); }} />
               </>
             ) : CARES.map(c => (
               <DockButton key={c.action} icon={c.icon} label={c.label} color={c.color} cost={COST} onClick={() => doCare(c.action as 'feed' | 'clean' | 'shower', c.label)} />
@@ -216,7 +218,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           </div>
 
           <div className="absolute right-3 bottom-(--safe-b) z-5">
-            <button onClick={() => setSheet('friends')} aria-haspopup="dialog" className="group flex flex-col items-center gap-1 text-[11px] font-bold">
+            <button onClick={() => openFriends('friends')} aria-haspopup="dialog" className="group flex flex-col items-center gap-1 text-[11px] font-bold">
               <span className="grid size-14 place-items-center rounded-[20px] bg-linear-135 from-(--accent-2) to-(--accent) text-white shadow-[0_8px_18px_rgba(255,111,159,.45)] transition-transform group-active:scale-92">
                 <Icon name="i-invite" className="size-[22px]" />
               </span>
@@ -238,7 +240,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
           {sheet === 'custom' && <CustomSheet cfg={cfg} equip={equip} owned={game.owned} war={war} onSave={saveCustom} onClose={closeSheet} />}
           {sheet === 'shop' && <Shop pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} />}
           {sheet === 'missions' && <Missions ms={ms} onClose={closeSheet} />}
-          {sheet === 'friends' && <Friends pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} />}
+          {sheet === 'friends' && <Friends pet={pet} onPetUpdate={onPetUpdate} onClose={closeSheet} initialTab={friendsTab} />}
         </div>
         {topup && <TopupPopup ctx={topup} cash={pet.cash} onClose={closeTopup} />}
 
