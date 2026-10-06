@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* 전쟁모드: .war 안에서만 적용되는 변형 (예: war:text-white) */
+@custom-variant war (&:where(.war, .war *));
+
+@theme {
+  --font-sans: Pretendard, -apple-system, "Malgun Gothic", sans-serif;
+
+  --animate-breathe: breathe 3.2s ease-in-out infinite;
+  --animate-hop: hop .5s cubic-bezier(.3, .7, .4, 1);
+  --animate-blink: blink 4.5s infinite;
+  --animate-flash: flash .45s ease-out;
+  --animate-shake: shake .4s;
+  --animate-pop: pop .3s both;
+  --animate-ping-once: ping-once .5s;
+  --animate-float-up: float-up 1s ease-out forwards;
+
+  @keyframes breathe { 50% { transform: translateY(-2px) scaleY(1.012) } }
+  @keyframes hop { 30% { transform: translateY(-18px) scaleY(1.03) } 65% { transform: translateY(0) scaleY(.95) } 100% { transform: none } }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1) } 96% { transform: scaleY(.08) } }
+  @keyframes flash { 30% { opacity: .35 } }
+  @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) } }
+  @keyframes ping-once { 50% { transform: scale(1.4) } }
+  @keyframes float-up {
+    from { opacity: 0; transform: translate(-50%, 0) scale(.8) }
+    20% { opacity: 1; transform: translate(-50%, -10px) scale(1.05) }
+    to { opacity: 0; transform: translate(-50%, -60px) }
+  }
+}
+
+/* ── 테마 토큰: 애완모드(기본) / 전쟁모드(.war). 화면에서는 bg-(--glass)처럼 쓴다 ── */
+.room {
+  --safe-t: max(14px, env(safe-area-inset-top));
+  --safe-b: max(18px, env(safe-area-inset-bottom));
+  --wall-1: #fdf3e7; --wall-2: #f6e1ca; --dot: rgba(214, 160, 110, .16);
+  --base: #ebcfac; --floor-1: #e0b287; --floor-2: #cc976a; --seam: rgba(120, 70, 35, .13);
+  --rug-1: #ffd3df; --rug-2: #ffb3c7;
+  --glass: rgba(255, 255, 255, .84); --glass-line: rgba(255, 255, 255, .95);
+  --ink: #3a2d4f; --ink-2: #8c81a5; --track: #eee8f7;
+  --accent: #ff6f9f; --accent-2: #ff9a76; --primary: #7c6cf6;
+  --shadow: 0 6px 18px rgba(92, 60, 40, .13), 0 1px 3px rgba(92, 60, 40, .08);
+  --sheet: #fffaf5; --card: #fff; --chip-bg: #f3edf8;
+  --legend-outline: -.6px -.6px 0 #d42a2a, .6px -.6px 0 #d42a2a, -.6px .6px 0 #d42a2a, .6px .6px 0 #d42a2a,
+    0 -.75px 0 #d42a2a, 0 .75px 0 #d42a2a, -.75px 0 0 #d42a2a, .75px 0 0 #d42a2a;
+}
+.room.war {
+  --wall-1: #3b3055; --wall-2: #281f3d; --dot: rgba(255, 255, 255, .05);
+  --base: #1f1830; --floor-1: #2e2540; --floor-2: #1f192d; --seam: rgba(0, 0, 0, .28);
+  --rug-1: #8a2940; --rug-2: #b8425a;
+  --glass: rgba(34, 26, 52, .8); --glass-line: rgba(255, 255, 255, .1);
+  --ink: #fff; --ink-2: #b3a8cf; --track: rgba(255, 255, 255, .12);
+  --accent: #ff5d6c; --accent-2: #ff9f4a; --primary: #ff5d6c;
+  --shadow: 0 8px 22px rgba(0, 0, 0, .35);
+  --sheet: #231b35; --card: #2f2647; --chip-bg: rgba(255, 255, 255, .08);
+}
+
+/* 반투명 유리 패널 (HUD) */
+@utility glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+}
+
+/* 방 배경: 물방울 무늬 벽 / 나무 바닥 */
+@utility room-wall {
+  background: radial-gradient(var(--dot) 1.6px, transparent 1.9px) 0 0 / 22px 22px, linear-gradient(var(--wall-1), var(--wall-2));
+}
+@utility room-floor {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 70px, var(--seam) 70px 72px),
+    repeating-linear-gradient(0deg, transparent 0 44px, var(--seam) 44px 46px),
+    linear-gradient(var(--floor-1), var(--floor-2));
+}
+
+/* 전설 이름: 노랑 + 얇은 빨간 테두리 */
+@utility legend-text {
+  color: #ffd21f;
+  font-weight: 900;
+  text-shadow: var(--legend-outline);
+}
+
+html, body { height: 100%; }
+html { line-height: normal; }   /* 목업과 같은 줄 높이 (Tailwind 기본은 1.5) */
+body {
+  background: #1c1629;
+  display: flex;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button { cursor: pointer; }
