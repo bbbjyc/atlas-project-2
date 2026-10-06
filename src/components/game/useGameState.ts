@@ -9,10 +9,49 @@ export const COST = 10;   // 돌봄 1번에 드는 캐시
 export type CareAction = 'feed' | 'clean' | 'shower';
 export interface Buff { k: 'atk' | 'def' | 'regen'; a: number; t: number }
 
+// 애완모드 스탯 (0~100)
+export interface PetStats {
+  hunger: number;      // 높을수록 배고픔
+  tiredness: number;   // 높을수록 피로
+  cleanliness: number; // 높을수록 깨끗함
+  happiness: number;   // 높을수록 행복함
+  isAwake: boolean;
+  sleepStartTime: number | null;
+  lastUpdateTime: number; // 자동 변화 계산용
+  lastCashRecoveryTime: number; // 캐시 자동 회복용
+}
+
+// 돌봄 행동별 설정
+interface CareConfig {
+  hunger?: number;
+  tiredness?: number;
+  cleanliness?: number;
+  happiness?: number;
+  cost: number;
+  cooldown: number;
+  exp: number;
+}
+
+const CARE_CONFIG: Record<string, CareConfig> = {
+  feed: { hunger: -30, cost: 10, cooldown: 90, exp: 3 },
+  clean: { cleanliness: 40, cost: 15, cooldown: 120, exp: 2 },
+  shower: { cleanliness: 40, cost: 15, cooldown: 120, exp: 2 },
+  sleep: { tiredness: -50, cost: 0, cooldown: 0, exp: 1 },
+  play: { happiness: 30, cost: 5, cooldown: 45, exp: 5 },
+};
+
+// 자동 변화 (1시간마다)
+const AUTO_CHANGE_RATE = {
+  hunger: 10,
+  tiredness: 5,
+  cleanliness: -3,
+  happiness: -2,
+};
+
 // 미션 진행도용 횟수. 아직 없는 기능(초대·방문·선물·대전)은 0에 머문다
 // TODO: DB 가 붙으면 care_logs · cash_logs · visit_logs · battle_logs 를 세서 계산
 export const EMPTY_STATS = {
-  feed: 0, clean: 0, shower: 0, shopOpen: 0, customSave: 0, modeSwitch: 0, buy: 0, buyClothes: 0,
+  feed: 0, clean: 0, shower: 0, sleep: 0, play: 0, shopOpen: 0, customSave: 0, modeSwitch: 0, buy: 0, buyClothes: 0,
   invites: 0, visits: 0, gifts: 0, battleWins: 0, clanWins: 0, chainDepth: 0,
 };
 export type Stats = typeof EMPTY_STATS;
@@ -35,6 +74,51 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
   const updatePet = useCallback((fn: (p: Pet) => Pet) => { petRef.current = fn(petRef.current); setPet(petRef.current); }, []);
   const getPet = useCallback(() => petRef.current, []);
   useEffect(() => { savePet(pet); }, [pet]);
+
+  // ── 애완모드 자동 변화 (1시간마다) ──
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updatePet(p => {
+        if (!p.isAwake) return p; // 자는 중이면 변화 없음
+
+        const now = Math.floor(Date.now() / 1000);
+        const elapsed = Math.max(0, (now - p.lastUpdateTime) / 3600); // 시간 단위
+
+        return {
+          ...p,
+          hunger: Math.min(100, p.hunger + AUTO_CHANGE_RATE.hunger * elapsed),
+          tiredness: Math.min(100, p.tiredness + AUTO_CHANGE_RATE.tiredness * elapsed),
+          cleanliness: Math.max(0, p.cleanliness + AUTO_CHANGE_RATE.cleanliness * elapsed),
+          happiness: Math.max(0, p.happiness + AUTO_CHANGE_RATE.happiness * elapsed),
+          lastUpdateTime: now,
+        };
+      });
+    }, 10000); // 10초마다 체크 (개발 편의상)
+    return () => clearInterval(interval);
+  }, [updatePet]);
+
+  // ── 캐시 자동 회복 (1시간마다 +20) ──
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updatePet(p => {
+        if (!p.isAwake) return p; // 자는 중이면 회복 없음
+
+        const now = Math.floor(Date.now() / 1000);
+        const elapsed = Math.max(0, now - p.lastCashRecoveryTime);
+        const times = Math.floor(elapsed / 3600); // 경과한 시간
+
+        if (times > 0) {
+          return {
+            ...p,
+            cash: Math.min(150, p.cash + 20 * times),
+            lastCashRecoveryTime: now,
+          };
+        }
+        return p;
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [updatePet]);
 
   const [{ list: owned }, setOwned] = usePersisted('atlas.owned', { list: [] as string[] });
   const [stats, setStats] = usePersisted('atlas.stats', EMPTY_STATS);
@@ -100,10 +184,93 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void) {
 
   const own = useCallback((name: string) => setOwned(o => (o.list.includes(name) ? o : { list: [...o.list, name] })), [setOwned]);
 
+  // ── 돌봄 행동 (애완모드) ──
+  const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
+
+  const care = useCallback((action: 'feed' | 'clean' | 'shower' | 'sleep' | 'wake' | 'play') => {
+    const p = getPet();
+    const now = Math.floor(Date.now() / 1000);
+
+    // 특수 행동: 깨우기
+    if (action === 'wake') {
+      if (!p.isAwake) {
+        updatePet(pet => ({ ...pet, isAwake: true, sleepStartTime: null }));
+        bump('feed'); // TODO: 실제로는 다른 카테고리
+      }
+      return;
+    }
+
+    // 특수 행동: 재우기
+    if (action === 'sleep') {
+      if (p.isAwake) {
+        updatePet(pet => ({ ...pet, isAwake: false, sleepStartTime: now }));
+        addExp(1);
+        bump('feed');
+      }
+      return;
+    }
+
+    // 펫이 자는 중이면 불가
+    if (!p.isAwake) { toast('펫이 자고 있습니다'); return; }
+
+    const config = CARE_CONFIG[action as 'feed' | 'clean' | 'shower' | 'play'];
+    if (!config) return;
+
+    // 쿨타임 체크
+    const cd = cooldowns[action] || 0;
+    if (cd > 0) { toast(`아직 준비 중입니다. ${cd}초 후`); return; }
+
+    // 캐시 체크
+    if (p.cash < config.cost) { toast('캐시가 부족합니다'); return; }
+
+    // 놀아주기: 피로도 80 이상이면 불가
+    if (action === 'play' && p.tiredness >= 80) { toast('펫이 너무 피곤합니다'); return; }
+
+    // 행동 실행
+    updatePet(pet => {
+      let changes: Partial<Pet> = { cash: pet.cash - config.cost };
+
+      if ('hunger' in config && config.hunger) changes.hunger = Math.max(0, Math.min(100, pet.hunger + config.hunger));
+      if ('tiredness' in config && config.tiredness) changes.tiredness = Math.max(0, Math.min(100, pet.tiredness + config.tiredness));
+      if ('cleanliness' in config && config.cleanliness) changes.cleanliness = Math.max(0, Math.min(100, pet.cleanliness + config.cleanliness));
+      if ('happiness' in config && config.happiness) changes.happiness = Math.max(0, Math.min(100, pet.happiness + config.happiness));
+
+      return { ...pet, ...changes };
+    });
+
+    // 경험치 추가 (배고픔 80 이상이면 불가)
+    if (p.hunger < 80) {
+      addExp(config.exp);
+    }
+
+    // 쿨타임 설정
+    if (config.cooldown > 0) {
+      setCooldowns(cd => ({ ...cd, [action]: config.cooldown }));
+    }
+
+    bump(action);
+  }, [getPet, updatePet, addExp, toast, bump, cooldowns]);
+
+  // 쿨타임 감소
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCooldowns(cd => {
+        const next = { ...cd };
+        Object.keys(next).forEach(k => {
+          next[k] = Math.max(0, next[k] - 1);
+          if (next[k] === 0) delete next[k];
+        });
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return {
     pet, getPet, updatePet, addExp, addCash, owned, own, stats, bump,
     love, power, def, hp, maxHp, buffs, equipped, fxUseful, drink, toast,
     shops: { pet: SHOP, war: WAR_SHOP },
+    care, cooldowns, // 애완모드
   };
 }
 export type GameState = ReturnType<typeof useGameState>;

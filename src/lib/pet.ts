@@ -30,6 +30,7 @@ export function createPet(name: string, userId: string): Pet {
     lastFeedTime: now,
     lastPlayTime: now,
     lastCashRecoveryTime: now,
+    lastUpdateTime: now,
     sleepStartTime: null,
     updatedAt: now,
 
