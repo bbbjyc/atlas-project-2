@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pet } from '@/types/pet';
 import { Fx, ITEM, Item, SHOP, WAR_SHOP } from '../shop/catalog';
 import { Equip, EQUIP_KEY, slotOf } from '../character/charConfig';
+import { baseAtk, baseDef, maxHp as maxHpAt } from '@/lib/war';   // 전투 능력치 규칙 (레벨 1 이 시작, 레벨마다 늘어남)
 import { savePet } from './storage';
 
 export const COST = 10;   // 돌봄 1번에 드는 캐시
@@ -58,7 +59,7 @@ export const EMPTY_STATS = {
 export type Stats = typeof EMPTY_STATS;
 
 // 브라우저에 남겨 두는 값 (새로고침해도 유지). TODO: 가진 아이템은 cash_logs 의 item 으로 계산 (plan.md)
-function usePersisted<T>(key: string, init: T) {
+export function usePersisted<T>(key: string, init: T) {   // 전쟁모드(src/components/war)도 같은 방식으로 저장한다
   const [v, setV] = useState<T>(() => {
     try { const s = localStorage.getItem(key); return s ? { ...init, ...JSON.parse(s) } : init; } catch { return init; }
   });
@@ -149,15 +150,16 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
   const gear: Item[] = Object.values(equip).map(n => ITEM[n]).filter(it => it?.kind === 'gear');
 
   // ── 물약 효과: 같은 종류는 쌓이지 않고 더 강한(같으면 더 긴) 것 하나만 남는다. 재생은 1초 = 1턴 ──
-  const maxHp = 300 + pet.level * 30;
-  const [hp, setHp] = useState(180);   // TODO: 전투(startBattle)가 붙으면 전투 결과로 줄어든다. 지금은 물약을 시험하려고 덜 찬 상태로 시작
+  const maxHp = maxHpAt(pet.level);
+  const [hp, setHp] = useState(() => maxHpAt(initialPet.level));   // 처음엔 가득. 전투(src/components/war)가 끝나면 남은 체력으로 줄어든다
   const [buffs, setBuffs] = useState<Buff[]>([]);
   const hpRef = useRef(hp); hpRef.current = hp;
+  useEffect(() => { setHp(h => Math.min(h, maxHp)); }, [maxHp]);   // 체력은 최대 체력을 넘지 않는다
   const buffsRef = useRef(buffs); buffsRef.current = buffs;
   const buffPct = (k: Buff['k']) => buffs.find(b => b.k === k)?.a || 0;
 
-  const power = Math.round((pet.level * 10 + baseLove + gear.reduce((s, it) => s + (it?.atk || 0), 0)) * (1 + buffPct('atk') / 100));
-  const def = Math.round((pet.level * 5 + gear.reduce((s, it) => s + (it?.def || 0), 0)) * (1 + buffPct('def') / 100));
+  const power = Math.round((baseAtk(pet.level) + baseLove + gear.reduce((s, it) => s + (it?.atk || 0), 0)) * (1 + buffPct('atk') / 100));
+  const def = Math.round((baseDef(pet.level) + gear.reduce((s, it) => s + (it?.def || 0), 0)) * (1 + buffPct('def') / 100));
 
   // 지금 마시면 달라지는 게 있는 효과인지 (체력이 가득이면 회복은 헛일, 더 약한 효과는 덮어쓰지 못한다)
   const fxUseful = useCallback(([k, a, t = 0]: Fx) => {
@@ -190,6 +192,15 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
   }, [hasRegen, maxHp]);
 
   const own = useCallback((name: string) => setOwned(o => (o.list.includes(name) ? o : { list: [...o.list, name] })), [setOwned]);
+  const loseItem = useCallback((name: string) => setOwned(o => ({ list: o.list.filter(n => n !== name) })), [setOwned]);   // 전투에 져서 빼앗긴 아이템
+
+  // 전투가 끝났을 때: 체력을 남은 값으로(최소 1) 바꾸고, 공격·방어 물약은 한 판씩 줄인다 (0판이 되면 사라진다. 재생은 그대로)
+  const finishBattle = useCallback((hpLeft: number) => {
+    hpRef.current = Math.min(maxHp, Math.max(1, Math.round(hpLeft)));
+    setHp(hpRef.current);
+    const next = buffsRef.current.flatMap(b => (b.k === 'regen' ? [b] : b.t > 1 ? [{ ...b, t: b.t - 1 }] : []));
+    buffsRef.current = next; setBuffs(next);
+  }, [maxHp]);
 
   // ── 돌봄 행동 (애완모드) ──
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
@@ -276,9 +287,9 @@ export function useGameState(initialPet: Pet, toast: (msg: string) => void, isWa
   }, []);
 
   return {
-    pet, getPet, updatePet, addExp, addCash, owned, own, stats, bump,
+    pet, getPet, updatePet, addExp, addCash, owned, own, loseItem, stats, bump,
     equip, setEquip, wear, isWorn,
-    love, power, def, hp, maxHp, buffs, fxUseful, drink, toast,
+    love, power, def, hp, maxHp, buffs, fxUseful, drink, finishBattle, toast,
     shops: { pet: SHOP, war: WAR_SHOP },
     care, cooldowns, // 애완모드
   };

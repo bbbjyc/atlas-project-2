@@ -7,11 +7,18 @@ import Sheet, { SheetHead, Wallet } from './ui/Sheet';
 import Character from './character/Character';
 import { CharConfig, Equip } from './character/charConfig';
 import { useGame } from './game/GameContext';
+import { BattleKind, formatRemaining, pvpCooldownLeft } from '@/lib/war';
+import BattleSheet from './war/BattleSheet';
+import ClanPanel from './war/ClanPanel';
+import ClanWarCard from './war/ClanWarCard';
+import { useNow } from './war/useNow';
+import { useWar, WarApi } from './war/useWar';
 
 interface FriendsProps {
   pet: Pet;
   onPetUpdate: (pet: Pet) => void;
   onClose: () => void;
+  initialTab?: 'friends' | 'clan';   // 어느 탭으로 열지 (전쟁모드 아래쪽 '클랜전' 버튼은 클랜 탭으로)
 }
 
 const GIFT_COST = 10;   // 선물(밥·청소·샤워 대신 해 주기) 1번
@@ -32,10 +39,18 @@ const DEMO: Friend[] = [
 ];
 
 // 화면 2·3: 친구 집 방문·선물 / 초대 링크·초대 트리·클랜
-export default function Friends({ pet, onPetUpdate, onClose }: FriendsProps) {
+export default function Friends({ pet, onPetUpdate, onClose, initialTab = 'friends' }: FriendsProps) {
   const game = useGame();
-  const [tab, setTab] = useState<'friends' | 'clan'>('friends');
+  const [tab, setTab] = useState<'friends' | 'clan'>(initialTab);
   const [shake, setShake] = useState(0);
+
+  // 전쟁모드: 대전·클랜전 (src/components/war). 열기 전에 자는 중·피로·쿨타임·캐시를 확인한다
+  const wr = useWar(game);
+  const [battle, setBattle] = useState<{ kind: BattleKind; foe: Friend | null } | null>(null);
+  const now = useNow(1000, game.war && wr.state.lastPvpAt > 0);   // 대전 쿨타임 글자를 1초마다 (대전을 한 적이 있을 때만)
+  const pvpLeft = game.war ? pvpCooldownLeft(wr.state.lastPvpAt || null, now) : 0;
+  const challenge = (f: Friend) => { if (wr.checkReady('pvp')) setBattle({ kind: 'pvp', foe: f }); };
+  const startClanWar = () => { if (wr.checkReady('clanwar')) setBattle({ kind: 'clanwar', foe: null }); };
 
   const visit = (f: Friend) => {
     // TODO: visit_logs 에 action_type 'visit' 로 저장
@@ -53,6 +68,9 @@ export default function Friends({ pet, onPetUpdate, onClose }: FriendsProps) {
   };
 
   return (
+    <>
+    {/* 대전 창이 위에 열려 있는 동안은 친구 창을 막는다 (터치·키보드·Esc 는 대전 창이 받는다) */}
+    <div className="contents" inert={battle !== null}>
     <Sheet onClose={onClose} labelledBy="friendsTitle">
       <SheetHead id="friendsTitle" title="친구"><Wallet cash={pet.cash} shake={shake} className="ml-auto" /></SheetHead>
 
@@ -72,15 +90,20 @@ export default function Friends({ pet, onPetUpdate, onClose }: FriendsProps) {
           예시 친구예요. 초대 기능이 연결되면 실제 친구로 바뀌어요
         </p>
         {tab === 'friends'
-          ? DEMO.map((f, i) => <FriendCard key={f.id} f={f} i={i} war={game.war} onVisit={visit} onGift={gift} onBattle={() => game.toast('대전은 다음 단계에서 만들어요')} />)
-          : <ClanTab pet={pet} cfg={game.cfg} equip={game.equip} />}
+          ? DEMO.map((f, i) => <FriendCard key={f.id} f={f} i={i} war={game.war} pvpLeft={pvpLeft} onVisit={visit} onGift={gift} onBattle={() => challenge(f)} />)
+          : <ClanTab pet={pet} cfg={game.cfg} equip={game.equip} wr={wr} war={game.war} onClanWar={startClanWar} />}
       </div>
     </Sheet>
+    </div>
+    {battle && (
+      <BattleSheet kind={battle.kind} foe={battle.foe} allies={DEMO.filter(f => f.id !== battle.foe?.id)} wr={wr} onClose={() => setBattle(null)} />
+    )}
+    </>
   );
 }
 
-function FriendCard({ f, i, war, onVisit, onGift, onBattle }: {
-  f: Friend; i: number; war: boolean;
+function FriendCard({ f, i, war, pvpLeft, onVisit, onGift, onBattle }: {
+  f: Friend; i: number; war: boolean; pvpLeft: number;   // pvpLeft: 대전 쿨타임이 남은 밀리초 (0 이면 바로 신청)
   onVisit: (f: Friend) => void; onGift: (f: Friend, g: typeof GIFTS[number]) => void; onBattle: () => void;
 }) {
   return (
@@ -103,6 +126,7 @@ function FriendCard({ f, i, war, onVisit, onGift, onBattle }: {
         {war ? (
           <button onClick={onBattle} className="flex h-9 flex-1 items-center justify-center gap-1 rounded-xl bg-[rgba(255,93,108,.18)] text-xs font-extrabold text-[#ff8791] transition-transform active:scale-97">
             <Icon name="i-swords" className="size-4" />대전 신청
+            {pvpLeft > 0 && <span className="text-[10px] font-bold opacity-75">· {formatRemaining(pvpLeft)} 뒤</span>}
           </button>
         ) : GIFTS.map(g => (
           <button key={g.action} onClick={() => onGift(f, g)} aria-label={`${f.name}님에게 ${g.label} 선물`}
@@ -116,7 +140,7 @@ function FriendCard({ f, i, war, onVisit, onGift, onBattle }: {
   );
 }
 
-function ClanTab({ pet, cfg, equip }: { pet: Pet; cfg: CharConfig; equip: Equip }) {
+function ClanTab({ pet, cfg, equip, wr, war, onClanWar }: { pet: Pet; cfg: CharConfig; equip: Equip; wr: WarApi; war: boolean; onClanWar: () => void }) {
   const game = useGame();
   // TODO: 초대 코드는 players.invite_code, 클랜은 clans.name, 전적은 battle_logs 를 clan_id 로 센 승리 수 (plan.md)
   const link = typeof window === 'undefined' ? '' : `${window.location.origin}/?invite=${pet.userId.replace(/^user_/, '')}`;
@@ -140,7 +164,7 @@ function ClanTab({ pet, cfg, equip }: { pet: Pet; cfg: CharConfig; equip: Equip 
       <section className="rounded-2xl bg-(--card) p-3.5 shadow-[0_2px_8px_rgba(60,40,80,.07)]">
         <h3 className="flex items-center gap-1.5 text-sm font-extrabold"><Icon name="i-shield" className="size-4 text-(--primary)" />{pet.name}의 클랜</h3>
         <div className="mt-2.5 grid grid-cols-3 gap-1.5 text-center">
-          {[['클랜원', `${DEMO.length + 1}명`], ['클랜전 승리', '0승'], ['가장 먼 초대', '3단계']].map(([k, v]) => (
+          {[['클랜원', `${DEMO.length + 1}명`], ['클랜전 승리', `${wr.state.record.clanWins}승`], ['가장 먼 초대', '3단계']].map(([k, v]) => (
             <div key={k} className="rounded-xl bg-(--chip-bg) py-2">
               <b className="block text-[15px] font-extrabold tabular-nums">{v}</b>
               <span className="text-[10px] font-bold text-(--ink-2)">{k}</span>
@@ -148,6 +172,9 @@ function ClanTab({ pet, cfg, equip }: { pet: Pet; cfg: CharConfig; equip: Equip 
           ))}
         </div>
       </section>
+
+      <ClanPanel wr={wr} members={DEMO.length + 1} war={war} />
+      {war && <ClanWarCard wr={wr} onStart={onClanWar} />}
 
       <section className="rounded-2xl bg-(--card) p-3.5 shadow-[0_2px_8px_rgba(60,40,80,.07)]">
         <h3 className="flex items-center gap-1.5 text-sm font-extrabold"><Icon name="i-link" className="size-4 text-(--primary)" />초대 트리</h3>
