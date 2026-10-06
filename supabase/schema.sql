@@ -124,3 +124,32 @@ alter table public.cash_logs
 
 -- 변경 3 (plan.md 반영): 배치한 가구를 저장하기 위해 style_logs.furniture 추가 (가구 id를 쉼표로 이은 값)
 alter table public.style_logs add column if not exists furniture text;
+
+-- 변경 4 (plan.md 반영): 잠들었다 깨우는 행동 wake 추가 (변경 1을 대체해 다시 만든다. 여러 번 실행해도 안전)
+alter table public.care_logs drop constraint if exists care_logs_action_type_check;
+alter table public.care_logs
+  add constraint care_logs_action_type_check
+  check (action_type in ('feed', 'clean', 'shower', 'sleep', 'wake', 'play'));
+
+-- 변경 5 (plan.md 반영): 상점 아이템 종류에 food / weapon / armor / potion 추가 (변경 2를 대체)
+alter table public.cash_logs drop constraint if exists cash_logs_item_type_check;
+alter table public.cash_logs
+  add constraint cash_logs_item_type_check
+  check (item_type in ('outfit', 'background', 'furniture', 'food', 'weapon', 'armor', 'potion'));
+
+-- 변경 6 (plan.md 반영): 자동으로 차는 캐시 reason 'recovery' 추가
+alter table public.cash_logs drop constraint if exists cash_logs_reason_check;
+alter table public.cash_logs
+  add constraint cash_logs_reason_check
+  check (reason in ('mission', 'recovery', 'purchase', 'feed', 'clean', 'shower', 'heal', 'gift', 'battle', 'buy_item'));
+
+-- 변경 7 (plan.md 반영): 상점 "충전" 버튼으로 직접 연 팝업을 구분하는 shortage_reason 'topup_button' 추가
+alter table public.fake_door_logs drop constraint if exists fake_door_logs_shortage_reason_check;
+alter table public.fake_door_logs
+  add constraint fake_door_logs_shortage_reason_check
+  check (shortage_reason in ('feed', 'clean', 'shower', 'heal', 'gift', 'battle', 'buy_item', 'topup_button'));
+
+-- 변경 8 (plan.md 반영): 미션 보상·시작 캐시를 플레이어당 한 번만 받게 한다 (item = 'mission:<id>')
+create unique index if not exists cash_logs_mission_once
+  on public.cash_logs (player_id, item)
+  where reason = 'mission';
