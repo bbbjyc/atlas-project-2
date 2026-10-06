@@ -76,9 +76,11 @@ export default function Shop({ pet, onPetUpdate, onClose }: ShopProps) {
       const lv = game.addExp(it.val);
       if (lv) game.toast(`레벨 업! Lv.${lv}`);
     } else if (it.kind === 'potion') {
+      game.bump('potions');
       game.toast(`${it.name}! ${game.drink(it.effects).map(fxText).join(', ')}`);
     } else {
       game.own(it.name);
+      if (it.kind === 'gear') game.bump('gearBuy');
       // 입을 수 있는 것(옷·무기·갑옷)은 사자마자 입는다. 꾸미기 창에서 바꿀 수 있다
       if (slotOf(it)) game.wear(it);
       if (it.kind === 'gear') game.toast(`${it.name} 장착! 전투력 +${it.atk} · 방어력 +${it.def}`);

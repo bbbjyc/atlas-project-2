@@ -51,16 +51,52 @@ export const MISSION_TIERS: Tier[] = [
   ] },
 ];
 
-// 받은 보상·알린 미션을 기억하고, 새로 끝난 미션을 toast 로 알린다 (애완모드에서만 진행 가능)
-export function useMissions(stats: Stats, lv: number, toast: (m: string) => void, grant: (r: Reward) => void, isWarMode: boolean = false) {
-  const [saved, setSaved] = useState<{ claimed: string[]; bonus: number[]; seen: boolean }>(() => {
-    const init = { claimed: [] as string[], bonus: [] as number[], seen: false };
-    try { return { ...init, ...JSON.parse(localStorage.getItem('atlas.missions') || '{}') }; } catch { return init; }
-  });
-  useEffect(() => { try { localStorage.setItem('atlas.missions', JSON.stringify(saved)); } catch { /* 무시 */ } }, [saved]);
+// 전쟁모드 미션. 애완 미션과 목록·진행·받은 기록이 따로 간다 (싸움·장비·물약 중심)
+// soon: 아직 기록이 없는 조건(약탈 막기, 3대3 완승, 아지트). 기록이 생기면 soon 만 지운다
+export const WAR_MISSION_TIERS: Tier[] = [
+  { lv: 1, name: '신병', title: '첫 출정', desc: '싸우고, 장비를 갖추고, 물약을 써 봐요', bonus: 50, missions: [
+    M('w-win1', 'i-swords', '첫 승리', '대전에서 한 번 이겨요', 1, s => s.battleWins, { cash: 30, item: '하얀 철검' }),
+    M('w-gear1', 'i-sword', '첫 장비', '상점에서 무기나 갑옷을 1개 사요', 1, s => s.gearBuy, { cash: 20, item: '원목 나무 방패' }),
+    M('w-potion1', 'i-potion', '첫 물약', '전쟁 물약을 한 번 마셔요', 1, s => s.potions, { cash: 20 }),
+  ] },
+  { lv: 2, name: '용사', title: '싸우는 용사', desc: '이기는 횟수를 쌓고 장비를 모아요', bonus: 100, missions: [
+    M('w-win3', 'i-swords', '대전 3승', '대전에서 3번 이겨요', 3, s => s.battleWins, { cash: 80 }),
+    M('w-gear3', 'i-sword', '장비 3개', '무기나 갑옷을 3개 사요', 3, s => s.gearBuy, { cash: 60 }),
+    M('w-potion3', 'i-potion', '물약 3병', '전쟁 물약을 3번 마셔요', 3, s => s.potions, { cash: 50 }),
+    M('w-guard', 'i-shield', '약탈 막기', '약탈당하지 않고 대전에서 5번 이겨요', 5, () => 0, { cash: 60 }, true),
+  ] },
+  { lv: 3, name: '지휘관', title: '클랜 지휘관', desc: '클랜과 함께 싸워요', bonus: 200, missions: [
+    M('w-win10', 'i-swords', '대전 10승', '대전에서 10번 이겨요', 10, s => s.battleWins, { cash: 150 }),
+    M('w-clan1', 'i-shield', '클랜전 승리', '클랜전에서 한 번 이겨요', 1, s => s.clanWins, { cash: 150 }),
+    M('w-team', 'i-swords', '3대3 완승', '한 대전에서 상대 팀을 모두 쓰러뜨려요', 1, () => 0, { cash: 120 }, true),
+  ] },
+  { lv: 4, name: '전쟁영웅', title: '전쟁 영웅', desc: '클랜 아지트를 키우고 전쟁을 이겨요', bonus: 500, missions: [
+    M('w-win20', 'i-swords', '대전 20승', '대전에서 20번 이겨요', 20, s => s.battleWins, { cash: 300 }),
+    M('w-clan3', 'i-shield', '클랜전 3승', '클랜전에서 3번 이겨요', 3, s => s.clanWins, { cash: 300 }),
+    M('w-hideout', 'i-home', '아지트 Lv.2', '클랜 아지트를 Lv.2로 키워요', 2, () => 0, { cash: 200 }, true),
+  ] },
+];
 
-  const progress = (m: Mission) => isWarMode ? 0 : Math.min(m.goal, m.get(stats, lv)); // 전쟁모드에선 진행도 0
-  const isDone = (m: Mission) => !isWarMode && progress(m) >= m.goal; // 전쟁모드에선 항상 미완료
+// 받은 보상·알린 미션을 기억하고, 새로 끝난 미션을 toast 로 알린다. 모드에 따라 애완 또는 전쟁 미션 목록을 쓴다
+const BLANK = { claimed: [] as string[], bonus: [] as number[], seen: false };
+type Saved = typeof BLANK;
+export function useMissions(stats: Stats, lv: number, toast: (m: string) => void, grant: (r: Reward) => void, isWarMode: boolean = false) {
+  const mode = isWarMode ? 'war' : 'pet';
+  const tiers = isWarMode ? WAR_MISSION_TIERS : MISSION_TIERS;
+  // 두 모드의 기록을 한 곳에 나눠 둔다. 예전 저장 형식(애완 기록만 있던 것)은 애완 쪽으로 옮긴다
+  const [all, setAll] = useState<Record<'pet' | 'war', Saved>>(() => {
+    try {
+      const s = JSON.parse(localStorage.getItem('atlas.missions') || '{}');
+      if ('claimed' in s) return { pet: { ...BLANK, ...s }, war: BLANK };
+      return { pet: { ...BLANK, ...s.pet }, war: { ...BLANK, ...s.war } };
+    } catch { return { pet: BLANK, war: BLANK }; }
+  });
+  useEffect(() => { try { localStorage.setItem('atlas.missions', JSON.stringify(all)); } catch { /* 무시 */ } }, [all]);
+  const saved = all[mode];
+  const setSaved = useCallback((fn: (s: Saved) => Saved) => setAll(a => ({ ...a, [mode]: fn(a[mode]) })), [mode]);
+
+  const progress = (m: Mission) => Math.min(m.goal, m.get(stats, lv));
+  const isDone = (m: Mission) => progress(m) >= m.goal;
   const claimed = (id: string) => saved.claimed.includes(id);
   const bonusClaimed = (t: number) => saved.bonus.includes(t);
   const unlocked = (t: number) => t === 1 || bonusClaimed(t - 1);
@@ -68,14 +104,14 @@ export function useMissions(stats: Stats, lv: number, toast: (m: string) => void
   // 그 단계에서 지금 받을 수 있는 보상 수 (미션 + 보너스)
   const claimable = (t: Tier) => !unlocked(t.lv) ? 0
     : t.missions.filter(m => !m.soon && isDone(m) && !claimed(m.id)).length + (allClaimed(t) && !bonusClaimed(t.lv) ? 1 : 0);
-  const count = MISSION_TIERS.reduce((s, t) => s + claimable(t), 0);
+  const count = tiers.reduce((s, t) => s + claimable(t), 0);
   const badge = count ? String(count) : saved.seen ? '' : '!';
 
   // 행동 뒤에 새로 끝난 미션 알림 (한 번씩만)
   const notified = useRef(new Set<string>());
   const first = useRef(true);
   useEffect(() => {
-    MISSION_TIERS.forEach(t => {
+    tiers.forEach(t => {
       if (!unlocked(t.lv)) return;
       t.missions.forEach(m => {
         if (m.soon || !isDone(m) || claimed(m.id) || notified.current.has(m.id)) return;
@@ -89,14 +125,14 @@ export function useMissions(stats: Stats, lv: number, toast: (m: string) => void
   const claim = useCallback((m: Mission) => {
     setSaved(s => ({ ...s, claimed: [...s.claimed, m.id] }));
     grant(m.reward);
-  }, [grant]);
+  }, [grant, setSaved]);
   const claimBonus = useCallback((t: Tier) => {
     setSaved(s => ({ ...s, bonus: [...s.bonus, t.lv] }));
     grant({ cash: t.bonus });
-    if (t.lv < MISSION_TIERS.length) toast(`Lv.${t.lv + 1} ${MISSION_TIERS[t.lv].name} 미션이 열렸어요!`);
-  }, [grant, toast]);
-  const markSeen = useCallback(() => setSaved(s => (s.seen ? s : { ...s, seen: true })), []);
+    if (t.lv < tiers.length) toast(`Lv.${t.lv + 1} ${tiers[t.lv].name} 미션이 열렸어요!`);
+  }, [grant, toast, setSaved, tiers]);
+  const markSeen = useCallback(() => setSaved(s => (s.seen ? s : { ...s, seen: true })), [setSaved]);
 
-  return { progress, isDone, claimed, bonusClaimed, unlocked, claimable, badge, claim, claimBonus, markSeen };
+  return { tiers, progress, isDone, claimed, bonusClaimed, unlocked, claimable, badge, claim, claimBonus, markSeen };
 }
 export type MissionState = ReturnType<typeof useMissions>;
