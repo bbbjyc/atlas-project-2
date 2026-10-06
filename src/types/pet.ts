@@ -23,6 +23,7 @@ export interface Pet {
   lastFeedTime: number;
   lastPlayTime: number;
   lastCashRecoveryTime: number;
+  lastUpdateTime: number; // 자동 스탯 변화 추적용
   sleepStartTime: number | null;
   updatedAt: number;
 
