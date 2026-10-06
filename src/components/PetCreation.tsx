@@ -19,7 +19,7 @@ function makePet(name: string, userId: string): Pet {
     hunger: 50, tiredness: 30, cleanliness: 70, happiness: 60, isAwake: true,
     outfit: 'basic', backgroundColor: 'white', furniture: [],
     cash: 100,
-    createdAt: now, lastFeedTime: now, lastPlayTime: now, lastCashRecoveryTime: now, sleepStartTime: null, updatedAt: now,
+    createdAt: now, lastFeedTime: now, lastPlayTime: now, lastCashRecoveryTime: now, lastUpdateTime: now, sleepStartTime: null, updatedAt: now,
     friends: [], friendshipScores: {}, lastVisitTime: {},
   };
 }

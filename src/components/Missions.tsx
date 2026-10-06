@@ -8,7 +8,7 @@ import { Mission, MISSION_TIERS, MissionState, Reward } from './missions/mission
 
 // 미션 창: 단계(Lv.1 입문 ~ Lv.4 마스터) 탭, 단계 진행도와 보너스, 미션 목록
 export default function Missions({ ms, onClose }: { ms: MissionState; onClose: () => void }) {
-  const { pet } = useGame();
+  const { pet, war } = useGame();
   // 아직 끝나지 않은 가장 낮은 단계부터 보여 준다
   const [tierLv, setTierLv] = useState(() => (MISSION_TIERS.find(t => ms.unlocked(t.lv) && !ms.bonusClaimed(t.lv)) ?? MISSION_TIERS[MISSION_TIERS.length - 1]).lv);
   const listRef = useRef<HTMLDivElement>(null);
@@ -48,6 +48,41 @@ export default function Missions({ ms, onClose }: { ms: MissionState; onClose: (
       <div className="mx-4 mt-3 flex-none rounded-[18px] bg-linear-135 from-[#9585ff] to-[#6c5cf0] px-3.5 pt-3.5 pb-3 text-white shadow-[0_6px_16px_rgba(108,92,240,.25)] war:from-[#ff7a6b] war:to-[#c8364a] war:shadow-[0_6px_16px_rgba(200,54,74,.3)]">
         <h3 className="text-base font-extrabold">Lv.{t.lv} {t.title}</h3>
         <p className="mt-0.5 text-xs opacity-85">{t.desc}</p>
+
+        {/* 애완모드 스탯 바 (애완모드에서만) */}
+        {!war && (
+          <div className="mt-2 space-y-1.5 text-[10px]">
+            <div className="flex items-center gap-2">
+              <span className="min-w-8">배고픔</span>
+              <span className="block h-1 flex-1 overflow-hidden rounded-[1px] bg-white/25">
+                <i className="block h-full bg-[#ff6b6b] transition-[width]" style={{ width: `${pet.hunger}%` }} />
+              </span>
+              <span className="min-w-6 text-right">{Math.round(pet.hunger)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="min-w-8">피로도</span>
+              <span className="block h-1 flex-1 overflow-hidden rounded-[1px] bg-white/25">
+                <i className="block h-full bg-[#4ecdc4] transition-[width]" style={{ width: `${pet.tiredness}%` }} />
+              </span>
+              <span className="min-w-6 text-right">{Math.round(pet.tiredness)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="min-w-8">청결도</span>
+              <span className="block h-1 flex-1 overflow-hidden rounded-[1px] bg-white/25">
+                <i className="block h-full bg-[#45b7d1] transition-[width]" style={{ width: `${pet.cleanliness}%` }} />
+              </span>
+              <span className="min-w-6 text-right">{Math.round(pet.cleanliness)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="min-w-8">행복도</span>
+              <span className="block h-1 flex-1 overflow-hidden rounded-[1px] bg-white/25">
+                <i className="block h-full bg-[#f9ca24] transition-[width]" style={{ width: `${pet.happiness}%` }} />
+              </span>
+              <span className="min-w-6 text-right">{Math.round(pet.happiness)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="mt-2.5 flex items-center gap-2 text-[11px] font-extrabold">
           <span className="block h-1.5 flex-1 overflow-hidden rounded-[3px] bg-white/25">
             <i className="block h-full rounded-[inherit] bg-white transition-[width] duration-450" style={{ width: `${doneN / real.length * 100}%` }} />

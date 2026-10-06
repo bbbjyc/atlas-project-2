@@ -35,9 +35,9 @@ const chipIcon = 'size-3.5 stroke-[2.3]!';
 
 export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   const { msg, on, toast } = useToastQueue();
-  const game = useGameState(initialPet, toast);
-  const { pet, getPet, updatePet, bump, addCash, own, equip, setEquip } = game;
   const [war, setWar] = useState(false);
+  const game = useGameState(initialPet, toast, war);
+  const { pet, getPet, updatePet, bump, addCash, own, care, cooldowns, equip, setEquip } = game;
   const [cfg, setCfg] = useState<CharConfig>(loadCfg);
   const [sheet, setSheet] = useState<SheetName>(null);
   const [topup, setTopup] = useState<TopupCtx | null>(null);
@@ -58,7 +58,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
     if (r.item) own(r.item);
     toast(`보상: ${[r.cash && `${r.cash} 캐시`, r.item].filter(Boolean).join(' + ')}`);
   }, [addCash, own, toast]);
-  const ms = useMissions(game.stats, pet.level, toast, grant);
+  const ms = useMissions(game.stats, pet.level, toast, grant, war);
 
   const float = useCallback((text: string, color: string, delay = 0) => {
     window.setTimeout(() => {
@@ -87,15 +87,16 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
   }, []);
   const closeTopup = useCallback(() => { topupOpen.current = false; setTopup(null); }, []);
 
-  const care = (action: CareAction, label: string) => {
-    if (getPet().cash < COST) { setCashShake(n => n + 1); openTopup(COST, action); return; }
-    // TODO: src/lib/pet.ts 가 main 에 들어오면 addCareLog(pet.userId, action), addCashLog(...) 로 저장
-    updatePet(p => ({ ...p, cash: p.cash - COST }));
-    const lv = game.addExp(1);
-    bump(action);
+  // useGameState의 care 함수 사용 (애완모드 규칙 적용)
+  const doCare = (action: 'feed' | 'clean' | 'shower' | 'sleep' | 'wake' | 'play', label?: string) => {
+    const before = pet.level;
+    care(action);
     doHop();
-    float(`${label}! +1 EXP`, '#7c6cf6');
-    float(`-${COST}`, '#e0950e', 180);
+    if (label) {
+      float(`${label}!`, '#7c6cf6');
+      float(`-${action === 'sleep' || action === 'wake' ? 0 : 10}`, '#e0950e', 180);
+    }
+    const lv = pet.level > before ? pet.level : 0;
     if (lv) toast(`레벨 업! Lv.${lv}`);
   };
 
@@ -210,7 +211,7 @@ export default function GameScreen({ pet: initialPet }: GameScreenProps) {
                 <DockButton icon="i-shield" label="클랜전" color="bg-[rgba(255,159,74,.18)] text-[#ffb36e]" onClick={() => { setAnim('defend'); soon('클랜전')(); }} />
               </>
             ) : CARES.map(c => (
-              <DockButton key={c.action} icon={c.icon} label={c.label} color={c.color} cost={COST} onClick={() => care(c.action, c.label)} />
+              <DockButton key={c.action} icon={c.icon} label={c.label} color={c.color} cost={COST} onClick={() => doCare(c.action as 'feed' | 'clean' | 'shower', c.label)} />
             ))}
           </div>
 
