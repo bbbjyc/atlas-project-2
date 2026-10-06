@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Icon from './ui/Icon';
 import { CloseButton, Wallet } from './ui/Sheet';
+import { useGame } from './game/GameContext';
 import type { ShortageReason } from './game/GameContext';
 
 // [캐시, 원]. 기본 1캐시 = 1원, 큰 상품일수록 할인을 더 해 준다
@@ -20,6 +21,7 @@ export function logFakeDoor(event_type: 'popup_shown' | 'tier_clicked', tier: st
 // 충전 팝업 (페이크 도어: 실제 결제는 아직 없음). 어떤 화면 위에도 뜬다
 // 캐시가 모자라서 열렸으면 부족분을 딱 채우는 가장 작은 상품을 "추천"으로 맨 위에, 더 큰 상품은 아래에
 export default function TopupPopup({ ctx, cash, onClose }: { ctx: TopupCtx; cash: number; onClose: () => void }) {
+  const game = useGame();
   const [soon, setSoon] = useState(!!ctx.soon);
   const [shown, setShown] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -53,7 +55,12 @@ export default function TopupPopup({ ctx, cash, onClose }: { ctx: TopupCtx; cash
     return () => document.removeEventListener('keydown', onKey, true);
   }, []);
 
-  const pick = (amt: number) => { logFakeDoor('tier_clicked', String(amt), ctx.reason); setSoon(true); };
+  const pick = (amt: number) => {
+    logFakeDoor('tier_clicked', String(amt), ctx.reason);
+    game.addCash(amt);
+    game.toast(`캐시 +${amt.toLocaleString()}`);
+    setSoon(true);
+  };
 
   let best = -1;
   if (short > 0) { best = TOPUP.findIndex(([amt]) => amt >= short); if (best < 0) best = TOPUP.length - 1; }
